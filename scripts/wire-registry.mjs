@@ -14,6 +14,7 @@ export const REGISTRY = {
     app: ui("Root the whole game renders into", "home", "display"),
     profName: ui("Player name, saved on this device", "profile", "none: stored locally only"),
     goWorld: ui("Start World Live (60 s cycle, bots in this build)", "world", "round_start"),
+    goWorldScr: ui("Start World Live: Scrambled (advanced scramble every round, own board)", "world_scr", "round_start"),
     goPractice: ui("Start Solo Practice with the chosen grid, photos, scramble and hint", "practice_full", "round_start"),
     goBlitz: ui("Start a 2-minute Solo Blitz run", "blitz", "round_start"),
     goGroup: ui("Open Group Room (host or join with a code)", "group", "screen"),
@@ -116,6 +117,7 @@ export const REGISTRY = {
     "api/feedback": ui("Ingest tester feedback", "feedback_form", "display"),
     "api/admin/summary": ui("Aggregated results for the owner", "admin", "display"),
     "api/room/[name]": ui("WebSocket into a live room (Durable Object)", "group", "display"),
+    "api/time": ui("Server clock that aligns World Live on every device", "world_same", "display"),
     "api/admin/session": ui("One session's rows (wire map proof, deletion requests)", "admin", "display"),
   },
   event: {
@@ -137,6 +139,7 @@ export const REGISTRY = {
   // Promises the owner has made that have no code yet. Listed so they cannot be forgotten.
   promise: {
     "group-realtime": ui("Friends and family join one shared link and play in real time with no noticeable delay", "group", "round_end"),
+    "world-real-board": ui("World Live leaderboard shows the real people playing that same round (today: shared bots + you)", null, "none", "planned"),
     "ai-agents": ui("People can connect their AI agents to play (agent API / MCP seat in a room)", null, "none", "planned"),
     "pack-persist": ui("My own photos survive a page reload", "pack_persist", "none", "gap"),
     "anti-capture": ui("Discourage screenshots / phone capture of photos (native app: Android FLAG_SECURE, iOS capture detection; web can only deter)", null, "none", "planned"),

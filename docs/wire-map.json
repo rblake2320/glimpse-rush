@@ -1,13 +1,13 @@
 {
  "base": "https://glimpse-rush.pages.dev",
- "ran": "2026-10-03T22:40:25.304Z",
+ "ran": "2026-10-03T23:02:40.437Z",
  "red": 0,
  "inventory": {
   "counts": {
-   "ui": 77,
+   "ui": 78,
    "screen": 8,
    "mode": 4,
-   "api": 5,
+   "api": 6,
    "event": 12,
    "tag": 11
   },
@@ -39,197 +39,13 @@
   }
  },
  "wires": {
-  "home": {
-   "promise": "Home loads with every mode and no errors",
-   "state": "green",
-   "detail": "5 mode controls visible",
-   "ms": 389,
-   "failing_since": null,
-   "elements": 2
-  },
   "consent_no": {
    "promise": "Declining consent sends nothing and stores no id",
    "state": "green",
-   "detail": "0 requests, no id stored",
-   "ms": 9460,
+   "detail": "no data sent, no id stored",
+   "ms": 9690,
    "failing_since": null,
    "elements": 1
-  },
-  "consent_yes": {
-   "promise": "Accepting consent records session_start and screens",
-   "state": "green",
-   "detail": "session_start, screen landed",
-   "ms": 551,
-   "failing_since": null,
-   "elements": 4
-  },
-  "practice_full": {
-   "promise": "Practice: freeze, correct answer, results with credit; events land",
-   "state": "green",
-   "detail": "photo loaded (900px), credit shown, 4 events landed",
-   "ms": 4575,
-   "failing_since": null,
-   "elements": 20
-  },
-  "half_credit": {
-   "promise": "Half answer banks and continues; wrong 2nd answer keeps half credit",
-   "state": "green",
-   "detail": "banked, continued, kept",
-   "ms": 10040,
-   "failing_since": null,
-   "elements": 0
-  },
-  "giveup": {
-   "promise": "Give up reveals the photo and records the outcome; Back returns home",
-   "state": "green",
-   "detail": "gave_up landed, home reached",
-   "ms": 5543,
-   "failing_since": null,
-   "elements": 2
-  },
-  "unfreeze": {
-   "promise": "Unfreeze spends a freeze and is recorded",
-   "state": "green",
-   "detail": "freeze spent, freeze_fail landed",
-   "ms": 4997,
-   "failing_since": null,
-   "elements": 2
-  },
-  "options": {
-   "promise": "Practice grid, scramble and hint options reach the round",
-   "state": "green",
-   "detail": "9 tiles, scramble 1, hint on",
-   "ms": 5512,
-   "failing_since": null,
-   "elements": 3
-  },
-  "blitz": {
-   "promise": "Blitz: answer, skip, end run, run again; run total recorded",
-   "state": "green",
-   "detail": "run total 1900 recorded",
-   "ms": 5294,
-   "failing_since": null,
-   "elements": 8
-  },
-  "world": {
-   "promise": "World Live: join, freeze, answer, results with leaderboard, next round",
-   "state": "green",
-   "detail": "leaderboard shown, round_end landed",
-   "ms": 48991,
-   "failing_since": null,
-   "elements": 6
-  },
-  "abandon": {
-   "promise": "Quitting a round before it ends is recorded",
-   "state": "green",
-   "detail": "round_abandon landed",
-   "ms": 5364,
-   "failing_since": null,
-   "elements": 1
-  },
-  "visit_data": {
-   "promise": "Visit data lands: device details, page speed, answer time, play time, errors",
-   "state": "green",
-   "detail": "windows/chrome, first byte 113 ms, 4 s active, error captured",
-   "ms": 5043,
-   "failing_since": null,
-   "elements": 2
-  },
-  "owner_device": {
-   "promise": "?owner=1 marks a device so its plays are never counted",
-   "state": "green",
-   "detail": "owner plays stored, excluded from stats",
-   "ms": 919,
-   "failing_since": null,
-   "elements": 0
-  },
-  "feedback_form": {
-   "promise": "Feedback form: rating, tags, text, send; stored with context",
-   "state": "green",
-   "detail": "feedback stored (1 rows for this session)",
-   "ms": 5547,
-   "failing_since": null,
-   "elements": 22
-  },
-  "round_reaction": {
-   "promise": "Round thumbs and 'should count' flag are stored per photo",
-   "state": "green",
-   "detail": "thumbs + dispute stored",
-   "ms": 5261,
-   "failing_since": null,
-   "elements": 1
-  },
-  "admin": {
-   "promise": "Admin results are locked without the token, load with it, and exclude test traffic",
-   "state": "green",
-   "detail": "locked, renders, 2 real testers counted",
-   "ms": 886,
-   "failing_since": null,
-   "elements": 7
-  },
-  "api_guard": {
-   "promise": "APIs reject garbage, oversize and empty input",
-   "state": "green",
-   "detail": "400 / 413 / 400",
-   "ms": 180,
-   "failing_since": null,
-   "elements": 0
-  },
-  "headers": {
-   "promise": "Security and no-index headers are served",
-   "state": "green",
-   "detail": "noindex on /admin, nosniff",
-   "ms": 120,
-   "failing_since": null,
-   "elements": 0
-  },
-  "photos": {
-   "promise": "Every built-in photo loads at 900x900 with an allowed licence, answers and a credit",
-   "state": "green",
-   "detail": "63 photos OK",
-   "ms": 1145,
-   "failing_since": null,
-   "elements": 0
-  },
-  "selftest": {
-   "promise": "Scoring self-test in the page passes every spec vector",
-   "state": "green",
-   "detail": "38/38 pass",
-   "ms": 381,
-   "failing_since": null,
-   "elements": 1
-  },
-  "pack": {
-   "promise": "Your own photos: add a photo from the device, name the pack, back out",
-   "state": "green",
-   "detail": "1 photo added",
-   "ms": 443,
-   "failing_since": null,
-   "elements": 8
-  },
-  "pack_persist": {
-   "promise": "Your own photos survive a reload",
-   "state": "amber",
-   "detail": "after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site)",
-   "ms": 709,
-   "failing_since": "2026-10-03T22:39:36.793Z",
-   "elements": 1
-  },
-  "profile": {
-   "promise": "Player name is saved on the device",
-   "state": "green",
-   "detail": "kept after reload",
-   "ms": 699,
-   "failing_since": null,
-   "elements": 1
-  },
-  "group": {
-   "promise": "Group Room: host shares a link, a friend joins with just a name, both play the same round live",
-   "state": "green",
-   "detail": "joined via invite in 258 ms, round start skew 12 ms, boards match",
-   "ms": 47775,
-   "failing_since": null,
-   "elements": 27
   }
  },
  "elements": [
@@ -239,7 +55,7 @@
    "purpose": "Root the whole game renders into",
    "wire": "home",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -248,7 +64,7 @@
    "purpose": "Player name, saved on this device",
    "wire": "profile",
    "done": "none: stored locally only",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -257,7 +73,16 @@
    "purpose": "Start World Live (60 s cycle, bots in this build)",
    "wire": "world",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goWorldScr",
+   "purpose": "Start World Live: Scrambled (advanced scramble every round, own board)",
+   "wire": "world_scr",
+   "done": "round_start",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -266,7 +91,7 @@
    "purpose": "Start Solo Practice with the chosen grid, photos, scramble and hint",
    "wire": "practice_full",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -275,7 +100,7 @@
    "purpose": "Start a 2-minute Solo Blitz run",
    "wire": "blitz",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -284,7 +109,7 @@
    "purpose": "Open Group Room (host or join with a code)",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -293,7 +118,7 @@
    "purpose": "Open Your own photos",
    "wire": "pack",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -302,7 +127,7 @@
    "purpose": "Practice grid size picker (4-100 tiles)",
    "wire": "options",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -311,7 +136,7 @@
    "purpose": "Practice photo source: built-in or my photos",
    "wire": "pack",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -320,7 +145,7 @@
    "purpose": "Practice scramble level (off, x1.25, x1.5)",
    "wire": "options",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -329,7 +154,7 @@
    "purpose": "Practice category hint (x0.5)",
    "wire": "options",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -338,7 +163,7 @@
    "purpose": "Scoring self-test output (spec §11 vectors)",
    "wire": "selftest",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -347,7 +172,7 @@
    "purpose": "Round phase label (join, live reveal, final window)",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -356,7 +181,7 @@
    "purpose": "Round / run clock",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -365,7 +190,7 @@
    "purpose": "Reveal progress bar",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -374,7 +199,7 @@
    "purpose": "Tile grid covering the photo",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -383,7 +208,7 @@
    "purpose": "Tiles revealed counter",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -392,7 +217,7 @@
    "purpose": "Live tile count while frozen",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -401,7 +226,7 @@
    "purpose": "Join countdown ring before a synced round",
    "wire": "world",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -410,7 +235,7 @@
    "purpose": "Leave a round during the join countdown",
    "wire": "world",
    "done": "round_abandon",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -419,7 +244,7 @@
    "purpose": "FREEZE: stop the board and answer",
    "wire": "practice_full",
    "done": "freeze",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -428,7 +253,7 @@
    "purpose": "Answer form",
    "wire": "practice_full",
    "done": "answer",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -437,7 +262,7 @@
    "purpose": "Answer input",
    "wire": "practice_full",
    "done": "answer",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -446,7 +271,7 @@
    "purpose": "Autocomplete from a general word list (never this round's answers)",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -455,7 +280,7 @@
    "purpose": "7-second answer timer bar",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -464,7 +289,7 @@
    "purpose": "7-second answer countdown",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -473,7 +298,7 @@
    "purpose": "Give up this freeze and keep watching",
    "wire": "unfreeze",
    "done": "freeze_fail",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -482,7 +307,7 @@
    "purpose": "Practice: give up and reveal",
    "wire": "giveup",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -491,7 +316,7 @@
    "purpose": "Blitz: this photo's reveal clock",
    "wire": "blitz",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -500,7 +325,7 @@
    "purpose": "Blitz: skip photo, or move on keeping a banked half credit",
    "wire": "blitz",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -509,7 +334,7 @@
    "purpose": "Blitz: end the run now",
    "wire": "blitz",
    "done": "blitz_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -518,7 +343,7 @@
    "purpose": "Next World Live round / play practice again",
    "wire": "world",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -527,7 +352,7 @@
    "purpose": "Countdown to the next synced round",
    "wire": "world",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -536,7 +361,7 @@
    "purpose": "Back to menu",
    "wire": "giveup",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -545,7 +370,7 @@
    "purpose": "Blitz: run again",
    "wire": "blitz",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -554,7 +379,7 @@
    "purpose": "Add photos from the device",
    "wire": "pack",
    "done": "none: photos never leave the device",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -563,7 +388,7 @@
    "purpose": "Upload progress / result message",
    "wire": "pack",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -572,7 +397,7 @@
    "purpose": "Name of the photo pack",
    "wire": "pack",
    "done": "none: stored locally only",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -581,7 +406,7 @@
    "purpose": "Practice with my own photos",
    "wire": "pack",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -590,7 +415,7 @@
    "purpose": "Explains which photos a group game uses",
    "wire": "group",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -599,7 +424,7 @@
    "purpose": "Group: your name in the room",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -608,7 +433,7 @@
    "purpose": "Group: create a room",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -617,7 +442,7 @@
    "purpose": "Group: join a room",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -626,7 +451,7 @@
    "purpose": "Group: room code input",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -635,7 +460,7 @@
    "purpose": "Group setting: grid",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -644,7 +469,7 @@
    "purpose": "Group setting: rounds",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -653,7 +478,7 @@
    "purpose": "Group setting: hint",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -662,7 +487,7 @@
    "purpose": "Group setting: scramble",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -671,7 +496,7 @@
    "purpose": "Group setting: scramble varies per round",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -680,7 +505,7 @@
    "purpose": "Group setting: built-in or pack photos",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -689,7 +514,7 @@
    "purpose": "Group setting: number of teams",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -698,7 +523,7 @@
    "purpose": "Group: copy the invite link",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -707,7 +532,7 @@
    "purpose": "Group: share the invite through the phone share sheet (text, WhatsApp...)",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -716,7 +541,7 @@
    "purpose": "Group: host starts the game",
    "wire": "group",
    "done": "round_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -725,7 +550,7 @@
    "purpose": "Group: pick a team",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -734,7 +559,7 @@
    "purpose": "Group: live board during a round",
    "wire": "group",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -743,7 +568,7 @@
    "purpose": "Group: leave the room",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -752,7 +577,7 @@
    "purpose": "Group: take over as host if the host left",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -761,7 +586,7 @@
    "purpose": "Back from a sub-screen",
    "wire": "pack",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -770,7 +595,7 @@
    "purpose": "Group: retry when live rooms are unavailable",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -779,7 +604,7 @@
    "purpose": "Consent: share anonymous play data",
    "wire": "consent_yes",
    "done": "session_start",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -797,7 +622,7 @@
    "purpose": "Feedback: 1-5 rating",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -806,7 +631,7 @@
    "purpose": "Feedback: what it was about",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -815,7 +640,7 @@
    "purpose": "Feedback: what they liked",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -824,7 +649,7 @@
    "purpose": "Feedback: what they didn't like",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -833,7 +658,7 @@
    "purpose": "Feedback: what broke",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -842,7 +667,7 @@
    "purpose": "Feedback: optional email for follow-up",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -851,7 +676,7 @@
    "purpose": "Feedback: send",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -860,7 +685,7 @@
    "purpose": "Feedback: close without sending",
    "wire": "feedback_form",
    "done": "feedback_open",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -869,7 +694,7 @@
    "purpose": "Feedback: send status",
    "wire": "feedback_form",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -878,7 +703,7 @@
    "purpose": "Round reaction: send status",
    "wire": "round_reaction",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -887,7 +712,7 @@
    "purpose": "Admin token input",
    "wire": "admin",
    "done": "none: secret, never logged",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -896,7 +721,7 @@
    "purpose": "Admin: load results",
    "wire": "admin",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -905,7 +730,7 @@
    "purpose": "Admin: load status",
    "wire": "admin",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -914,7 +739,7 @@
    "purpose": "Admin: results tables and comments",
    "wire": "admin",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -923,7 +748,7 @@
    "purpose": "Admin: download every number as JSON (for ads, buyers, investors)",
    "wire": "admin",
    "done": "none: owner download",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -932,7 +757,7 @@
    "purpose": "Mode menu",
    "wire": "home",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -941,7 +766,7 @@
    "purpose": "A round in progress",
    "wire": "practice_full",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -950,7 +775,7 @@
    "purpose": "Round result, score breakdown, board, reaction",
    "wire": "practice_full",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -959,7 +784,7 @@
    "purpose": "Blitz run summary",
    "wire": "blitz",
    "done": "blitz_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -968,7 +793,7 @@
    "purpose": "Your own photos",
    "wire": "pack",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -977,7 +802,7 @@
    "purpose": "Group Room host/join",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -986,7 +811,7 @@
    "purpose": "Group Room lobby",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -995,7 +820,7 @@
    "purpose": "Group Room final standings",
    "wire": "group",
    "done": "screen",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1004,7 +829,7 @@
    "purpose": "World Live",
    "wire": "world",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1013,7 +838,7 @@
    "purpose": "Solo Practice",
    "wire": "practice_full",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1022,7 +847,7 @@
    "purpose": "Solo Blitz",
    "wire": "blitz",
    "done": "blitz_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1031,7 +856,7 @@
    "purpose": "Group Room in real time over a shared link",
    "wire": "group",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1040,7 +865,7 @@
    "purpose": "Ingest consented play events",
    "wire": "consent_yes",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1049,7 +874,7 @@
    "purpose": "Ingest tester feedback",
    "wire": "feedback_form",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1058,7 +883,7 @@
    "purpose": "Aggregated results for the owner",
    "wire": "admin",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1067,7 +892,16 @@
    "purpose": "WebSocket into a live room (Durable Object)",
    "wire": "group",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/time",
+   "purpose": "Server clock that aligns World Live on every device",
+   "wire": "world_same",
+   "done": "display",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1076,7 +910,7 @@
    "purpose": "One session's rows (wire map proof, deletion requests)",
    "wire": "admin",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1085,7 +919,7 @@
    "purpose": "A consenting tester arrived",
    "wire": "consent_yes",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1094,7 +928,7 @@
    "purpose": "Navigation path",
    "wire": "consent_yes",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1103,7 +937,7 @@
    "purpose": "A round began (mode, grid, photo, options)",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1112,7 +946,7 @@
    "purpose": "A freeze (timing, tiles shown)",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1121,7 +955,7 @@
    "purpose": "What was typed and how it matched",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1130,7 +964,7 @@
    "purpose": "Wrong answer, timeout, unfreeze, or left the app",
    "wire": "unfreeze",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1139,7 +973,7 @@
    "purpose": "Outcome and score of a round",
    "wire": "practice_full",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1148,7 +982,7 @@
    "purpose": "Left mid-round (menu or closed)",
    "wire": "abandon",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1157,7 +991,7 @@
    "purpose": "Blitz run total",
    "wire": "blitz",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1166,7 +1000,7 @@
    "purpose": "Opened the feedback form",
    "wire": "feedback_form",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1175,7 +1009,7 @@
    "purpose": "Play time per visit (active minutes, rounds), server reply time, live-room delay",
    "wire": "visit_data",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1184,7 +1018,7 @@
    "purpose": "Crashes and failed files on testers' devices",
    "wire": "visit_data",
    "done": "display",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1193,7 +1027,7 @@
    "purpose": "Feedback tag: fun",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1202,7 +1036,7 @@
    "purpose": "Feedback tag: too_hard",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1211,7 +1045,7 @@
    "purpose": "Feedback tag: too_easy",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1220,7 +1054,7 @@
    "purpose": "Feedback tag: unfair_scoring",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1229,7 +1063,7 @@
    "purpose": "Feedback tag: confusing",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1238,7 +1072,7 @@
    "purpose": "Feedback tag: too_slow",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1247,7 +1081,7 @@
    "purpose": "Feedback tag: photo_issue",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1256,7 +1090,7 @@
    "purpose": "Feedback tag: answer_rejected",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1265,7 +1099,7 @@
    "purpose": "Feedback tag: layout",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1274,7 +1108,7 @@
    "purpose": "Feedback tag: performance",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1283,7 +1117,7 @@
    "purpose": "Feedback tag: other",
    "wire": "feedback_form",
    "done": "feedback:general",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
   },
   {
@@ -1292,8 +1126,17 @@
    "purpose": "Friends and family join one shared link and play in real time with no noticeable delay",
    "wire": "group",
    "done": "round_end",
-   "state": "green",
+   "state": "unrun",
    "status": "live"
+  },
+  {
+   "kind": "promise",
+   "name": "world-real-board",
+   "purpose": "World Live leaderboard shows the real people playing that same round (today: shared bots + you)",
+   "wire": null,
+   "done": "none",
+   "state": "amber",
+   "status": "planned"
   },
   {
    "kind": "promise",

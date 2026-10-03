@@ -128,9 +128,10 @@ const WIRES = {
     await p.waitForSelector("#pt-no");
     p.api.length = 0;
     await p.click("#pt-no"); await p.click("#goPractice"); await freezeAnswer(p, "zzqx"); await p.waitForTimeout(5000);
-    must(p.api.length === 0, "API calls after declining: " + p.api.length);
+    const data = p.api.filter((u) => /\/api\/(e|feedback)/.test(u)); // the clock read (/api/time) carries no id and no data
+    must(data.length === 0, "data sent after declining: " + data.join(", "));
     must(await p.evaluate(() => localStorage.getItem("gr.pt.sid")) === null, "an id was stored");
-    noErrors(p); await close(p); return "0 requests, no id stored";
+    noErrors(p); await close(p); return "no data sent, no id stored";
   }],
   consent_yes: ["Accepting consent records session_start and screens", async () => {
     const p = await page({ consent: null });
@@ -217,6 +218,39 @@ const WIRES = {
     must(await p.locator("#next").isVisible(), "next round button missing");
     await landed(p.sid, (r) => ev(r, "round_end", (e) => e.mode === "world"), "world round_end");
     noErrors(p); await close(p); return "leaderboard shown, round_end landed";
+  }],
+  world_same: ["World Live is the same round on every device at the same moment, even with a wrong device clock", async () => {
+    const real = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const skew = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await skew.addInitScript(() => { const n = Date.now.bind(Date); Date.now = () => n() + 9000; }); // a phone whose clock is 9 s fast
+    try {
+      const [a, b] = await Promise.all([real.newPage(), skew.newPage()]);
+      await Promise.all([a.goto(BASE + "/"), b.goto(BASE + "/")]);
+      for (const p of [a, b]) { await p.waitForSelector("#pt-no"); await p.click("#pt-no"); }
+      const out = [];
+      for (const btn of ["#goWorld", "#goWorldScr"]) {
+        await Promise.all([a.click(btn), b.click(btn)]);
+        await Promise.all([a, b].map((p) => p.waitForFunction(() => S.R && S.R.cycle !== undefined, null, { timeout: 10000 })));
+        const snap = (p) => p.evaluate(() => ({ k: S.R.cycle, photo: S.R.photo.slug, N: S.R.N, seed: S.R.seed, scr: S.R.scr, wall: Math.round(S.R.revealStart + performance.timeOrigin) }));
+        const [x, y] = await Promise.all([snap(a), snap(b)]);
+        must(x.k === y.k && x.photo === y.photo && x.N === y.N && x.seed === y.seed && x.scr === y.scr, `different rounds: ${JSON.stringify(x)} vs ${JSON.stringify(y)}`);
+        const gap = Math.abs(x.wall - y.wall);
+        must(gap < 250, `reveal start ${gap} ms apart (clock sync failed)`);
+        out.push(`${btn === "#goWorld" ? "plain" : "scrambled"} ${x.photo} ${gap} ms apart`);
+        for (const p of [a, b]) await p.evaluate(() => { S.screen = "home"; render(); });
+      }
+      return out.join("; ") + " (one device clock 9 s fast)";
+    } finally { await real.close(); await skew.close(); }
+  }],
+  world_scr: ["World Live: Scrambled: every round shuffled + turned, x1.5 score, own board, recorded as its own mode", async () => {
+    const p = await page();
+    await p.click("#goWorldScr"); await p.waitForFunction(() => S.R && S.R.photo);
+    must(await p.evaluate(() => S.R.scr === 2 && !!S.R.scramble), "round is not at scramble level 2");
+    await freezeAnswer(p, (await answers(p)).full);
+    await p.waitForSelector(".result-h", { timeout: 70000 });
+    must(/World Live: Scrambled Leaderboard/.test(await p.locator("body").innerText()), "scrambled leaderboard missing");
+    await landed(p.sid, (r) => ev(r, "round_start", (e, d) => e.mode === "world_scr" && d.scr === 2) && ev(r, "round_end", (e) => e.mode === "world_scr"), "world_scr round_start/round_end");
+    noErrors(p); await close(p); return "scrambled round played, recorded as world_scr";
   }],
   abandon: ["Quitting a round before it ends is recorded", async () => {
     const p = await page();

@@ -22,6 +22,7 @@ Glimpse Rush is a mobile photo-reveal guessing game. A photo is hidden under a g
 | Mode | Opponents | Grid | Hints | Ranked | Frequency |
 |---|---|---|---|---|---|
 | World Live | Everyone online | Server picks: 25 / 36 / 64 / 100 (hidden until reveal) | Never | Yes | New round every 60 s, 24/7 |
+| World Live: Scrambled (v1.1.3) | Everyone online in this queue | As World Live | Never | Yes (its own day/week boards) | Same 60 s cycle; every round at scramble level 2 (shuffled + turned, ×1.5), same arrangement for everyone |
 | Daily Challenge | Friends, family, groups, world | Fixed 36 | Never | Yes | 5 photos/day, 1 attempt each, resets 00:00 America/Chicago |
 | Solo Practice | Self | Player picks 4 / 9 / 16 / 25 / 36 / 64 / 100 | Optional (×0.5) | No | Unlimited |
 | Solo Blitz (solo ranked play) | Self + friends board | Fixed 25 | Never | Yes (Blitz board only) | Unlimited; best score counts |
@@ -70,7 +71,7 @@ An optional difficulty setting that shuffles where each piece of the photo sits 
 - **Same for everyone** (default): scramble seed = round seed. **Different per player** (Group Room and Practice only): scramble seed derived per player, so each person sees a different arrangement of the same photo.
 - The server pre-cuts and pre-rotates the piece for each cell, so the client never learns a piece's source position.
 - RESULTS always shows the unscrambled photo.
-- **Where it's offered in v1:** Solo Practice and Group Room (host setting). World Live, Daily, and Blitz stay at level 0. A future "Scrambled" World Live queue would use same-for-everyone only, so ranking stays fair.
+- **Where it's offered in v1:** Solo Practice and Group Room (host setting), and **World Live: Scrambled** (v1.1.3), a separate ranked queue where every round is level 2, same for everyone, scored on its own boards (`lb_world_scr_day`, `lb_world_scr_week`). Regular World Live, Daily, and Blitz stay at level 0, so their boards remain comparable.
 
 ---
 
@@ -471,7 +472,7 @@ Authorization is enforced in the API: group owner/admin manage teams and setting
 ### 21.4 Integrity and audit
 - Scores are append-only (triggers block UPDATE/DELETE) and every score is appended to `score_ledger`, a SHA-256 hash chain. `ledger_verify()` returns the first broken sequence number or NULL; run it nightly and after every restore. Corrections are new compensating entries, never edits.
 - Each round stores `sha256(seed)`; the seed is published after RESULTS so anyone can verify the tile order and scramble.
-- Database checks reject a score above the §5.6 bound for that round's grid and scramble, a third freeze, a score whose mode differs from its round, and scramble/hint/small grids in ranked modes.
+- Database checks reject a score above the §5.6 bound for that round's grid and scramble, a third freeze, a score whose mode differs from its round, and scramble/hint/small grids in ranked modes (World Live: Scrambled must be scramble level 2 and is otherwise held to the same rules).
 
 ### 21.5 Retention, backups, deletion
 | Data | Kept |
@@ -508,6 +509,8 @@ Authorization is enforced in the API: group owner/admin manage teams and setting
 | v1.1 | 16 no-repeat window 30 days → 24 hours | Doc divergence: 1,500 photos cannot cover 30 days |
 | v1.1 | 11 vectors TV13–TV16 | Lock rounding mode, multiplier order, floor |
 | v1.1 | 10 Solo Practice early end + Give up | Solo has no shared clock to wait for |
+| v1.1.4 | 3 prototype now follows §3 exactly: round k = minute k of server time; photo, grid, tile order, scramble and bot rivals derived from k only (same on every device); clients sync to `/api/time` | Owner report: World Live was different on each device. `test/flow.test.mjs` M (fails on the old page); wire `world_same` (one device clock 9 s fast, reveal 1-2 ms apart) |
+| v1.1.3 | 2, 4a World Live: Scrambled, a ranked queue at scramble level 2 with its own boards; schema mode `world_scr` | Owner request: an advanced scramble mode for World Live. Kept off the regular board so scores stay comparable. `backend/schema.test.mjs` B7, `test/flow.test.mjs` K/L |
 | v1.1.2 | 21.2 uploaded photos are fitted whole into the square instead of centre-cropped | Playtest report 2026-10-03: "Did not load the whole photo from the phone" (a tall phone photo lost its top and bottom). `test/flow.test.mjs` J |
 | v1.1.1 | 6.4 partial on the first freeze banks and continues in Solo Practice, Solo Blitz and Group Room (World Live unchanged); round scores the higher result; 10 Practice early end amended | Owner playtest feedback: a close answer ended the round with no chance to name it properly. `test/flow.test.mjs` A–I (6 fail on the v1.1 page, 3 guard unchanged behaviour) |
 | v1.1 | 20 Profiles, room + persistent teams (average scoring), live leaderboards; 21 backend services, image pipeline, REST API, integrity ledger, retention; schema.sql + 21 tests | Teams and live boards need accounts and stored data behind them |

@@ -207,3 +207,66 @@ test("J custom photos: a tall phone photo is kept whole (fitted, not cropped)", 
     assert.ok(px.mid[1] > 200, "middle is the photo: " + px.mid);
   } finally { await p.close(); }
 });
+
+test("K World Live: Scrambled: advanced scramble every round, x1.5 scoring, own leaderboard title, next round stays scrambled", async () => {
+  const p = await open();
+  try {
+    await p.click("#goWorldScr");
+    await p.waitForFunction(() => S.R && S.R.photo);
+    const r = await p.evaluate(() => ({ mode: S.R.mode, scr: S.R.scr, scramble: !!S.R.scramble, turns: S.R.scramble && S.R.scramble.turn.some((t) => t !== 0), title: document.querySelector(".title").textContent }));
+    assert.equal(r.mode, "world"); assert.equal(r.scr, 2); assert.ok(r.scramble, "pieces are scrambled"); assert.ok(r.turns, "pieces are turned");
+    assert.match(r.title, /World Live: Scrambled/);
+    const full = await p.evaluate(() => S.R.photo.accepted[0]);
+    await freezeAndAnswer(p, full);
+    const d = await p.evaluate(() => ({ ...S.R.done, N: S.R.N }));
+    const expect = await p.evaluate((d) => ({ scr: d.inFinal ? finalWindowScore(d.N, { freezeNo: 1, scr: 2 }) : revealScore(d.N, d.el, { freezeNo: 1, scr: 2 }),
+      plain: d.inFinal ? finalWindowScore(d.N, { freezeNo: 1 }) : revealScore(d.N, d.el, { freezeNo: 1 }) }), d);
+    assert.equal(d.score, expect.scr, "score uses the x1.5 scramble multiplier");
+    assert.ok(d.score > expect.plain);
+    await p.waitForSelector(".result-h", { timeout: 70000 });
+    assert.match(await p.locator("body").innerText(), /World Live: Scrambled Leaderboard/);
+    await p.click("#next");
+    await p.waitForFunction(() => S.screen === "play" && S.R && S.R.phase !== "RESULTS");
+    assert.equal(await p.evaluate(() => S.R.scr), 2, "next round is scrambled too");
+    // regular World Live is untouched
+    assert.deepEqual(p.errs, []);
+  } finally { await p.close(); }
+});
+
+test("L regular World Live stays plain", async () => {
+  const p = await open();
+  try {
+    await p.click("#goWorld"); await p.waitForFunction(() => S.R && S.R.photo);
+    assert.deepEqual(await p.evaluate(() => [S.R.scr, !!S.R.scramble]), [0, false]);
+  } finally { await p.close(); }
+});
+
+test("M World Live is one global round: separate browsers get the same photo, grid, tiles, scramble, bots and start time", async () => {
+  const ctxA = await browser.newContext(), ctxB = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  try {
+    const [a, b] = await Promise.all([ctxA.newPage(), ctxB.newPage()]);
+    await Promise.all([a.goto(URL_), b.goto(URL_)]);
+    for (const [btn, scr] of [["#goWorld", 0], ["#goWorldScr", 2]]) {
+      await Promise.all([a.click(btn), b.click(btn)]);
+      await Promise.all([a, b].map((p) => p.waitForFunction(() => S.R && S.R.photo && S.R.cycle !== undefined)));
+      const snap = (p) => p.evaluate(() => ({ k: S.R.cycle, photo: S.R.photo.slug ?? S.R.photo.id, N: S.R.N, seed: S.R.seed, scr: S.R.scr,
+        rank: S.R.rank.join(","), scramble: S.R.scramble ? S.R.scramble.src.join(",") + "|" + S.R.scramble.turn.join(",") : null,
+        bots: S.R.bots.map((x) => x.name + ":" + x.score).join(","), wall: Math.round(S.R.revealStart + performance.timeOrigin) }));
+      const [sa, sb] = await Promise.all([snap(a), snap(b)]);
+      const wallA = sa.wall, wallB = sb.wall; delete sa.wall; delete sb.wall;
+      assert.deepEqual(sa, sb, "both browsers must get the identical round");
+      assert.equal(sa.scr, scr);
+      assert.ok(Math.abs(wallA - wallB) < 150, `reveal start differs by ${Math.abs(wallA - wallB)} ms`);
+      assert.equal(wallA % 60000 > 4800 && wallA % 60000 < 5200, true, "reveal starts 5 s after the minute");
+      await Promise.all([a, b].map((p) => p.evaluate(() => { S.screen = "home"; render(); })));
+    }
+    // the photo sequence is a property of the minute, not of the browser, and does not repeat within the pool
+    const seqA = await a.evaluate(() => Array.from({ length: 200 }, (_, i) => worldRound(30000000 + i, 0).photo.slug ?? worldRound(30000000 + i, 0).photo.id));
+    const seqB = await b.evaluate(() => Array.from({ length: 200 }, (_, i) => worldRound(30000000 + i, 0).photo.slug ?? worldRound(30000000 + i, 0).photo.id));
+    assert.deepEqual(seqA, seqB);
+    const L = await a.evaluate(() => PHOTOS.length);
+    const firstBlock = seqA.slice(0, L - (30000000 % L)); // inside one shuffle block nothing repeats
+    assert.equal(new Set(firstBlock).size, firstBlock.length);
+    assert.notDeepEqual(await a.evaluate(() => worldRound(30000000, 0).photo.slug), await a.evaluate(() => worldRound(30000000, 2).photo.slug), "scrambled queue is a different round");
+  } finally { await ctxA.close(); await ctxB.close(); }
+});

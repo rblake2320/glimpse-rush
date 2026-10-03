@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS room_players (
 
 CREATE TABLE IF NOT EXISTS rounds (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  mode         text NOT NULL CHECK (mode IN ('world','daily','blitz','practice','group')),
+  mode         text NOT NULL CHECK (mode IN ('world','world_scr','daily','blitz','practice','group')),
   room_id      uuid REFERENCES rooms(id),
   round_no     integer CHECK (round_no >= 1),
   photo_id     uuid NOT NULL REFERENCES photos(id),
@@ -192,8 +192,10 @@ CREATE TABLE IF NOT EXISTS rounds (
   reveal_start timestamptz NOT NULL,
   CHECK (reveal_start >= cycle_start),
   CHECK (mode <> 'group' OR (room_id IS NOT NULL AND round_no IS NOT NULL)),
-  CHECK (mode IN ('practice','group') OR (scramble = 0 AND NOT hint)),          -- §4a, §5.3: ranked modes plain
-  CHECK (mode NOT IN ('world','daily','blitz') OR grid_n >= 25)
+  CHECK (mode IN ('practice','group') OR NOT hint),                               -- §5.3: no hints in ranked modes
+  CHECK (mode IN ('practice','group') OR (mode = 'world_scr' AND scramble = 2) OR (mode <> 'world_scr' AND scramble = 0)), -- §4a: ranked modes plain, except
+                                                                                  -- World Live: Scrambled = always level 2 (v1.1.3)
+  CHECK (mode NOT IN ('world','world_scr','daily','blitz') OR grid_n >= 25)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS rounds_room_no ON rounds (room_id, round_no) WHERE room_id IS NOT NULL;
 
@@ -326,6 +328,21 @@ SELECT day_key, user_id, sum(score)::integer AS total
 FROM (SELECT day_key, user_id, score,
              row_number() OVER (PARTITION BY day_key, user_id ORDER BY score DESC, scored_at) AS rn
       FROM scores WHERE mode = 'world') s
+WHERE rn <= 10 GROUP BY day_key, user_id;
+
+-- v1.1.3 World Live: Scrambled has its own boards (same rules: best 20 per week, best 10 per day).
+CREATE OR REPLACE VIEW lb_world_scr_week AS
+SELECT week_key, user_id, sum(score)::integer AS total, count(*)::integer AS rounds_counted
+FROM (SELECT week_key, user_id, score,
+             row_number() OVER (PARTITION BY week_key, user_id ORDER BY score DESC, scored_at) AS rn
+      FROM scores WHERE mode = 'world_scr') s
+WHERE rn <= 20 GROUP BY week_key, user_id;
+
+CREATE OR REPLACE VIEW lb_world_scr_day AS
+SELECT day_key, user_id, sum(score)::integer AS total
+FROM (SELECT day_key, user_id, score,
+             row_number() OVER (PARTITION BY day_key, user_id ORDER BY score DESC, scored_at) AS rn
+      FROM scores WHERE mode = 'world_scr') s
 WHERE rn <= 10 GROUP BY day_key, user_id;
 
 -- §20.2 Team round score = average over the team's players in that room (no score = 0), integer half-up.

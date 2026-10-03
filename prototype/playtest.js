@@ -76,7 +76,7 @@
   const active = () => activeMs + (visibleSince !== null ? performance.now() - visibleSince : 0);
   const heartbeat = (final) => {
     const roomRtt = typeof G !== "undefined" && G.room && G.room.rtt ? G.room.rtt : null;
-    track("heartbeat", { mode: S.R ? S.R.mode : null, data: { visit, active_ms: Math.round(active()), total_ms: Math.round(performance.now()), rounds,
+    track("heartbeat", { mode: modeOf(S.R), data: { visit, active_ms: Math.round(active()), total_ms: Math.round(performance.now()), rounds,
       screen: S.screen, api_ms: median(apiMs), room_rtt: roomRtt, final: !!final } });
   };
   setInterval(() => { if (!document.hidden) heartbeat(false); }, 30000);
@@ -87,7 +87,7 @@
     const key = kind + "|" + msg + "|" + where;
     if (seenErr.has(key) || seenErr.size >= 10) return;
     seenErr.add(key);
-    track("client_error", { mode: S.R ? S.R.mode : null, photo_id: S.R && S.R.photo ? String(S.R.photo.slug ?? S.R.photo.id) : null,
+    track("client_error", { mode: modeOf(S.R), photo_id: S.R && S.R.photo ? String(S.R.photo.slug ?? S.R.photo.id) : null,
       data: { kind, msg: String(msg).slice(0, 200), where: String(where || "").slice(0, 160), stack: String(stack || "").split("\n").slice(0, 4).join(" | ").slice(0, 400), screen: S.screen } });
     flush(false);
   };
@@ -104,7 +104,7 @@
     // a round that started and has not been reported (finished) yet; works whether or not the screen already switched
     if (R && !R._rep && R.phase !== "RESULTS" && (reason !== "closed" || S.screen === "play")) {
       R._rep = 1;
-      track("round_abandon", { mode: R.mode, round_no: R.roundNo, photo_id: R.photo && R.photo.id, grid: R.N,
+      track("round_abandon", { mode: modeOf(R), round_no: R.roundNo, photo_id: R.photo && R.photo.id, grid: R.N,
         data: { reason, phase: R.phase, frozen: !!R.frozen, freezes: R.freezesUsed, ms: Math.round(performance.now() - (R._t0 || 0)) } });
     }
   };
@@ -126,13 +126,14 @@
     return e ? Math.round(e.duration) : null;
   };
   const safe = (f) => { try { f(); } catch (e) { /* telemetry must never break the game */ } };
+  const modeOf = (R) => (R && R.mode === "world" && R.scr ? "world_scr" : R ? R.mode : null);
   const pid = (R) => (R && R.photo ? String(R.photo.slug ?? R.photo.id) : null);
 
   wrap("run", (orig, [R]) => {
     const out = orig(R);
     safe(() => {
       R._t0 = performance.now(); rounds++;
-      track("round_start", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
+      track("round_start", { mode: modeOf(R), round_no: R.roundNo, photo_id: pid(R), grid: R.N,
         data: { scr: R.scr, hint: !!R.hint, seed: R.seed, custom: !!(R.photo && R.photo.custom),
           img_ms: imgMs(R.photo) } }); // how long the photo took to download (null if not yet loaded or embedded)
     });
@@ -144,7 +145,7 @@
     const out = orig(...a);
     safe(() => {
       if (R && R.freezesUsed > before && R.frozen) {
-        track("freeze", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
+        track("freeze", { mode: modeOf(R), round_no: R.roundNo, photo_id: pid(R), grid: R.N,
           data: { n: R.frozen.freezeNo, el: R.frozen.el, shown: R.frozen.s, final: !!R.frozen.inFinal } });
       }
     });
@@ -158,7 +159,7 @@
       if (R && R.frozen && S.screen === "play") {
         const text = String(a[0] ?? "").trim().slice(0, 80);
         if (m.kind === "wrong") (R._wrong = R._wrong || []).push(text);
-        track("answer", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
+        track("answer", { mode: modeOf(R), round_no: R.roundNo, photo_id: pid(R), grid: R.N,
           data: { kind: m.kind, why: m.why, text, n: R.frozen.freezeNo,
             rt: Math.max(0, Math.round(GAME.ANSWER_WINDOW_MS - (R.frozen.deadline - performance.now()))) } }); // ms from freeze to submit
       }
@@ -172,7 +173,7 @@
     safe(() => {
       if (had) {
         const why = String(a[0] ?? "");
-        track("freeze_fail", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
+        track("freeze_fail", { mode: modeOf(R), round_no: R.roundNo, photo_id: pid(R), grid: R.N,
           data: { n, why: why.startsWith('"') ? "wrong_answer" : why.slice(0, 60) } });
       }
     });
@@ -187,7 +188,7 @@
     if (!R || R._rep) return;
     R._rep = 1;
     const d = R.done;
-    track("round_end", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
+    track("round_end", { mode: modeOf(R), round_no: R.roundNo, photo_id: pid(R), grid: R.N,
       data: { outcome, score: d ? d.score : 0, shown: d ? d.s : null, el: d ? d.el : null, freezes: R.freezesUsed,
         ms: Math.round(performance.now() - (R._t0 || 0)), hint: !!R.hint, scr: R.scr } });
     heartbeat(false); // play time is saved at every round end, so a lost close-time message costs at most one round
@@ -249,7 +250,7 @@
 
   const ctx = () => {
     const R = S.R;
-    return { screen: S.screen, mode: R ? R.mode : null, round: R ? R.roundNo : null, photo: pid(R), grid: R ? R.N : null,
+    return { screen: S.screen, mode: modeOf(R), round: R ? R.roundNo : null, photo: pid(R), grid: R ? R.N : null,
       viewport: innerWidth + "x" + innerHeight, build: BUILD, log: R && R.log ? R.log.slice(-20) : null };
   };
 

@@ -216,3 +216,26 @@ test('F6 handles: format enforced, unique case-insensitively among live accounts
   await assert.rejects(q(`INSERT INTO users(auth_uid,handle,display_name) VALUES ('x','no spaces','x')`), /check/i);
   await assert.rejects(q(`INSERT INTO users(auth_uid,handle,display_name) VALUES ('y','<script>','x')`), /check/i);
 });
+
+test('B7 World Live: Scrambled is ranked, always advanced scramble, and has its own boards (v1.1.3)', async () => {
+  // allowed only at scramble level 2, never plain, never with a hint, never under 25 tiles
+  const ok = await round('world_scr', 36, { scramble: 2 });
+  await assert.rejects(round('world_scr', 36, { scramble: 0 }), /check/i);
+  await assert.rejects(round('world_scr', 36, { scramble: 1 }), /check/i);
+  await assert.rejects(round('world_scr', 36, { scramble: 2, hint: true }), /check/i);
+  await assert.rejects(round('world_scr', 16, { scramble: 2 }), /check/i);
+  // regular World Live stays plain
+  await assert.rejects(round('world', 36, { scramble: 2 }), /check/i);
+  // the bound includes the x1.5 scramble multiplier for that round
+  const bound = (await one(`SELECT max_score(36, 2) AS m`)).m;
+  const u = await user('b7user');
+  await score(u, ok, 'world_scr', bound, { at: '2026-10-07T15:00:00Z' });
+  await assert.rejects(score(u, await round('world_scr', 36, { scramble: 2 }), 'world_scr', bound + 1), /exceeds max/);
+  await score(u, await round('world'), 'world', 500, { at: '2026-10-07T15:00:00Z' });
+  // separate boards: the scrambled score is not on the regular board and vice versa
+  const scr = await one(`SELECT total FROM lb_world_scr_week WHERE user_id=$1 AND week_key='2026-W41'`, [u]);
+  const reg = await one(`SELECT total FROM lb_world_week WHERE user_id=$1 AND week_key='2026-W41'`, [u]);
+  assert.equal(scr.total, bound);
+  assert.equal(reg.total, 500);
+  assert.equal((await one(`SELECT total FROM lb_world_scr_day WHERE user_id=$1`, [u])).total, bound);
+});
