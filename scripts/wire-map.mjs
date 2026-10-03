@@ -135,8 +135,7 @@ const WIRES = {
   consent_yes: ["Accepting consent records session_start and screens", async () => {
     const p = await page({ consent: null });
     await p.click("#pt-yes");
-    const rows = await landed(p.sid, (r) => ev(r, "session_start") && ev(r, "screen"), "session_start + screen");
-    must(rows.session?.device, "session row missing device");
+    await landed(p.sid, (r) => ev(r, "session_start") && ev(r, "screen") && r.session?.device, "session_start + screen + session row with device");
     noErrors(p); await close(p); return "session_start, screen landed";
   }],
   practice_full: ["Practice: freeze, correct answer, results with credit; events land", async () => {
