@@ -1,0 +1,40 @@
+// Two real browsers on the live site: host creates a room, guest joins from the invite link, they play one round.
+import { chromium } from "playwright";
+const BASE = (process.argv[2] || "https://glimpse-rush.pages.dev").replace(/\/$/, "");
+const b = await chromium.launch();
+const mk = async () => { const c = await b.newContext({ viewport: { width: 390, height: 844 } }); await c.addInitScript(() => localStorage.setItem("gr.pt.consent", "no")); const p = await c.newPage(); p.errs = []; p.on("pageerror", (e) => p.errs.push(String(e))); return p; };
+const host = await mk(), guest = await mk();
+const t = () => performance.now();
+try {
+  await host.goto(BASE + "/"); await host.click("#goGroup");
+  await host.fill("#nick", "Host"); await host.click('#gRounds [data-r="5"]'); await host.click("#host");
+  await host.waitForFunction(() => S.screen === "groupLobby" && G.code);
+  const code = await host.evaluate(() => G.code), invite = await host.evaluate(() => inviteUrl());
+  console.log("room", code, "invite", invite);
+  await guest.goto(invite);
+  await guest.waitForSelector("#joinCode");
+  const pre = await guest.inputValue("#joinCode");
+  if (pre !== code) throw new Error("invite did not prefill the code: " + pre);
+  await guest.fill("#nick", "Guest"); const t0 = t(); await guest.click("#join");
+  await host.waitForFunction(() => groupTable(0).length === 2, null, { timeout: 10000 });
+  console.log(`host saw the guest ${(t() - t0).toFixed(0)} ms after Join`);
+  await guest.waitForFunction(() => groupTable(0).some((r) => r.host), null, { timeout: 10000 });
+  await host.click("#start");
+  await Promise.all([host, guest].map((p) => p.waitForFunction(() => S.screen === "play" && S.R && S.R.mode === "group", null, { timeout: 15000 })));
+  const same = await Promise.all([host, guest].map((p) => p.evaluate(() => [S.R.photo.id, S.R.seed, S.R.N, Math.round(S.R.revealStart + performance.timeOrigin)])));
+  console.log("host round", same[0], "guest round", same[1]);
+  if (same[0][0] !== same[1][0] || same[0][1] !== same[1][1]) throw new Error("players got different rounds");
+  console.log(`round start skew ${Math.abs(same[0][3] - same[1][3])} ms`);
+  const ans = await guest.evaluate(() => S.R.photo.accepted[0]);
+  await guest.waitForSelector("#fz:not([disabled])", { timeout: 20000 }); await guest.click("#fz"); await guest.fill("#ans", ans); await guest.press("#ans", "Enter");
+  const g = await guest.evaluate(() => S.R.done && S.R.done.score);
+  await host.waitForFunction((s) => groupTable(1).some((r) => r.name === "Guest" && r.round === s), g, { timeout: 10000 });
+  console.log("host sees guest's score", g);
+  await Promise.all([host, guest].map((p) => p.waitForSelector(".result-h", { timeout: 60000 })));
+  const boards = await Promise.all([host, guest].map((p) => p.evaluate(() => groupTable(1).map((r) => `${r.name}:${r.round ?? "-"}`).sort().join(" "))));
+  console.log("results boards", boards);
+  if (boards[0] !== boards[1]) throw new Error("boards differ");
+  if (host.errs.length || guest.errs.length) throw new Error("page errors " + [...host.errs, ...guest.errs].join(" | "));
+  console.log("PASS");
+} catch (e) { console.log("FAIL", e.message); process.exitCode = 1; }
+await b.close();

@@ -1,0 +1,1301 @@
+{
+ "base": "https://glimpse-rush.pages.dev",
+ "ran": "2026-10-03T21:56:18.480Z",
+ "red": 0,
+ "inventory": {
+  "counts": {
+   "ui": 76,
+   "screen": 8,
+   "mode": 4,
+   "api": 5,
+   "event": 10,
+   "tag": 11
+  },
+  "problems": [],
+  "photos": {
+   "catalog": 82,
+   "pool": 63,
+   "notSourced": [
+    "eiffel-tower",
+    "statue-of-liberty",
+    "taj-mahal",
+    "christ-the-redeemer",
+    "angkor-wat",
+    "burj-khalifa",
+    "mount-fuji",
+    "brooklyn-bridge",
+    "hollywood-sign",
+    "golden-retriever",
+    "lion",
+    "cow",
+    "chair",
+    "guitar",
+    "piano",
+    "typewriter",
+    "hot-air-balloon",
+    "lighthouse",
+    "strawberry"
+   ]
+  }
+ },
+ "wires": {
+  "home": {
+   "promise": "Home loads with every mode and no errors",
+   "state": "green",
+   "detail": "5 mode controls visible",
+   "ms": 359,
+   "failing_since": null,
+   "elements": 2
+  },
+  "consent_no": {
+   "promise": "Declining consent sends nothing and stores no id",
+   "state": "green",
+   "detail": "0 requests, no id stored",
+   "ms": 9410,
+   "failing_since": null,
+   "elements": 1
+  },
+  "consent_yes": {
+   "promise": "Accepting consent records session_start and screens",
+   "state": "green",
+   "detail": "session_start, screen landed",
+   "ms": 576,
+   "failing_since": null,
+   "elements": 4
+  },
+  "practice_full": {
+   "promise": "Practice: freeze, correct answer, results with credit; events land",
+   "state": "green",
+   "detail": "photo loaded (900px), credit shown, 4 events landed",
+   "ms": 4601,
+   "failing_since": null,
+   "elements": 20
+  },
+  "half_credit": {
+   "promise": "Half answer banks and continues; wrong 2nd answer keeps half credit",
+   "state": "green",
+   "detail": "banked, continued, kept",
+   "ms": 9968,
+   "failing_since": null,
+   "elements": 0
+  },
+  "giveup": {
+   "promise": "Give up reveals the photo and records the outcome; Back returns home",
+   "state": "green",
+   "detail": "gave_up landed, home reached",
+   "ms": 5598,
+   "failing_since": null,
+   "elements": 2
+  },
+  "unfreeze": {
+   "promise": "Unfreeze spends a freeze and is recorded",
+   "state": "green",
+   "detail": "freeze spent, freeze_fail landed",
+   "ms": 4711,
+   "failing_since": null,
+   "elements": 2
+  },
+  "options": {
+   "promise": "Practice grid, scramble and hint options reach the round",
+   "state": "green",
+   "detail": "9 tiles, scramble 1, hint on",
+   "ms": 5444,
+   "failing_since": null,
+   "elements": 3
+  },
+  "blitz": {
+   "promise": "Blitz: answer, skip, end run, run again; run total recorded",
+   "state": "green",
+   "detail": "run total 1900 recorded",
+   "ms": 5245,
+   "failing_since": null,
+   "elements": 8
+  },
+  "world": {
+   "promise": "World Live: join, freeze, answer, results with leaderboard, next round",
+   "state": "green",
+   "detail": "leaderboard shown, round_end landed",
+   "ms": 49167,
+   "failing_since": null,
+   "elements": 6
+  },
+  "abandon": {
+   "promise": "Quitting a round before it ends is recorded",
+   "state": "green",
+   "detail": "round_abandon landed",
+   "ms": 5490,
+   "failing_since": null,
+   "elements": 1
+  },
+  "feedback_form": {
+   "promise": "Feedback form: rating, tags, text, send; stored with context",
+   "state": "green",
+   "detail": "feedback stored (1 rows for this session)",
+   "ms": 5530,
+   "failing_since": null,
+   "elements": 22
+  },
+  "round_reaction": {
+   "promise": "Round thumbs and 'should count' flag are stored per photo",
+   "state": "green",
+   "detail": "thumbs + dispute stored",
+   "ms": 5365,
+   "failing_since": null,
+   "elements": 1
+  },
+  "admin": {
+   "promise": "Admin results are locked without the token, load with it, and exclude test traffic",
+   "state": "green",
+   "detail": "locked, renders, 1 real testers counted",
+   "ms": 755,
+   "failing_since": null,
+   "elements": 6
+  },
+  "api_guard": {
+   "promise": "APIs reject garbage, oversize and empty input",
+   "state": "green",
+   "detail": "400 / 413 / 400",
+   "ms": 198,
+   "failing_since": null,
+   "elements": 0
+  },
+  "headers": {
+   "promise": "Security and no-index headers are served",
+   "state": "green",
+   "detail": "noindex on /admin, nosniff",
+   "ms": 239,
+   "failing_since": null,
+   "elements": 0
+  },
+  "photos": {
+   "promise": "Every built-in photo loads at 900x900 with an allowed licence, answers and a credit",
+   "state": "green",
+   "detail": "63 photos OK",
+   "ms": 1126,
+   "failing_since": null,
+   "elements": 0
+  },
+  "selftest": {
+   "promise": "Scoring self-test in the page passes every spec vector",
+   "state": "green",
+   "detail": "38/38 pass",
+   "ms": 382,
+   "failing_since": null,
+   "elements": 1
+  },
+  "pack": {
+   "promise": "Your own photos: add a photo from the device, name the pack, back out",
+   "state": "green",
+   "detail": "1 photo added",
+   "ms": 480,
+   "failing_since": null,
+   "elements": 8
+  },
+  "pack_persist": {
+   "promise": "Your own photos survive a reload",
+   "state": "amber",
+   "detail": "after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site)",
+   "ms": 626,
+   "failing_since": "2026-10-03T21:55:29.917Z",
+   "elements": 1
+  },
+  "profile": {
+   "promise": "Player name is saved on the device",
+   "state": "green",
+   "detail": "kept after reload",
+   "ms": 616,
+   "failing_since": null,
+   "elements": 1
+  },
+  "group": {
+   "promise": "Group Room: host shares a link, a friend joins with just a name, both play the same round live",
+   "state": "green",
+   "detail": "joined via invite in 336 ms, round start skew 19 ms, boards match",
+   "ms": 47914,
+   "failing_since": null,
+   "elements": 27
+  }
+ },
+ "elements": [
+  {
+   "kind": "ui",
+   "name": "app",
+   "purpose": "Root the whole game renders into",
+   "wire": "home",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "profName",
+   "purpose": "Player name, saved on this device",
+   "wire": "profile",
+   "done": "none: stored locally only",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goWorld",
+   "purpose": "Start World Live (60 s cycle, bots in this build)",
+   "wire": "world",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goPractice",
+   "purpose": "Start Solo Practice with the chosen grid, photos, scramble and hint",
+   "wire": "practice_full",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goBlitz",
+   "purpose": "Start a 2-minute Solo Blitz run",
+   "wire": "blitz",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goGroup",
+   "purpose": "Open Group Room (host or join with a code)",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "goPack",
+   "purpose": "Open Your own photos",
+   "wire": "pack",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "grids",
+   "purpose": "Practice grid size picker (4-100 tiles)",
+   "wire": "options",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pSrc",
+   "purpose": "Practice photo source: built-in or my photos",
+   "wire": "pack",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pScr",
+   "purpose": "Practice scramble level (off, x1.25, x1.5)",
+   "wire": "options",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "hint",
+   "purpose": "Practice category hint (x0.5)",
+   "wire": "options",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "vec",
+   "purpose": "Scoring self-test output (spec §11 vectors)",
+   "wire": "selftest",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "phaseLbl",
+   "purpose": "Round phase label (join, live reveal, final window)",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "clock",
+   "purpose": "Round / run clock",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "prog",
+   "purpose": "Reveal progress bar",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "tiles",
+   "purpose": "Tile grid covering the photo",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "rev",
+   "purpose": "Tiles revealed counter",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "worldAt",
+   "purpose": "Live tile count while frozen",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "cd",
+   "purpose": "Join countdown ring before a synced round",
+   "wire": "world",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "quit",
+   "purpose": "Leave a round during the join countdown",
+   "wire": "world",
+   "done": "round_abandon",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "fz",
+   "purpose": "FREEZE: stop the board and answer",
+   "wire": "practice_full",
+   "done": "freeze",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "af",
+   "purpose": "Answer form",
+   "wire": "practice_full",
+   "done": "answer",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "ans",
+   "purpose": "Answer input",
+   "wire": "practice_full",
+   "done": "answer",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "dict",
+   "purpose": "Autocomplete from a general word list (never this round's answers)",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "ansBar",
+   "purpose": "7-second answer timer bar",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "ansClock",
+   "purpose": "7-second answer countdown",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "unfreeze",
+   "purpose": "Give up this freeze and keep watching",
+   "wire": "unfreeze",
+   "done": "freeze_fail",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "giveup",
+   "purpose": "Practice: give up and reveal",
+   "wire": "giveup",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "photoClock",
+   "purpose": "Blitz: this photo's reveal clock",
+   "wire": "blitz",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "skip",
+   "purpose": "Blitz: skip photo, or move on keeping a banked half credit",
+   "wire": "blitz",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "endRun",
+   "purpose": "Blitz: end the run now",
+   "wire": "blitz",
+   "done": "blitz_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "next",
+   "purpose": "Next World Live round / play practice again",
+   "wire": "world",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "nextIn",
+   "purpose": "Countdown to the next synced round",
+   "wire": "world",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "home",
+   "purpose": "Back to menu",
+   "wire": "giveup",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "again",
+   "purpose": "Blitz: run again",
+   "wire": "blitz",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "files",
+   "purpose": "Add photos from the device",
+   "wire": "pack",
+   "done": "none: photos never leave the device",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "packMsg",
+   "purpose": "Upload progress / result message",
+   "wire": "pack",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "packName",
+   "purpose": "Name of the photo pack",
+   "wire": "pack",
+   "done": "none: stored locally only",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "tryIt",
+   "purpose": "Practice with my own photos",
+   "wire": "pack",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "srcNote",
+   "purpose": "Explains which photos a group game uses",
+   "wire": "group",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "nick",
+   "purpose": "Group: your name in the room",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "host",
+   "purpose": "Group: create a room",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "join",
+   "purpose": "Group: join a room",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "joinCode",
+   "purpose": "Group: room code input",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gGrid",
+   "purpose": "Group setting: grid",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gRounds",
+   "purpose": "Group setting: rounds",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gHint",
+   "purpose": "Group setting: hint",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gScr",
+   "purpose": "Group setting: scramble",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gScrEach",
+   "purpose": "Group setting: scramble varies per round",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gSrc",
+   "purpose": "Group setting: built-in or pack photos",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "gTeams",
+   "purpose": "Group setting: number of teams",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "copy",
+   "purpose": "Group: copy the invite link",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "share",
+   "purpose": "Group: share the invite through the phone share sheet (text, WhatsApp...)",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "start",
+   "purpose": "Group: host starts the game",
+   "wire": "group",
+   "done": "round_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "tpick",
+   "purpose": "Group: pick a team",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "live",
+   "purpose": "Group: live board during a round",
+   "wire": "group",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "leave",
+   "purpose": "Group: leave the room",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "takeover",
+   "purpose": "Group: take over as host if the host left",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "back",
+   "purpose": "Back from a sub-screen",
+   "wire": "pack",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "retry",
+   "purpose": "Group: retry when live rooms are unavailable",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-yes",
+   "purpose": "Consent: share anonymous play data",
+   "wire": "consent_yes",
+   "done": "session_start",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-no",
+   "purpose": "Consent: decline; nothing is sent or stored",
+   "wire": "consent_no",
+   "done": "none: declining must leave no trace",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-stars",
+   "purpose": "Feedback: 1-5 rating",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-tags",
+   "purpose": "Feedback: what it was about",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-liked",
+   "purpose": "Feedback: what they liked",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-dis",
+   "purpose": "Feedback: what they didn't like",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-bug",
+   "purpose": "Feedback: what broke",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-contact",
+   "purpose": "Feedback: optional email for follow-up",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-send",
+   "purpose": "Feedback: send",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-cancel",
+   "purpose": "Feedback: close without sending",
+   "wire": "feedback_form",
+   "done": "feedback_open",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-msg",
+   "purpose": "Feedback: send status",
+   "wire": "feedback_form",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "pt-st",
+   "purpose": "Round reaction: send status",
+   "wire": "round_reaction",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "tok",
+   "purpose": "Admin token input",
+   "wire": "admin",
+   "done": "none: secret, never logged",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "login",
+   "purpose": "Admin: load results",
+   "wire": "admin",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "status",
+   "purpose": "Admin: load status",
+   "wire": "admin",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "ui",
+   "name": "out",
+   "purpose": "Admin: results tables and comments",
+   "wire": "admin",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "home",
+   "purpose": "Mode menu",
+   "wire": "home",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "play",
+   "purpose": "A round in progress",
+   "wire": "practice_full",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "results",
+   "purpose": "Round result, score breakdown, board, reaction",
+   "wire": "practice_full",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "blitzResults",
+   "purpose": "Blitz run summary",
+   "wire": "blitz",
+   "done": "blitz_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "pack",
+   "purpose": "Your own photos",
+   "wire": "pack",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "groupSetup",
+   "purpose": "Group Room host/join",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "groupLobby",
+   "purpose": "Group Room lobby",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "screen",
+   "name": "groupFinal",
+   "purpose": "Group Room final standings",
+   "wire": "group",
+   "done": "screen",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "mode",
+   "name": "world",
+   "purpose": "World Live",
+   "wire": "world",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "mode",
+   "name": "practice",
+   "purpose": "Solo Practice",
+   "wire": "practice_full",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "mode",
+   "name": "blitz",
+   "purpose": "Solo Blitz",
+   "wire": "blitz",
+   "done": "blitz_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "mode",
+   "name": "group",
+   "purpose": "Group Room in real time over a shared link",
+   "wire": "group",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/e",
+   "purpose": "Ingest consented play events",
+   "wire": "consent_yes",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/feedback",
+   "purpose": "Ingest tester feedback",
+   "wire": "feedback_form",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/admin/summary",
+   "purpose": "Aggregated results for the owner",
+   "wire": "admin",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/room/[name]",
+   "purpose": "WebSocket into a live room (Durable Object)",
+   "wire": "group",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "api",
+   "name": "api/admin/session",
+   "purpose": "One session's rows (wire map proof, deletion requests)",
+   "wire": "admin",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "session_start",
+   "purpose": "A consenting tester arrived",
+   "wire": "consent_yes",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "screen",
+   "purpose": "Navigation path",
+   "wire": "consent_yes",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "round_start",
+   "purpose": "A round began (mode, grid, photo, options)",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "freeze",
+   "purpose": "A freeze (timing, tiles shown)",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "answer",
+   "purpose": "What was typed and how it matched",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "freeze_fail",
+   "purpose": "Wrong answer, timeout, unfreeze, or left the app",
+   "wire": "unfreeze",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "round_end",
+   "purpose": "Outcome and score of a round",
+   "wire": "practice_full",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "round_abandon",
+   "purpose": "Left mid-round (menu or closed)",
+   "wire": "abandon",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "blitz_end",
+   "purpose": "Blitz run total",
+   "wire": "blitz",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "feedback_open",
+   "purpose": "Opened the feedback form",
+   "wire": "feedback_form",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "fun",
+   "purpose": "Feedback tag: fun",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "too_hard",
+   "purpose": "Feedback tag: too_hard",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "too_easy",
+   "purpose": "Feedback tag: too_easy",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "unfair_scoring",
+   "purpose": "Feedback tag: unfair_scoring",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "confusing",
+   "purpose": "Feedback tag: confusing",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "too_slow",
+   "purpose": "Feedback tag: too_slow",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "photo_issue",
+   "purpose": "Feedback tag: photo_issue",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "answer_rejected",
+   "purpose": "Feedback tag: answer_rejected",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "layout",
+   "purpose": "Feedback tag: layout",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "performance",
+   "purpose": "Feedback tag: performance",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "tag",
+   "name": "other",
+   "purpose": "Feedback tag: other",
+   "wire": "feedback_form",
+   "done": "feedback:general",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "promise",
+   "name": "group-realtime",
+   "purpose": "Friends and family join one shared link and play in real time with no noticeable delay",
+   "wire": "group",
+   "done": "round_end",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "promise",
+   "name": "ai-agents",
+   "purpose": "People can connect their AI agents to play (agent API / MCP seat in a room)",
+   "wire": null,
+   "done": "none",
+   "state": "amber",
+   "status": "planned"
+  },
+  {
+   "kind": "promise",
+   "name": "pack-persist",
+   "purpose": "My own photos survive a page reload",
+   "wire": "pack_persist",
+   "done": "none",
+   "state": "amber",
+   "status": "gap"
+  },
+  {
+   "kind": "promise",
+   "name": "anti-capture",
+   "purpose": "Discourage screenshots / phone capture of photos (native app: Android FLAG_SECURE, iOS capture detection; web can only deter)",
+   "wire": null,
+   "done": "none",
+   "state": "amber",
+   "status": "planned"
+  },
+  {
+   "kind": "promise",
+   "name": "real-device-test",
+   "purpose": "Checked on a real phone, not only an emulated one",
+   "wire": null,
+   "done": "none",
+   "state": "amber",
+   "status": "planned"
+  },
+  {
+   "kind": "promise",
+   "name": "retention-purge",
+   "purpose": "Old playtest data purged automatically (spec §21.5)",
+   "wire": null,
+   "done": "none",
+   "state": "amber",
+   "status": "planned"
+  }
+ ]
+}

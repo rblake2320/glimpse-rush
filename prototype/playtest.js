@@ -46,7 +46,8 @@
 
   const abandonIfOpen = (reason) => {
     const R = S.R;
-    if (R && !R._rep && (S.screen === "play")) {
+    // a round that started and has not been reported (finished) yet; works whether or not the screen already switched
+    if (R && !R._rep && R.phase !== "RESULTS" && (reason !== "closed" || S.screen === "play")) {
       R._rep = 1;
       track("round_abandon", { mode: R.mode, round_no: R.roundNo, photo_id: R.photo && R.photo.id, grid: R.N,
         data: { reason, phase: R.phase, frozen: !!R.frozen, freezes: R.freezesUsed, ms: Math.round(performance.now() - (R._t0 || 0)) } });
@@ -62,7 +63,7 @@
     window[name] = function (...a) { return fn(orig, a, this); };
   };
   const safe = (f) => { try { f(); } catch (e) { /* telemetry must never break the game */ } };
-  const pid = (R) => (R && R.photo ? R.photo.id : null);
+  const pid = (R) => (R && R.photo ? String(R.photo.slug ?? R.photo.id) : null);
 
   wrap("run", (orig, [R]) => {
     const out = orig(R);
@@ -138,7 +139,7 @@
   });
   wrap("blitzEnd", (orig, a) => {
     const B = S.blitz, R = S.R;
-    safe(() => { if (R && R.done && R.partialOpen && !R.flash) reportEnd(R, "partial"); }); // run ended on a banked half answer
+    safe(() => { if (R && R.done && R.partialOpen && !R.flash) reportEnd(R, "partial"); if (R) R._rep = 1; }); // run over: the open photo is not an abandon
     const out = orig(...a);
     safe(() => track("blitz_end", { mode: "blitz", data: { total: B.total, photos: B.used.length } }));
     safe(addRunFeedback);

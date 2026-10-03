@@ -47,5 +47,6 @@ npm run deploy                # publish prototype/ + functions/ to Cloudflare Pa
 
 - **No automatic retention purge yet.** Spec §21.5 keeps attempt text 13 months; for the playtest, purge by hand until a scheduled job exists.
 - Rate limits are per browser ID, which a scripted client can rotate. Fine for a friends-and-family playtest; put Cloudflare rate limiting on a custom domain before wide public traffic.
-- Group Rooms and "Suggest answers" need the claude.ai runtime, so they are unavailable on this site. They are not tracked until the real backend exists.
+- Group Room events are recorded through the same game hooks; "Suggest answers" for custom packs is not available on this site.
+- Custom photo packs are not saved across a reload on this site (wire `pack_persist`, amber).
 - The e2e script uses real Chromium against production but not a phone; real-device testing is still to do.

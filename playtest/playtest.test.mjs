@@ -159,3 +159,25 @@ test("F admin summary: 401 without the token, correct aggregates with it", async
   assert.equal(g36.rounds, 3);
   assert.equal(g36.pct_correct, 33.3);
 });
+
+test("G synthetic (wire-map) sessions are stored but never counted; the session endpoint is admin-only", async () => {
+  const { onRequestGet: getSession } = await import("../functions/api/admin/session.js");
+  const db = d1();
+  const env = { DB: db, ADMIN_TOKEN: "tok-123" };
+  const SYN = "5e5e5e5e-map-0000000000000001";
+  await postEvents({ request: req("/api/e", { sid: SYN, events: [ev("round_start", { mode: "practice", grid: 36, photo_id: "p9" }), ev("round_end", { mode: "practice", grid: 36, photo_id: "p9", data: { outcome: "correct", score: 10, shown: 3 } })] }), env });
+  await postFeedback({ request: req("/api/feedback", { sid: SYN, kind: "general", rating: 1, tags: ["other"] }), env });
+  await postEvents({ request: req("/api/e", { sid: SID, events: [ev("round_start", { mode: "world", grid: 16, photo_id: "p1" })] }), env });
+  const s = await (await getSummary({ request: new Request("https://x.test/api/admin/summary", { headers: { authorization: "Bearer tok-123" } }), env })).json();
+  assert.equal(s.totals.sessions, 1, "synthetic session not counted");
+  assert.equal(s.totals.events, 1);
+  assert.equal(s.totals.feedback, 0);
+  assert.equal(s.funnel.find((x) => x.mode === "practice"), undefined);
+  assert.equal(s.rating.n, 0);
+  const url = "https://x.test/api/admin/session?sid=" + SYN;
+  assert.equal((await getSession({ request: new Request(url), env })).status, 401);
+  assert.equal((await getSession({ request: new Request("https://x.test/api/admin/session?sid=bad", { headers: { authorization: "Bearer tok-123" } }), env })).status, 400);
+  const rows = await (await getSession({ request: new Request(url, { headers: { authorization: "Bearer tok-123" } }), env })).json();
+  assert.deepEqual(rows.events.map((e) => e.type), ["round_start", "round_end"]);
+  assert.equal(rows.feedback[0].rating, 1);
+});

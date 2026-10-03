@@ -1,0 +1,28 @@
+name: wire-map
+# Daily live check of every promise against production (and the deployed room service). A red lamp fails the job.
+on:
+  schedule:
+    - cron: "17 13 * * *"
+  workflow_dispatch:
+jobs:
+  map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run map
+        env:
+          GLIMPSE_ADMIN_TOKEN: ${{ secrets.GLIMPSE_ADMIN_TOKEN }}
+      - run: node --test --test-concurrency=1 rooms/room.test.mjs
+        env:
+          ROOMS_URL: wss://glimpse-rush-rooms.rblake2320.workers.dev
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wire-map
+          path: docs/

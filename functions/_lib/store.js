@@ -32,11 +32,23 @@ export async function saveFeedback(db, fb, now) {
   ).bind(fb.sid, now, fb.kind, fb.rating, fb.tags, fb.liked, fb.disliked, fb.bug, fb.answer, fb.photo_id, fb.contact, fb.context).run();
 }
 
-const all = async (db, sql, ...b) => (await db.prepare(sql).bind(...b).all()).results ?? [];
+// Wire-map and test traffic uses this session-id prefix; it is stored like any other session but never counted.
+export const SYNTHETIC_PREFIX = "5e5e5e5e";
+const real = (sql) => sql.replace(/\bFROM (events|feedback|sessions)\b/g, `FROM (SELECT * FROM $1 WHERE sid NOT LIKE '${SYNTHETIC_PREFIX}%') $1`);
+const rawAll = async (db, sql, ...b) => (await db.prepare(sql).bind(...b).all()).results ?? [];
+const all = (db, sql, ...b) => rawAll(db, real(sql), ...b);
+
+export async function sessionRows(db, sid) {
+  return {
+    session: await db.prepare("SELECT * FROM sessions WHERE sid=?").bind(sid).first(),
+    events: await rawAll(db, "SELECT type, mode, round_no, photo_id, grid, data FROM events WHERE sid=? ORDER BY id", sid),
+    feedback: await rawAll(db, "SELECT kind, rating, tags, liked, disliked, bug, answer, photo_id, context FROM feedback WHERE sid=? ORDER BY id", sid),
+  };
+}
 
 export async function summary(db, now) {
   const day = now - 864e5;
-  const one = async (sql, ...b) => (await db.prepare(sql).bind(...b).first()) ?? {};
+  const one = async (sql, ...b) => (await db.prepare(real(sql)).bind(...b).first()) ?? {};
   const totals = await one(
     `SELECT (SELECT COUNT(*) FROM sessions) AS sessions,
             (SELECT COUNT(*) FROM sessions WHERE last_seen>?) AS sessions_24h,

@@ -8,13 +8,19 @@ Owner: Ron Blake. Personal project; all IP belongs to the owner.
 
 ## Status
 
+Live playtest: **https://glimpse-rush.pages.dev** (results dashboard at `/admin/`). Wire map: `docs/WIRE_MAP.md`.
+
 | Piece | State |
 |---|---|
-| Build spec | `docs/Glimpse_Rush_Build_Spec_v1.1.md` (source of truth; changelog in §22) |
-| Scoring library | `packages/scoring/` — integer, half-up, matches spec §4a/§5; 24 tests pass |
-| Database schema | `backend/schema.sql` — PostgreSQL 15+, hash-chained score ledger; 21 tests pass |
-| Playable prototype | `prototype/index.html` — World Live (bots), Solo Blitz, Solo Practice, Group Room, custom photo packs, scramble, teams |
-| Mobile app (Flutter), game server, API, media pipeline | Not started — milestones M1–M5 in spec §17 |
+| Build spec | `docs/Glimpse_Rush_Build_Spec_v1.1.md` (source of truth, now v1.1.1; changelog in §22) |
+| Scoring library | `packages/scoring/`: integer, half-up, matches spec §4a/§5; 24 tests |
+| Database schema | `backend/schema.sql`: PostgreSQL 15+, hash-chained score ledger; 21 tests |
+| Playable game | `prototype/index.html`: World Live (bots), Solo Practice, Solo Blitz, **Group Room live over a shared invite link**, custom photos, scramble, teams; 9 browser flow tests |
+| Photos | 63 real photos (famous places, animals, insects, objects, food, nature) from Wikimedia Commons, public domain / CC0 / CC BY only, each checked by eye; credits in `prototype/photos/CREDITS.md`; fetcher `tools/fetch_photos.py` |
+| Live rooms | `rooms/`: Cloudflare Durable Object per room, WebSockets, server-clock sync; 6 tests (local workerd and deployed) |
+| Playtest data | `functions/` + D1: consent-gated events, feedback, dashboard; 7 backend tests |
+| Wire map | `scripts/wire-map.mjs`: inventory gate + 22 live wires against production, daily in GitHub Actions |
+| Mobile app (Flutter), accounts, server-side scoring, media pipeline | Not started (spec §17 M1-M5) |
 
 ## Layout
 
@@ -42,7 +48,7 @@ Expected: `scoring` 24/24 and `schema` 21/21 pass. No database server needed; th
 
 ## Open the prototype
 
-Open `prototype/index.html` in a browser. Solo Practice, Solo Blitz, World Live (bots) and the scoring self-test work offline. Group Room, photo uploads for groups, and "Suggest answers" need the claude.ai artifact runtime (live rooms, asset storage, Claude); outside it those buttons explain why they're unavailable.
+Open `prototype/index.html` in a browser for solo modes offline. Group Room needs the deployed site (`npm run deploy`, plus `npm run deploy:rooms` for the room service).
 
 ## Spec map
 

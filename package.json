@@ -15,7 +15,11 @@
     "test:db": "node --test backend/schema.test.mjs",
     "test:playtest": "node --test playtest/playtest.test.mjs",
     "test:flow": "node --test --test-concurrency=1 test/flow.test.mjs",
-    "deploy": "wrangler pages deploy prototype --project-name glimpse-rush --branch main"
+    "deploy": "wrangler pages deploy prototype --project-name glimpse-rush --branch main",
+    "map": "node scripts/wire-map.mjs",
+    "test:rooms": "node --test --test-concurrency=1 rooms/room.test.mjs",
+    "deploy:rooms": "cd rooms && wrangler deploy",
+    "photos": "python tools/fetch_photos.py"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.2.17",

@@ -120,6 +120,7 @@ tr.me td{background:#2f8bff33;font-weight:700}
 
 <div class="app" id="app"></div>
 
+<script src="photos/photos.js"></script>
 <script>
 "use strict";
 /* ============ Spec v1.1 constants & integer scoring (mirrors scoring.mjs) ============ */
@@ -134,8 +135,8 @@ const formulaScore=(N,el,o={})=>{const s=tilesShown(N,el),tl=Math.max(0,GAME.REV
 function revealScore(N,el,o={}){return Math.max(formulaScore(N,el,o),finalWindowScore(N,o))}
 const scoreFreeze=(N,el,o={})=>el<GAME.REVEAL_MS?revealScore(N,el,o):finalWindowScore(N,o);
 
-/* ============ Placeholder photo pool (emoji art stands in for licensed photos) ============ */
-const PHOTOS=[
+/* ============ Photo pool: real photos from photos/photos.js (tools/fetch_photos.py); emoji art only if that file is missing ============ */
+const EMOJI_PHOTOS=[
  ["🐕","Animals",["dog"],["animal","pet","puppy"],["#7a4a1c","#e8c38a"]],["🍕","Food",["pizza","pizza slice"],["food"],["#7a1d14","#f3b04a"]],
  ["🎸","Music",["guitar","electric guitar"],["instrument"],["#2b1550","#d04aa8"]],["🚲","Vehicles",["bicycle","bike"],["vehicle"],["#0d4a52","#7fe0d0"]],
  ["🐘","Animals",["elephant"],["animal"],["#3a3a3a","#c9b98f"]],["🦒","Animals",["giraffe"],["animal"],["#6b4a12","#f2d27a"]],
@@ -151,6 +152,9 @@ const PHOTOS=[
  ["🦁","Animals",["lion"],["animal","big cat"],["#4a2a00","#f0c060"]],["🍩","Food",["donut","doughnut"],["food","dessert"],["#4a1a3a","#ffb0d0"]],
  ["🚀","Vehicles",["rocket","spaceship"],["vehicle"],["#0a0a2a","#7a8aff"]],["🌻","Nature",["sunflower"],["flower","plant"],["#1a3a5a","#ffe060"]],
 ].map(([emoji,category,accepted,partial,colors],id)=>({id,emoji,category,accepted,partial,colors}));
+const PHOTOS=Array.isArray(window.GR_PHOTOS)&&window.GR_PHOTOS.length
+ ?window.GR_PHOTOS.map((p,id)=>({id,slug:p.slug,category:p.category,accepted:p.accepted,partial:p.partial,blocked:[],src:p.src,credit:p.credit}))
+ :EMOJI_PHOTOS;
 const DICT=[...new Set(("apple banana bear bed bee bell bench bicycle bike bird boat book bottle bowl box bread bridge brush bucket burger bus butterfly cactus cake camel camera candle car carrot castle cat chair cheese cheeseburger chicken clock cloud coat cow crab crown cup deer desk dog doll dolphin donkey donut door doughnut dove dragon drum duck eagle egg elephant fan fence fish flag flamingo flower fog fork fox frog fruit giraffe glass glove goat guitar hammer hamburger hat helicopter hill horse hose house ice insect jacket jellyfish kangaroo key kite kitten knife ladder lamp leaf lemon line lion lizard lobster melon monkey moon mountain mouse mug octopus orange owl panda parrot pear pen pencil penguin piano pig pizza plane plant plate pumpkin puppy rabbit rain rat ring river robot rock rocket rose sailboat sandwich sea seal shark sheep ship shoe snake sock spider spoon star sun sunflower table tiger tomato tortoise tower train tree truck turtle umbrella van vase volcano watch watermelon whale wheel window wolf zebra"
   ).split(" "))].sort();
 
@@ -234,7 +238,11 @@ Max 6 per list, lowercase, no duplicates of the host's answers. Reply as JSON {"
       const inp=$(`#f-${k}-${ph.id}`);if(inp)inp.value=ph[k].join(", ");b.remove()}}
   catch(e){box.innerHTML=`<span class="note warn">${e&&e.code==="not_granted"?"Suggestions were not allowed.":e&&e.code==="rate_limited"?"Too many requests. Try again in a minute.":"Could not get suggestions."}</span>`}}
 
-function randomPhoto(avoid=[]){let i,n=0;do{i=Math.floor(Math.random()*PHOTOS.length)}while((i===S.lastPhoto||avoid.includes(i))&&++n<50);S.lastPhoto=i;return PHOTOS[i]}
+function preload(p){if(p&&p.src&&!p._img){p._img=new Image();p._img.src=p.src}return p}
+function pickIndex(avoid){const q=S.photoQ||[];let i,n=0;do{i=Math.floor(Math.random()*PHOTOS.length)}while((i===S.lastPhoto||avoid.includes(i)||q.includes(i))&&++n<50);return i}
+/* Two upcoming photos are picked ahead and preloaded, so a round never starts on an unloaded image. */
+function randomPhoto(avoid=[]){const q=S.photoQ||(S.photoQ=[]);const k=q.findIndex(i=>i!==S.lastPhoto&&!avoid.includes(i));const i=k>=0?q.splice(k,1)[0]:pickIndex(avoid);S.lastPhoto=i;
+  while(q.length<2&&PHOTOS.length>3){const j=pickIndex([...avoid,i]);q.push(j);preload(PHOTOS[j])}return preload(PHOTOS[i])}
 
 /* ============ Round engine ============
  mode world/practice/group: synced phases JOIN → REVEAL → FINAL → RESULTS on revealStart (perf ms).
@@ -325,7 +333,34 @@ function blitzEnd(){const B=S.blitz,R=S.R;if(R&&R.done&&R.partialOpen&&!R.flash)
  Host presence carries the game: {role:"host", nick, clock, game:{id, rounds, grid, hint, state, roundNo, N, photoId, seed, startAt}}.
  Players' presence carries {nick, sc:{g:gameId, r:{"1":score,...}}}. Everyone derives the same round from the host's presence.
  Scores are self-reported in this preview; the real build scores on the server. */
-let ROOM=null;const G={room:null,code:"",isHost:false,peers:[],offset:null,game:null,startedKey:"",used:[],clockTimer:0,settings:{grid:"mixed",rounds:5,hint:false,src:"builtin",scr:0,scrEach:false,teams:0},myTeam:store.get("team",null),scores:{},err:""};
+/* Live rooms on this site: a WebSocket to /api/room/<name> (Cloudflare Durable Object, rooms/src/index.js).
+   Same shape as the room capability the game was written against: join(name) → {presence(patch), onPeers(cb, onErr), leave()}.
+   Peers carry {id, presence, updatedAt (local receive time), isMe, sameTab}. Reconnects by itself (phones drop sockets when asleep). */
+const WSROOM={join(name){return new Promise((resolve,reject)=>{
+  let ws=null,me=null,peers=new Map(),mine={},cb=null,onErr=null,left=false,tries=0,first=true;
+  const mk=(id,presence,at)=>({id,presence,updatedAt:at,isMe:id===me,sameTab:id===me});
+  const emit=()=>{if(cb)cb({peers:[...peers.values()].map(p=>({...p,isMe:p.id===me,sameTab:p.id===me}))})};
+  /* Clock sync: serverOffset = server time - local time, from the ping with the shortest round trip (NTP-style). */
+  let best=1e9,seq=0;const sent=new Map();
+  const ping=()=>{if(ws&&ws.readyState===1){const id=++seq;sent.set(id,Date.now());ws.send(JSON.stringify({t:"ping",id}))}};
+  let pinger=null;
+  const room={serverOffset:null,presence(patch){Object.assign(mine,patch);if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"presence",patch}));return Promise.resolve()},
+    onPeers(c,e){cb=c;onErr=e;emit()},leave(){left=true;clearInterval(pinger);try{ws&&ws.close(1000)}catch{}return Promise.resolve()},
+    get status(){return ws&&ws.readyState===1?"live":"reconnecting"}};
+  const open=()=>{ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/api/room/"+encodeURIComponent(name));
+    ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}const now=Date.now();
+      if(m.t==="hello"){me=m.id;tries=0;peers=new Map(m.peers.map(p=>[p.id,mk(p.id,p.presence||{},now)]));peers.set(me,mk(me,{...mine},now));
+        if(Object.keys(mine).length)ws.send(JSON.stringify({t:"presence",patch:mine}));
+        for(let i=0;i<6;i++)setTimeout(ping,i*150);clearInterval(pinger);pinger=setInterval(()=>{best+=2;ping()},5000);
+        if(first){first=false;resolve(room)}emit()}
+      else if(m.t==="peer"){peers.set(m.id,mk(m.id,m.presence||{},now));emit()}
+      else if(m.t==="leave"){peers.delete(m.id);emit()}
+      else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}}};
+    ws.onclose=()=>{if(left)return;if(first&&tries>=2)return reject({code:"connect_failed"});
+      if(tries++>=8){onErr&&onErr({code:"disconnected"});return}setTimeout(open,Math.min(500*2**tries,5000))}};
+  addEventListener("online",()=>{if(!left&&ws&&ws.readyState>1){tries=0;open()}});
+  open()})}};
+let ROOM=WSROOM;const G={room:null,code:"",isHost:false,peers:[],offset:null,game:null,startedKey:"",used:[],clockTimer:0,settings:{grid:"mixed",rounds:5,hint:false,src:"builtin",scr:0,scrEach:false,teams:0},myTeam:store.get("team",null),scores:{},err:""};
 (async()=>{try{if(window.claude&&window.claude.use){ROOM=await window.claude.use("room");if(S.screen==="home")render()}}catch{}})();
 (async()=>{try{if(window.claude&&window.claude.use){[ASSETS,SAMPLE]=await Promise.all([window.claude.use("assets").catch(()=>null),window.claude.use("sample").catch(()=>null)]);
   if(S.screen==="pack"||S.screen==="groupSetup")render()}}catch{}})();
@@ -333,20 +368,21 @@ const codeChars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const newCode=()=>Array.from({length:6},()=>codeChars[Math.floor(Math.random()*codeChars.length)]).join("");
 function groupStatus(R,s){if(R.mode!=="group"||!G.room)return;G.room.presence({st:{g:R.gameId,r:R.roundNo,s}}).catch(()=>{})}
 function setTeam(i){G.myTeam=i;store.set("team",i);G.room&&G.room.presence({team:i}).catch(()=>{});render()}
+function inviteUrl(){return location.origin+location.pathname+"#"+G.code}
 async function groupEnter(code,asHost){
   G.err="";const nick=($("#nick")?.value||"").trim().slice(0,20);if(!nick){G.err="Enter your name first.";return render()}
   S.nick=nick;store.set("nick",nick);code=code.toUpperCase().replace(/[^A-Z0-9]/g,"");if(code.length!==6){G.err="Room codes are 6 letters or numbers.";return render()}
   try{G.room=await ROOM.join("gr-"+code.toLowerCase())}catch(e){G.err="Could not open that room ("+(e&&e.code||"error")+"). Try again.";return render()}
-  G.code=code;G.isHost=asHost;G.scores={};G.offset=null;G.startedKey="";G.game=null;G.used=[];
+  G.code=code;G.isHost=asHost;try{history.replaceState(null,"","#"+code)}catch{}G.scores={};G.offset=null;G.startedKey="";G.game=null;G.used=[];
   G.room.onPeers(ch=>{G.peers=ch.peers;groupSync()},e=>{G.err="Room connection ended ("+e.code+").";render()});
   if(asHost){G.game={id:Date.now().toString(36),...G.settings,state:"lobby",roundNo:0};hostPublish()}
   else await G.room.presence({nick,role:"player",sc:null,team:G.myTeam});
   S.screen="groupLobby";render()}
-function hostPublish(){if(!G.isHost||!G.room)return;G.room.presence({nick:S.nick,role:"host",clock:Date.now(),game:G.game,team:G.myTeam});
+function hostPublish(){if(!G.isHost||!G.room)return;G.room.presence({nick:S.nick,role:"host",clock:Date.now(),so:G.room.serverOffset??null,game:G.game,team:G.myTeam});
   clearInterval(G.clockTimer);G.clockTimer=setInterval(()=>G.room&&G.isHost&&G.room.presence({clock:Date.now()}),2000)}
 function hostPeer(){return G.peers.find(p=>p.presence&&p.presence.role==="host"&&p.presence.game)}
 function groupSync(){const h=hostPeer();
-  if(h){if(!h.isMe&&typeof h.presence.clock==="number"){const off=h.updatedAt-h.presence.clock;G.offset=G.offset===null?off:Math.min(G.offset,off)}
+  if(h){const mySo=G.room&&G.room.serverOffset;if(!h.isMe&&typeof h.presence.so==="number"&&typeof mySo==="number"){G.offset=h.presence.so-mySo}else if(!h.isMe&&typeof h.presence.clock==="number"){const off=h.updatedAt-h.presence.clock;G.offset=G.offset===null?off:Math.min(G.offset,off)}
     G.game=h.presence.game;if(h.isMe)G.offset=0}
   const g=G.game;
   if(g&&g.state==="play"&&g.roundNo>0){const key=g.id+":"+g.roundNo;
@@ -388,7 +424,7 @@ function renderLive(){const el=$("#live");if(!el||!G.game)return;const g=G.game,
   el.innerHTML=`<div class="stat"><span>Live · round ${g.roundNo}</span><b>${locked}/${rows.length} locked in</b></div>
    ${teams.map(x=>`<div><div class="row"><span><span class="dot" style="background:${x.c}"></span>${x.n}</span><b>${fmt(x.total)}</b></div><div class="teambar"><i style="width:${x.total/max*100}%;background:${x.c}"></i></div></div>`).join("")}
    <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""}">${r.team!==null?`<span class="dot" style="background:${TEAMS[r.team].c}"></span>`:""}${esc(r.name)}${r.st?` · ${icon[r.st]||""}`:""}${r.st==="done"&&r.round!==undefined?` ${fmt(r.round)}`:""}</span>`).join("")}</div>`}
-async function groupLeave(){clearInterval(G.clockTimer);try{G.room&&await G.room.leave()}catch{}G.room=null;G.game=null;G.peers=[];S.screen="home";render()}
+async function groupLeave(){clearInterval(G.clockTimer);try{history.replaceState(null,"",location.pathname)}catch{}try{G.room&&await G.room.leave()}catch{}G.room=null;G.game=null;G.peers=[];S.screen="home";render()}
 function takeOverHost(){G.isHost=true;G.game={...(G.game||{id:Date.now().toString(36),...G.settings,roundNo:0}),state:G.game&&G.game.state==="play"?"play":"lobby"};hostPublish();if(S.screen==="results"&&S.R&&S.R.advanced)return groupResultsOver();render()}
 
 /* ============ Rendering ============ */
@@ -416,7 +452,7 @@ function renderHome(){cancelAnimationFrame(S.raf);S.R=null;
   <button class="mode" id="goPack"><span class="icon">+</span><span><b>Your own photos</b><small>Upload photos (family, team, products), type the correct answers, and choose how strict the answers are. ${PACK.photos.length} in your pack.</small></span></button>
   <button class="mode" id="goGroup"><span class="icon">GR</span><span><b>Group Room</b><small>Your own private game for family, friends, a team or a company. Host picks the rules, everyone joins with a code.</small></span></button>
   <details class="card"><summary><b>Scoring self-test</b> <span class="note">Spec v1.1 §11 vectors run in this page</span></summary><div class="log" id="vec" style="margin-top:8px;max-height:none"></div></details>
-  <p class="note">Playtest build. Photos are emoji placeholders and World Live rivals are bots. Group Room is live between real people who open this page. Scoring, tile order, freeze rules and answer matching follow Spec v1.1.</p>`;
+  <p class="note">Playtest build. World Live rivals are bots. Scoring, tile order, freeze rules and answer matching follow Spec v1.1.1. ${PHOTOS[0]&&PHOTOS[0].credit?`Photos from Wikimedia Commons (<a href="photos/CREDITS.md" target="_blank" rel="noopener" style="color:var(--volt-hi)">credits</a>).`:""}</p>`;
   $("#profName").onchange=e=>{S.nick=e.target.value.trim().slice(0,20);store.set("nick",S.nick)};
   $("#goWorld").onclick=startWorld;$("#goPractice").onclick=startPractice;$("#goBlitz").onclick=startBlitz;
   $("#goGroup").onclick=()=>{S.screen="groupSetup";render()};$("#goPack").onclick=()=>{S.screen="pack";render()};
@@ -532,6 +568,7 @@ function renderResults(){const R=S.R,d=R.done,p=R.photo;let head=d?(d.partial?"C
     <div class="board">${picHTML(p,esc(p.accepted[0]))}</div>
     <h2 style="text-align:center;text-transform:capitalize">${esc(p.accepted[0])}</h2>
     <div class="note" style="text-align:center">Also accepted: ${esc(p.accepted.slice(1).join(", ")||"none")} · Half credit: ${esc(p.partial.join(", ")||"none")}</div>
+    ${p.credit?`<div class="note" style="text-align:center;font-size:.75rem">Photo: ${esc(p.credit.author)} · ${esc(p.credit.license)} · <a href="${esc(p.credit.page)}" target="_blank" rel="noopener" style="color:var(--volt-hi)">source</a></div>`:""}
     ${d?breakdownHTML(R,d):""}${lb}<div class="row">${nextBtn}</div>
     <button class="btn ghost" id="home">${R.mode==="group"?"Leave room":"Back to menu"}</button>
     <details class="card"><summary>Round log</summary><div class="log">seed ${R.seed} · ${R.N} tiles\n${esc(R.log.join("\n")||"no actions")}</div></details>`;
@@ -544,7 +581,7 @@ function renderBlitzResults(){const B=S.blitz,best=Math.max(B.prevBest,B.total),
     <div class="card breakdown"><span>Photos played</span><span>${B.photos.length}</span><span>Solved</span><span>${B.photos.filter(p=>p.score).length}</span>
       <span>Your best on this device</span><span>${fmt(best)}</span><span class="tot">RUN SCORE</span><span class="tot">★ ${fmt(B.total)}</span></div>
     <div class="card" style="overflow-x:auto"><table><thead><tr><th>#</th><th>Photo</th><th>Result</th><th class="n">Points</th></tr></thead><tbody>
-      ${B.photos.map((p,i)=>`<tr><td>${i+1}</td><td style="text-transform:capitalize">${p.emoji} ${esc(p.answer)}</td><td>${esc(p.label)}${p.s?` · ${p.s}/25`:""}</td><td class="n">${fmt(p.score)}</td></tr>`).join("")||`<tr><td colspan="4">No photos finished.</td></tr>`}
+      ${B.photos.map((p,i)=>`<tr><td>${i+1}</td><td style="text-transform:capitalize">${p.emoji||""} ${esc(p.answer)}</td><td>${esc(p.label)}${p.s?` · ${p.s}/25`:""}</td><td class="n">${fmt(p.score)}</td></tr>`).join("")||`<tr><td colspan="4">No photos finished.</td></tr>`}
     </tbody></table></div>
     <button class="btn big go" id="again">Run again</button><button class="btn ghost" id="home">Back to menu</button>
     <p class="note">The friends Blitz board needs accounts (M4). This preview keeps your best score on this device only.</p>`;
@@ -552,8 +589,8 @@ function renderBlitzResults(){const B=S.blitz,best=Math.max(B.prevBest,B.total),
 
 function renderGroupSetup(){const s=G.settings,code=location.hash.replace("#","").toUpperCase();
   if(!ROOM){app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="back">Back</button></div>
-    <div class="card"><p>Group Room connects real people who have this page open at the same time.</p>
-    <p class="note">This view can't join a live room. It needs the page opened in claude.ai by a signed-in person it has been shared with. If you just opened it, wait a few seconds and try again.</p>
+    <div class="card"><p>Play with friends and family on one shared link, all on the same clock.</p>
+    <p class="note">Group Room is switched off in this test build while live rooms are being finished. Solo Practice, Solo Blitz and World Live all work now.</p>
     <button class="btn" id="retry">Try again</button></div>`;$("#back").onclick=()=>{S.screen="home";render()};$("#retry").onclick=render;return}
   const gridBtns=["mixed",4,9,16,25,36,64,100].map(n=>`<button type="button" data-g="${n}" aria-pressed="${String(s.grid)===String(n)}">${n==="mixed"?"Mixed":n}</button>`).join("");
   app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="back">Back</button></div>
@@ -584,7 +621,7 @@ function renderGroupSetup(){const s=G.settings,code=location.hash.replace("#",""
   $("#join").onclick=()=>groupEnter($("#joinCode").value,false);
   $("#host").onclick=()=>{const bad=packProblem();if(bad){G.err=bad;return render()}groupEnter(newCode(),true)}}
 function packProblem(){if(G.settings.src!=="pack")return"";const ps=readyPhotos();if(!ps.length)return"Add photos with correct answers first (Your own photos).";
-  if(ps.some(p=>!p.assetId))return"Some of your photos are only on this device, so other players can't see them. Upload works for the page owner; remove those photos or use Built-in.";
+  if(ps.some(p=>!p.assetId))return"Some of your photos are only on this device, so other players can't see them. Remove those photos or use Built-in.";
   return""}
 function packNote(){const s=G.settings;if(s.src!=="pack")return"Built-in photos.";const ps=readyPhotos();
   return ps.length?`${ps.length} of your photos are ready.${ps.length<s.rounds?` Fewer than ${s.rounds} rounds, so some will repeat.`:""} Correct answers stay with you as host until each round starts.`:`No ready photos yet. Open “Your own photos” from the menu.`}
@@ -594,7 +631,7 @@ function renderPack(){const ps=PACK.photos;
     <div class="card" style="display:flex;flex-direction:column;gap:8px">
       <label class="field">Pack name<input id="packName" maxlength="40" value="${esc(PACK.name)}"></label>
       <label class="btn go" style="text-align:center">Add photos<input type="file" id="files" accept="image/*" multiple hidden></label>
-      <div class="note" id="packMsg">${ASSETS?"Photos upload to this game page so players in your Group Room can see them.":"Photos stay on this device for this visit (Solo Practice). Only the page owner can upload photos for Group Rooms."}</div></div>
+      <div class="note" id="packMsg">${ASSETS?"Photos upload to this game page so players in your Group Room can see them.":"Photos stay on this device for this visit and are used in Solo Practice."}</div></div>
     <div class="card note">For each photo, type what players must answer. Use commas for more than one.
       <b>Correct</b> earns full points, <b>Half credit</b> earns 50%, and <b>Not accepted</b> earns nothing even if close (for example “car” at a car dealership).
       Turn on <b>Exact spelling</b> when a name must be typed exactly, like “Uncle Jim Bob”.</div>
@@ -623,7 +660,8 @@ function renderKeepScroll(){const y=window.scrollY;render();window.scrollTo(0,y)
 function renderGroupLobby(){const g=G.game,rows=groupTable(0),h=hostPeer();
   app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="leave">Leave</button></div>
     <div class="card" style="text-align:center"><div class="note">Room code</div><div class="code">${esc(G.code)}</div>
-      <div class="note">Share this page and the code. Everyone taps Group Room → Join.</div><button class="btn" id="copy" style="margin-top:8px">Copy code</button></div>
+      <div class="note">Send the invite. Anyone who opens it joins this room; they only type their name.</div>
+      <div class="row" style="justify-content:center;margin-top:8px"><button class="btn go" id="share">Share invite</button><button class="btn" id="copy">Copy link</button></div></div>
     <div class="card"><div class="stat" style="margin-bottom:8px"><span>Players here</span><b>${rows.length}</b></div>
       <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")||`<span class="note">Connecting…</span>`}</div></div>
     ${g&&g.teams?`<div class="card"><div class="stat" style="margin-bottom:8px"><span>Pick your team</span>${G.myTeam===null||G.myTeam>=g.teams?`<b class="warn">Not on a team yet</b>`:""}</div>
@@ -634,7 +672,11 @@ function renderGroupLobby(){const g=G.game,rows=groupTable(0),h=hostPeer();
       :`<div class="note" style="text-align:center">No host in this room yet. <button class="btn" id="takeover">Host this room</button></div>`}
     ${G.err?`<div class="note" style="color:var(--bad)">${esc(G.err)}</div>`:""}`;
   $("#leave").onclick=groupLeave;
-  $("#copy").onclick=e=>{navigator.clipboard?.writeText(G.code).then(()=>e.target.textContent="Copied",()=>e.target.textContent=G.code)};
+  const invite=inviteUrl();
+  $("#copy").onclick=e=>{navigator.clipboard?.writeText(invite).then(()=>e.target.textContent="Copied",()=>e.target.textContent=invite)};
+  $("#share").onclick=async e=>{const data={title:"Glimpse Rush",text:`Join my Glimpse Rush game! Room ${G.code}`,url:invite};
+    if(navigator.share){try{await navigator.share(data);return}catch(x){if(x&&x.name==="AbortError")return}}
+    navigator.clipboard?.writeText(invite).then(()=>e.target.textContent="Link copied",()=>e.target.textContent=invite)};
   const st=$("#start");if(st)st.onclick=()=>{G.used=[];G.game={...G.game,id:Date.now().toString(36)};G.scores={};hostStartRound(1)};
   const to=$("#takeover");if(to)to.onclick=takeOverHost;
   const tp=$("#tpick");if(tp)tp.onclick=e=>{const b=e.target.closest("[data-team]");if(b)setTeam(+b.dataset.team)}}
@@ -649,7 +691,9 @@ function renderGroupFinal(){const rows=groupTable(0).sort((a,b)=>b.total-a.total
   const a=$("#again");if(a)a.onclick=()=>{G.game={...G.game,state:"lobby",roundNo:0};hostPublish();S.screen="groupLobby";render()};
   $("#leave").onclick=groupLeave}
 
+if(/^#[A-Za-z0-9]{6}$/.test(location.hash))S.screen="groupSetup";
 render();
+setTimeout(()=>{if(!S.photoQ){S.photoQ=[];while(S.photoQ.length<2&&PHOTOS.length>3){const j=pickIndex([]);S.photoQ.push(j);preload(PHOTOS[j])}}},400);
 </script>
 <script src="playtest.js" defer></script>
 

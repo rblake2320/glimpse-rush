@@ -1,0 +1,1075 @@
+[
+ {
+  "slug": "eiffel-tower",
+  "cat": "Famous places",
+  "q": "Eiffel Tower Paris photograph Champ de Mars",
+  "accepted": [
+   "eiffel tower",
+   "the eiffel tower",
+   "tour eiffel"
+  ],
+  "partial": [
+   "paris",
+   "tower",
+   "france"
+  ]
+ },
+ {
+  "slug": "statue-of-liberty",
+  "cat": "Famous places",
+  "q": "Statue of Liberty Liberty Island photograph",
+  "accepted": [
+   "statue of liberty",
+   "the statue of liberty",
+   "lady liberty"
+  ],
+  "partial": [
+   "new york",
+   "liberty island",
+   "statue"
+  ]
+ },
+ {
+  "slug": "great-wall",
+  "cat": "Famous places",
+  "q": "Great Wall of China Mutianyu",
+  "accepted": [
+   "great wall of china",
+   "the great wall",
+   "great wall"
+  ],
+  "partial": [
+   "china",
+   "wall"
+  ]
+ },
+ {
+  "slug": "taj-mahal",
+  "cat": "Famous places",
+  "q": "Taj Mahal Agra India photograph",
+  "accepted": [
+   "taj mahal",
+   "the taj mahal"
+  ],
+  "partial": [
+   "india",
+   "agra",
+   "mausoleum",
+   "palace"
+  ]
+ },
+ {
+  "slug": "colosseum",
+  "cat": "Famous places",
+  "q": "Colosseum Rome exterior",
+  "accepted": [
+   "colosseum",
+   "the colosseum",
+   "coliseum",
+   "roman colosseum"
+  ],
+  "partial": [
+   "rome",
+   "italy",
+   "amphitheatre",
+   "amphitheater"
+  ]
+ },
+ {
+  "slug": "giza-pyramids",
+  "cat": "Famous places",
+  "q": "Giza pyramids Khafre Khufu desert photo",
+  "accepted": [
+   "pyramids of giza",
+   "great pyramid",
+   "great pyramid of giza",
+   "giza pyramids",
+   "giza"
+  ],
+  "partial": [
+   "pyramids",
+   "pyramid",
+   "egypt"
+  ]
+ },
+ {
+  "slug": "big-ben",
+  "cat": "Famous places",
+  "q": "Big Ben Elizabeth Tower Westminster",
+  "accepted": [
+   "big ben",
+   "elizabeth tower"
+  ],
+  "partial": [
+   "london",
+   "clock tower",
+   "westminster",
+   "parliament",
+   "houses of parliament"
+  ]
+ },
+ {
+  "slug": "sydney-opera-house",
+  "cat": "Famous places",
+  "q": "Sydney Opera House Bennelong Point photo",
+  "accepted": [
+   "sydney opera house",
+   "opera house"
+  ],
+  "partial": [
+   "sydney",
+   "australia"
+  ]
+ },
+ {
+  "slug": "golden-gate-bridge",
+  "cat": "Famous places",
+  "q": "Golden Gate Bridge",
+  "accepted": [
+   "golden gate bridge",
+   "golden gate"
+  ],
+  "partial": [
+   "san francisco",
+   "bridge"
+  ]
+ },
+ {
+  "slug": "machu-picchu",
+  "cat": "Famous places",
+  "q": "Machu Picchu",
+  "accepted": [
+   "machu picchu"
+  ],
+  "partial": [
+   "peru",
+   "inca",
+   "inca ruins",
+   "ruins"
+  ]
+ },
+ {
+  "slug": "mount-rushmore",
+  "cat": "Famous places",
+  "q": "Mount Rushmore National Memorial",
+  "accepted": [
+   "mount rushmore",
+   "mt rushmore",
+   "rushmore"
+  ],
+  "partial": [
+   "south dakota",
+   "presidents",
+   "monument"
+  ]
+ },
+ {
+  "slug": "grand-canyon",
+  "cat": "Famous places",
+  "q": "Grand Canyon Mather Point view",
+  "accepted": [
+   "grand canyon",
+   "the grand canyon"
+  ],
+  "partial": [
+   "arizona",
+   "canyon"
+  ]
+ },
+ {
+  "slug": "niagara-falls",
+  "cat": "Famous places",
+  "q": "Horseshoe Falls Niagara view from Canada",
+  "accepted": [
+   "niagara falls",
+   "niagara",
+   "horseshoe falls"
+  ],
+  "partial": [
+   "waterfall",
+   "falls"
+  ]
+ },
+ {
+  "slug": "leaning-tower-pisa",
+  "cat": "Famous places",
+  "q": "Leaning Tower of Pisa",
+  "accepted": [
+   "leaning tower of pisa",
+   "tower of pisa",
+   "pisa tower",
+   "leaning tower"
+  ],
+  "partial": [
+   "pisa",
+   "italy",
+   "tower"
+  ]
+ },
+ {
+  "slug": "stonehenge",
+  "cat": "Famous places",
+  "q": "Stonehenge",
+  "accepted": [
+   "stonehenge"
+  ],
+  "partial": [
+   "standing stones",
+   "stone circle",
+   "england"
+  ]
+ },
+ {
+  "slug": "christ-the-redeemer",
+  "cat": "Famous places",
+  "q": "Christ the Redeemer statue Corcovado close",
+  "accepted": [
+   "christ the redeemer",
+   "cristo redentor"
+  ],
+  "partial": [
+   "rio",
+   "rio de janeiro",
+   "brazil",
+   "jesus statue",
+   "statue"
+  ]
+ },
+ {
+  "slug": "petra",
+  "cat": "Famous places",
+  "q": "Petra Treasury Al Khazneh facade",
+  "accepted": [
+   "petra",
+   "al khazneh",
+   "the treasury"
+  ],
+  "partial": [
+   "jordan",
+   "ruins"
+  ]
+ },
+ {
+  "slug": "angkor-wat",
+  "cat": "Famous places",
+  "q": "Angkor Wat temple main towers reflection",
+  "accepted": [
+   "angkor wat"
+  ],
+  "partial": [
+   "cambodia",
+   "angkor",
+   "temple"
+  ]
+ },
+ {
+  "slug": "burj-khalifa",
+  "cat": "Famous places",
+  "q": "Burj Khalifa tower Dubai skyline day",
+  "accepted": [
+   "burj khalifa"
+  ],
+  "partial": [
+   "dubai",
+   "skyscraper",
+   "tower"
+  ]
+ },
+ {
+  "slug": "mount-fuji",
+  "cat": "Famous places",
+  "q": "Mount Fuji snow cap Lake Kawaguchi",
+  "accepted": [
+   "mount fuji",
+   "mt fuji",
+   "fuji",
+   "fujiyama"
+  ],
+  "partial": [
+   "japan",
+   "volcano",
+   "mountain"
+  ]
+ },
+ {
+  "slug": "old-faithful",
+  "cat": "Famous places",
+  "q": "Old Faithful geyser eruption",
+  "accepted": [
+   "old faithful"
+  ],
+  "partial": [
+   "yellowstone",
+   "geyser"
+  ]
+ },
+ {
+  "slug": "brooklyn-bridge",
+  "cat": "Famous places",
+  "q": "Brooklyn Bridge photograph Manhattan",
+  "accepted": [
+   "brooklyn bridge"
+  ],
+  "partial": [
+   "new york",
+   "bridge"
+  ]
+ },
+ {
+  "slug": "arc-de-triomphe",
+  "cat": "Famous places",
+  "q": "Arc de Triomphe Paris",
+  "accepted": [
+   "arc de triomphe",
+   "arch of triumph"
+  ],
+  "partial": [
+   "paris",
+   "arch"
+  ]
+ },
+ {
+  "slug": "tower-bridge",
+  "cat": "Famous places",
+  "q": "Tower Bridge London",
+  "accepted": [
+   "tower bridge"
+  ],
+  "partial": [
+   "london",
+   "bridge"
+  ]
+ },
+ {
+  "slug": "neuschwanstein",
+  "cat": "Famous places",
+  "q": "Neuschwanstein Castle",
+  "accepted": [
+   "neuschwanstein",
+   "neuschwanstein castle"
+  ],
+  "partial": [
+   "castle",
+   "germany",
+   "bavaria"
+  ]
+ },
+ {
+  "slug": "lincoln-memorial",
+  "cat": "Famous places",
+  "q": "Lincoln Memorial building exterior columns",
+  "accepted": [
+   "lincoln memorial"
+  ],
+  "partial": [
+   "washington",
+   "washington dc",
+   "lincoln",
+   "memorial"
+  ]
+ },
+ {
+  "slug": "hollywood-sign",
+  "cat": "Famous places",
+  "q": "Hollywood Sign Mount Lee hills",
+  "accepted": [
+   "hollywood sign"
+  ],
+  "partial": [
+   "hollywood",
+   "los angeles",
+   "sign"
+  ]
+ },
+ {
+  "slug": "space-needle",
+  "cat": "Famous places",
+  "q": "Space Needle Seattle",
+  "accepted": [
+   "space needle"
+  ],
+  "partial": [
+   "seattle",
+   "tower"
+  ]
+ },
+ {
+  "slug": "golden-retriever",
+  "cat": "Animals",
+  "q": "Golden Retriever dog portrait photo",
+  "accepted": [
+   "golden retriever",
+   "retriever"
+  ],
+  "partial": [
+   "dog",
+   "puppy"
+  ]
+ },
+ {
+  "slug": "cat",
+  "cat": "Animals",
+  "q": "domestic cat portrait",
+  "accepted": [
+   "cat",
+   "house cat",
+   "kitten",
+   "kitty"
+  ],
+  "partial": [
+   "animal",
+   "pet"
+  ]
+ },
+ {
+  "slug": "elephant",
+  "cat": "Animals",
+  "q": "African bush elephant Loxodonta africana savanna",
+  "accepted": [
+   "elephant",
+   "african elephant"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "giraffe",
+  "cat": "Animals",
+  "q": "Giraffe Giraffa camelopardalis Masai Mara",
+  "accepted": [
+   "giraffe"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "zebra",
+  "cat": "Animals",
+  "q": "plains zebra",
+  "accepted": [
+   "zebra"
+  ],
+  "partial": [
+   "animal",
+   "horse"
+  ]
+ },
+ {
+  "slug": "lion",
+  "cat": "Animals",
+  "q": "Lion Panthera leo male Serengeti",
+  "accepted": [
+   "lion"
+  ],
+  "partial": [
+   "big cat",
+   "cat",
+   "animal"
+  ]
+ },
+ {
+  "slug": "tiger",
+  "cat": "Animals",
+  "q": "Bengal tiger Panthera tigris tigris portrait",
+  "accepted": [
+   "tiger",
+   "bengal tiger"
+  ],
+  "partial": [
+   "big cat",
+   "cat",
+   "animal"
+  ]
+ },
+ {
+  "slug": "penguin",
+  "cat": "Animals",
+  "q": "emperor penguin",
+  "accepted": [
+   "penguin",
+   "emperor penguin"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "giant-panda",
+  "cat": "Animals",
+  "q": "Giant panda Ailuropoda melanoleuca eating bamboo",
+  "accepted": [
+   "panda",
+   "giant panda",
+   "panda bear"
+  ],
+  "partial": [
+   "bear",
+   "animal"
+  ]
+ },
+ {
+  "slug": "koala",
+  "cat": "Animals",
+  "q": "koala",
+  "accepted": [
+   "koala",
+   "koala bear"
+  ],
+  "partial": [
+   "animal",
+   "marsupial"
+  ]
+ },
+ {
+  "slug": "flamingo",
+  "cat": "Animals",
+  "q": "American flamingo Phoenicopterus ruber bird",
+  "accepted": [
+   "flamingo"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "owl",
+  "cat": "Animals",
+  "q": "owl",
+  "accepted": [
+   "owl"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "bald-eagle",
+  "cat": "Animals",
+  "q": "bald eagle",
+  "accepted": [
+   "bald eagle",
+   "eagle"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "dolphin",
+  "cat": "Animals",
+  "q": "bottlenose dolphin",
+  "accepted": [
+   "dolphin",
+   "bottlenose dolphin"
+  ],
+  "partial": [
+   "sea animal",
+   "animal"
+  ]
+ },
+ {
+  "slug": "sea-turtle",
+  "cat": "Animals",
+  "q": "green sea turtle",
+  "accepted": [
+   "sea turtle",
+   "turtle"
+  ],
+  "partial": [
+   "reptile",
+   "animal"
+  ]
+ },
+ {
+  "slug": "horse",
+  "cat": "Animals",
+  "q": "horse",
+  "accepted": [
+   "horse",
+   "pony"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "cow",
+  "cat": "Animals",
+  "q": "cow Bos taurus pasture grazing",
+  "accepted": [
+   "cow",
+   "cattle"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "peacock",
+  "cat": "Animals",
+  "q": "peacock Indian peafowl",
+  "accepted": [
+   "peacock",
+   "peafowl"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "chameleon",
+  "cat": "Animals",
+  "q": "chameleon",
+  "accepted": [
+   "chameleon"
+  ],
+  "partial": [
+   "lizard",
+   "reptile"
+  ]
+ },
+ {
+  "slug": "red-fox",
+  "cat": "Animals",
+  "q": "red fox Vulpes vulpes",
+  "accepted": [
+   "fox",
+   "red fox"
+  ],
+  "partial": [
+   "animal",
+   "dog"
+  ]
+ },
+ {
+  "slug": "honeybee",
+  "cat": "Insects",
+  "q": "honey bee Apis mellifera flower",
+  "accepted": [
+   "bee",
+   "honeybee",
+   "honey bee"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "ladybug",
+  "cat": "Insects",
+  "q": "ladybird Coccinella",
+  "accepted": [
+   "ladybug",
+   "ladybird",
+   "lady bug"
+  ],
+  "partial": [
+   "beetle",
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "monarch-butterfly",
+  "cat": "Insects",
+  "q": "monarch butterfly Danaus plexippus",
+  "accepted": [
+   "monarch butterfly",
+   "monarch",
+   "butterfly"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "dragonfly",
+  "cat": "Insects",
+  "q": "dragonfly Anisoptera insect macro",
+  "accepted": [
+   "dragonfly",
+   "dragon fly"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "grasshopper",
+  "cat": "Insects",
+  "q": "grasshopper",
+  "accepted": [
+   "grasshopper",
+   "locust"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "praying-mantis",
+  "cat": "Insects",
+  "q": "praying mantis Mantis religiosa",
+  "accepted": [
+   "praying mantis",
+   "mantis"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "ant",
+  "cat": "Insects",
+  "q": "ant macro",
+  "accepted": [
+   "ant"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "spider",
+  "cat": "Insects",
+  "q": "garden spider web Araneus",
+  "accepted": [
+   "spider"
+  ],
+  "partial": [
+   "bug",
+   "arachnid"
+  ]
+ },
+ {
+  "slug": "chair",
+  "cat": "Objects",
+  "q": "wooden chair furniture",
+  "accepted": [
+   "chair",
+   "wooden chair"
+  ],
+  "partial": [
+   "furniture",
+   "seat"
+  ]
+ },
+ {
+  "slug": "rocking-chair",
+  "cat": "Objects",
+  "q": "wooden rocking chair porch",
+  "accepted": [
+   "rocking chair"
+  ],
+  "partial": [
+   "chair",
+   "furniture"
+  ]
+ },
+ {
+  "slug": "sofa",
+  "cat": "Objects",
+  "q": "sofa couch living room",
+  "accepted": [
+   "sofa",
+   "couch"
+  ],
+  "partial": [
+   "furniture",
+   "seat"
+  ]
+ },
+ {
+  "slug": "bicycle",
+  "cat": "Objects",
+  "q": "bicycle parked city bike",
+  "accepted": [
+   "bicycle",
+   "bike"
+  ],
+  "partial": [
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "guitar",
+  "cat": "Objects",
+  "q": "acoustic guitar instrument isolated",
+  "accepted": [
+   "guitar",
+   "acoustic guitar"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "piano",
+  "cat": "Objects",
+  "q": "grand piano instrument concert hall",
+  "accepted": [
+   "piano",
+   "grand piano"
+  ],
+  "partial": [
+   "instrument",
+   "keyboard"
+  ]
+ },
+ {
+  "slug": "violin",
+  "cat": "Objects",
+  "q": "violin",
+  "accepted": [
+   "violin",
+   "fiddle"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "teapot",
+  "cat": "Objects",
+  "q": "teapot",
+  "accepted": [
+   "teapot",
+   "tea pot"
+  ],
+  "partial": [
+   "pot",
+   "kettle"
+  ]
+ },
+ {
+  "slug": "typewriter",
+  "cat": "Objects",
+  "q": "mechanical typewriter Underwood",
+  "accepted": [
+   "typewriter"
+  ],
+  "partial": [
+   "machine"
+  ]
+ },
+ {
+  "slug": "alarm-clock",
+  "cat": "Objects",
+  "q": "alarm clock",
+  "accepted": [
+   "alarm clock",
+   "clock"
+  ],
+  "partial": [
+   "timer"
+  ]
+ },
+ {
+  "slug": "umbrella",
+  "cat": "Objects",
+  "q": "open umbrella rain",
+  "accepted": [
+   "umbrella"
+  ],
+  "partial": [
+   "parasol"
+  ]
+ },
+ {
+  "slug": "hot-air-balloon",
+  "cat": "Objects",
+  "q": "hot air balloon flying sky",
+  "accepted": [
+   "hot air balloon"
+  ],
+  "partial": [
+   "balloon",
+   "aircraft"
+  ]
+ },
+ {
+  "slug": "lighthouse",
+  "cat": "Objects",
+  "q": "lighthouse coast cliff",
+  "accepted": [
+   "lighthouse"
+  ],
+  "partial": [
+   "tower",
+   "building"
+  ]
+ },
+ {
+  "slug": "steam-locomotive",
+  "cat": "Objects",
+  "q": "steam locomotive",
+  "accepted": [
+   "steam locomotive",
+   "locomotive",
+   "steam train",
+   "train"
+  ],
+  "partial": [
+   "vehicle",
+   "engine"
+  ]
+ },
+ {
+  "slug": "fire-truck",
+  "cat": "Objects",
+  "q": "fire engine truck",
+  "accepted": [
+   "fire truck",
+   "fire engine",
+   "firetruck"
+  ],
+  "partial": [
+   "truck",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "tractor",
+  "cat": "Objects",
+  "q": "farm tractor field",
+  "accepted": [
+   "tractor"
+  ],
+  "partial": [
+   "vehicle",
+   "machine"
+  ]
+ },
+ {
+  "slug": "helicopter",
+  "cat": "Objects",
+  "q": "helicopter",
+  "accepted": [
+   "helicopter"
+  ],
+  "partial": [
+   "aircraft",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "sailboat",
+  "cat": "Objects",
+  "q": "sailboat sailing",
+  "accepted": [
+   "sailboat",
+   "sailing boat",
+   "yacht"
+  ],
+  "partial": [
+   "boat",
+   "ship"
+  ]
+ },
+ {
+  "slug": "pineapple",
+  "cat": "Food",
+  "q": "pineapple Ananas comosus fruit",
+  "accepted": [
+   "pineapple"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "strawberry",
+  "cat": "Food",
+  "q": "strawberry fruit Fragaria",
+  "accepted": [
+   "strawberry",
+   "strawberries"
+  ],
+  "partial": [
+   "fruit",
+   "berry"
+  ]
+ },
+ {
+  "slug": "pizza",
+  "cat": "Food",
+  "q": "pizza Margherita",
+  "accepted": [
+   "pizza"
+  ],
+  "partial": [
+   "food"
+  ]
+ },
+ {
+  "slug": "cupcake",
+  "cat": "Food",
+  "q": "cupcake",
+  "accepted": [
+   "cupcake",
+   "muffin"
+  ],
+  "partial": [
+   "cake",
+   "dessert"
+  ]
+ },
+ {
+  "slug": "sunflower",
+  "cat": "Nature",
+  "q": "sunflower Helianthus",
+  "accepted": [
+   "sunflower"
+  ],
+  "partial": [
+   "flower",
+   "plant"
+  ]
+ },
+ {
+  "slug": "cactus",
+  "cat": "Nature",
+  "q": "saguaro cactus",
+  "accepted": [
+   "cactus",
+   "saguaro"
+  ],
+  "partial": [
+   "plant",
+   "desert"
+  ]
+ },
+ {
+  "slug": "rainbow",
+  "cat": "Nature",
+  "q": "double rainbow sky landscape",
+  "accepted": [
+   "rainbow"
+  ],
+  "partial": [
+   "sky",
+   "weather"
+  ]
+ },
+ {
+  "slug": "volcano",
+  "cat": "Nature",
+  "q": "volcano eruption",
+  "accepted": [
+   "volcano",
+   "erupting volcano"
+  ],
+  "partial": [
+   "mountain",
+   "lava"
+  ]
+ }
+]
