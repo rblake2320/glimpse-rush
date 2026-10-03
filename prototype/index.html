@@ -379,7 +379,7 @@ const WSROOM={join(name){return new Promise((resolve,reject)=>{
         if(first){first=false;resolve(room)}emit()}
       else if(m.t==="peer"){peers.set(m.id,mk(m.id,m.presence||{},now));emit()}
       else if(m.t==="leave"){peers.delete(m.id);emit()}
-      else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);room.rtt=rtt;if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}}};
+      else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);room.rtt=rtt;const had=room.serverOffset!==null;if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}if(!had)emit();}};
     ws.onclose=()=>{if(left)return;if(first&&tries>=2)return reject({code:"connect_failed"});
       if(tries++>=8){onErr&&onErr({code:"disconnected"});return}setTimeout(open,Math.min(500*2**tries,5000))}};
   addEventListener("online",()=>{if(!left&&ws&&ws.readyState>1){tries=0;open()}});
@@ -393,22 +393,31 @@ const newCode=()=>Array.from({length:6},()=>codeChars[Math.floor(Math.random()*c
 function groupStatus(R,s){if(R.mode!=="group"||!G.room)return;G.room.presence({st:{g:R.gameId,r:R.roundNo,s}}).catch(()=>{})}
 function setTeam(i){G.myTeam=i;store.set("team",i);G.room&&G.room.presence({team:i}).catch(()=>{});render()}
 function inviteUrl(){return location.origin+location.pathname+"#"+G.code}
-async function groupEnter(code,asHost){
-  G.err="";const nick=($("#nick")?.value||"").trim().slice(0,20);if(!nick){G.err="Enter your name first.";return render()}
+/* A reload of this tab rejoins the same room by itself (sessionStorage is per tab): same name, same score, same round.
+   A host who reloads comes back as host with the game exactly where it was. */
+const roomMemo={get(){try{return JSON.parse(sessionStorage.getItem("gr.room")||"null")}catch{return null}},
+  set(v){try{v?sessionStorage.setItem("gr.room",JSON.stringify(v)):sessionStorage.removeItem("gr.room")}catch{}}};
+async function groupEnter(code,asHost,memo){
+  G.err="";const nick=(memo?memo.nick:($("#nick")?.value||"")).trim().slice(0,20);if(!nick){G.err="Enter your name first.";return render()}
   S.nick=nick;store.set("nick",nick);code=code.toUpperCase().replace(/[^A-Z0-9]/g,"");if(code.length!==6){G.err="Room codes are 6 letters or numbers.";return render()}
   try{G.room=await ROOM.join("gr-"+code.toLowerCase())}catch(e){G.err="Could not open that room ("+(e&&e.code||"error")+"). Try again.";return render()}
-  G.code=code;G.isHost=asHost;try{history.replaceState(null,"","#"+code)}catch{}G.scores={};G.offset=null;G.startedKey="";G.game=null;G.used=[];
+  G.code=code;G.isHost=asHost;try{history.replaceState(null,"","#"+code)}catch{}G.scores={};G.scoresGame=null;G.offset=null;G.startedKey="";G.game=null;G.used=memo&&memo.used||[];G.joinedAt=Date.now();
+  roomMemo.set({code,nick,host:asHost,game:memo&&memo.game||null,used:G.used});
   G.room.onPeers(ch=>{G.peers=ch.peers;groupSync()},e=>{G.err="Room connection ended ("+e.code+").";render()});
-  if(asHost){G.game={id:Date.now().toString(36),...G.settings,state:"lobby",roundNo:0};hostPublish()}
-  else await G.room.presence({nick,role:"player",sc:null,team:G.myTeam});
-  S.screen="groupLobby";render()}
+  if(asHost){G.game=memo&&memo.game?memo.game:{id:Date.now().toString(36),...G.settings,state:"lobby",roundNo:0};G.offset=0;hostPublish();groupSync()}
+  else await G.room.presence({nick,role:"player",team:G.myTeam}); // no sc here: a rejoin may already have republished its saved scores
+  if(S.screen!=="play"&&S.screen!=="results")S.screen="groupLobby"; // a live round may already have started during the join
+  render();setTimeout(()=>{if(S.screen==="groupLobby")render()},3500)} // re-render so "nobody is hosting" can appear
 function hostPublish(){if(!G.isHost||!G.room)return;G.room.presence({nick:S.nick,role:"host",clock:Date.now(),so:G.room.serverOffset??null,game:G.game,team:G.myTeam});
-  clearInterval(G.clockTimer);G.clockTimer=setInterval(()=>G.room&&G.isHost&&G.room.presence({clock:Date.now()}),2000)}
+  const m=roomMemo.get();if(m)roomMemo.set({...m,host:true,game:G.game,used:G.used});
+  clearInterval(G.clockTimer);G.clockTimer=setInterval(()=>G.room&&G.isHost&&G.room.presence({clock:Date.now(),so:G.room.serverOffset??null}),2000)}
 function hostPeer(){return G.peers.find(p=>p.presence&&p.presence.role==="host"&&p.presence.game)}
 function groupSync(){const h=hostPeer();
-  if(h){const mySo=G.room&&G.room.serverOffset;if(!h.isMe&&typeof h.presence.so==="number"&&typeof mySo==="number"){G.offset=h.presence.so-mySo}else if(!h.isMe&&typeof h.presence.clock==="number"){const off=h.updatedAt-h.presence.clock;G.offset=G.offset===null?off:Math.min(G.offset,off)}
+  if(h){const mySo=G.room&&G.room.serverOffset;const synced=G.room&&"serverOffset" in G.room;
+    if(!h.isMe&&typeof h.presence.so==="number"&&typeof mySo==="number"){G.offset=h.presence.so-mySo}else if(!synced&&!h.isMe&&typeof h.presence.clock==="number"){const off=h.updatedAt-h.presence.clock;G.offset=G.offset===null?off:Math.min(G.offset,off)}
     G.game=h.presence.game;if(h.isMe)G.offset=0}
   const g=G.game;
+  if(g&&G.scoresGame!==g.id){G.scoresGame=g.id;G.scores=store.get("sc."+g.id,{})||{};if(Object.keys(G.scores).length)G.room&&G.room.presence({sc:{g:g.id,r:G.scores}})}
   if(g&&g.state==="play"&&g.roundNo>0){const key=g.id+":"+g.roundNo;
     if(key!==G.startedKey&&G.offset!==null){G.startedKey=key;startGroupRound(g)}}
   if(g&&g.state==="over"&&S.screen!=="play"&&!(S.screen==="results"&&S.R&&!S.R.advanced)){S.screen="groupFinal"}
@@ -423,7 +432,7 @@ function hostStartRound(n){const g=G.game;const N=g.grid==="mixed"?GAME.WORLD_LI
   if(g.src==="pack"){const pp=nextPackPhoto(G.used);G.used.push(pp.id);cp={i:pp.id,u:pp.src,a:pp.accepted,p:pp.partial||[],b:pp.blocked||[],x:!!pp.strict,h:pp.hint||""}}
   else{const photo=randomPhoto(G.used);G.used.push(photo.id);photoId=photo.id}
   G.game={...g,state:"play",roundNo:n,N,photoId,cp,seed:(Math.random()*2**32)>>>0,startAt:Date.now()};hostPublish()}
-function groupReport(R){if(R.gameId!==(G.game&&G.game.id))return;if(G.scoresGame!==R.gameId){G.scores={};G.scoresGame=R.gameId}G.scores[R.roundNo]=R.done.score;
+function groupReport(R){if(R.gameId!==(G.game&&G.game.id))return;if(G.scoresGame!==R.gameId){G.scores=store.get("sc."+R.gameId,{})||{};G.scoresGame=R.gameId}G.scores[R.roundNo]=R.done.score;store.set("sc."+R.gameId,G.scores);
   G.room&&G.room.presence({sc:{g:R.gameId,r:G.scores}})}
 function groupResultsOver(){if(!G.isHost){if(G.game&&G.game.state==="over")S.screen="groupFinal";return render()}const g=G.game;if(g.roundNo<g.rounds)hostStartRound(g.roundNo+1);
   else{G.game={...g,state:"over"};hostPublish();S.screen="groupFinal";render()}}
@@ -448,7 +457,7 @@ function renderLive(){const el=$("#live");if(!el||!G.game)return;const g=G.game,
   el.innerHTML=`<div class="stat"><span>Live · round ${g.roundNo}</span><b>${locked}/${rows.length} locked in</b></div>
    ${teams.map(x=>`<div><div class="row"><span><span class="dot" style="background:${x.c}"></span>${x.n}</span><b>${fmt(x.total)}</b></div><div class="teambar"><i style="width:${x.total/max*100}%;background:${x.c}"></i></div></div>`).join("")}
    <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""}">${r.team!==null?`<span class="dot" style="background:${TEAMS[r.team].c}"></span>`:""}${esc(r.name)}${r.st?` · ${icon[r.st]||""}`:""}${r.st==="done"&&r.round!==undefined?` ${fmt(r.round)}`:""}</span>`).join("")}</div>`}
-async function groupLeave(){clearInterval(G.clockTimer);try{history.replaceState(null,"",location.pathname)}catch{}try{G.room&&await G.room.leave()}catch{}G.room=null;G.game=null;G.peers=[];S.screen="home";render()}
+async function groupLeave(){clearInterval(G.clockTimer);roomMemo.set(null);try{history.replaceState(null,"",location.pathname)}catch{}try{G.room&&await G.room.leave()}catch{}G.room=null;G.game=null;G.peers=[];S.screen="home";render()}
 function takeOverHost(){G.isHost=true;G.game={...(G.game||{id:Date.now().toString(36),...G.settings,roundNo:0}),state:G.game&&G.game.state==="play"?"play":"lobby"};hostPublish();if(S.screen==="results"&&S.R&&S.R.advanced)return groupResultsOver();render()}
 
 /* ============ Rendering ============ */
@@ -688,13 +697,14 @@ function renderGroupLobby(){const g=G.game,rows=groupTable(0),h=hostPeer();
       <div class="note">Send the invite. Anyone who opens it joins this room; they only type their name.</div>
       <div class="row" style="justify-content:center;margin-top:8px"><button class="btn go" id="share">Share invite</button><button class="btn" id="copy">Copy link</button></div></div>
     <div class="card"><div class="stat" style="margin-bottom:8px"><span>Players here</span><b>${rows.length}</b></div>
-      <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")||`<span class="note">Connecting…</span>`}</div></div>
+      <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")||`<span class="note">${G.room&&G.room.status==="live"?"Just you so far":"Connecting…"}</span>`}</div></div>
     ${g&&g.teams?`<div class="card"><div class="stat" style="margin-bottom:8px"><span>Pick your team</span>${G.myTeam===null||G.myTeam>=g.teams?`<b class="warn">Not on a team yet</b>`:""}</div>
       <div class="teampick" id="tpick">${TEAMS.slice(0,g.teams).map((tm,i)=>{const mem=rows.filter(r=>r.team===i);
         return`<button type="button" data-team="${i}" aria-pressed="${G.myTeam===i}"><span class="dot" style="background:${tm.c}"></span>${tm.n} <span class="note">(${mem.length})</span><div class="note">${mem.map(m=>esc(m.name)).join(", ")||"empty"}</div></button>`}).join("")}</div></div>`:""}
     ${g?`<div class="card breakdown"><span>Teams</span><span>${g.teams?g.teams+" teams · average score":"Off"}</span><span>Grid</span><span>${g.grid==="mixed"?"Mixed":g.grid}</span><span>Rounds</span><span>${g.rounds}</span><span>Hint</span><span>${g.hint?"On (×0.5)":"Off"}</span><span>Scramble</span><span>${SCR_NAME[g.scr||0]}${g.scr?" "+SCR_X[g.scr]+(g.scrEach?" · each player differs":" · same for all"):""}</span></div>`:""}
     ${G.isHost?`<button class="btn big go" id="start">Start game</button>`:h?`<div class="note" style="text-align:center">Waiting for ${esc(String(h.presence.nick||"the host"))} to start…</div>`
-      :`<div class="note" style="text-align:center">No host in this room yet. <button class="btn" id="takeover">Host this room</button></div>`}
+      :Date.now()-(G.joinedAt||0)<3000?`<div class="note" style="text-align:center">Looking for the host…</div>`
+      :`<div class="note" style="text-align:center">Nobody is hosting room ${esc(G.code)} right now. Check the code with whoever invited you, or <button class="btn" id="takeover">host it yourself</button></div>`}
     ${G.err?`<div class="note" style="color:var(--bad)">${esc(G.err)}</div>`:""}`;
   $("#leave").onclick=groupLeave;
   const invite=inviteUrl();
@@ -717,6 +727,7 @@ function renderGroupFinal(){const rows=groupTable(0).sort((a,b)=>b.total-a.total
   $("#leave").onclick=groupLeave}
 
 if(/^#[A-Za-z0-9]{6}$/.test(location.hash))S.screen="groupSetup";
+{const m=roomMemo.get();if(m&&location.hash.slice(1).toUpperCase()===m.code&&ROOM===WSROOM)setTimeout(()=>groupEnter(m.code,!!m.host,m),0)}
 render();
 setTimeout(()=>{if(!S.photoQ){S.photoQ=[];while(S.photoQ.length<2&&PHOTOS.length>3){const j=pickIndex([]);S.photoQ.push(j);preload(PHOTOS[j])}}},400);
 </script>

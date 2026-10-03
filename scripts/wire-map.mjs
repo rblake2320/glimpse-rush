@@ -128,7 +128,7 @@ const WIRES = {
     await p.waitForSelector("#pt-no");
     p.api.length = 0;
     await p.click("#pt-no"); await p.click("#goPractice"); await freezeAnswer(p, "zzqx"); await p.waitForTimeout(5000);
-    const data = p.api.filter((u) => /\/api\/(e|feedback)/.test(u)); // the clock read (/api/time) carries no id and no data
+    const data = p.api.filter((u) => /\/api\/(e|feedback)(\?|$)/.test(u)); // the clock read (/api/time) carries no id and no data
     must(data.length === 0, "data sent after declining: " + data.join(", "));
     must(await p.evaluate(() => localStorage.getItem("gr.pt.sid")) === null, "an id was stored");
     noErrors(p); await close(p); return "no data sent, no id stored";
@@ -218,6 +218,13 @@ const WIRES = {
     must(await p.locator("#next").isVisible(), "next round button missing");
     await landed(p.sid, (r) => ev(r, "round_end", (e) => e.mode === "world"), "world round_end");
     noErrors(p); await close(p); return "leaderboard shown, round_end landed";
+  }],
+  group_reconnect: ["Group Room survives reloads: guest returns to the live round with their score; host keeps the game; unknown codes explain themselves", async () => {
+    const { spawnSync } = await import("node:child_process");
+    const r = spawnSync(process.execPath, [join(ROOT, "scripts/group-reconnect-e2e.mjs"), BASE], { encoding: "utf8", timeout: 360000 });
+    const out = (r.stdout || "") + (r.stderr || "");
+    must(/^PASS/m.test(out), (out.match(/^FAIL.*$/m) || ["no result"])[0]);
+    return "guest + host reload mid-game, scores kept, game continued";
   }],
   world_same: ["World Live is the same round on every device at the same moment, even with a wrong device clock", async () => {
     const real = await browser.newContext({ viewport: { width: 1280, height: 800 } });
