@@ -277,12 +277,27 @@ const clockSync=(async()=>{if(!/^https?:$/.test(location.protocol))return;let be
   for(let i=0;i<4;i++){try{const t0=Date.now(),r=await fetch("/api/time",{cache:"no-store"}),{now:srv}=await r.json(),t1=Date.now();
     if(t1-t0<best){best=t1-t0;S.clockOffset=Math.round(srv-(t0+t1)/2)}}catch{}}})();
 const worldNow=()=>Date.now()+S.clockOffset;
+/* Live World Live board (rooms/src/index.js WorldBoard): everyone in the same round sees the real players' scores as
+   they land, plus how many people are playing right now. Bots only fill the board in this preview and are labelled. */
+const WL={ws:null,q:null,board:null,sent:null,tries:0,
+  connect(q){if(!/^https?:$/.test(location.protocol))return;if(this.ws&&this.q===q&&this.ws.readyState<2)return;
+    try{this.ws&&this.ws.close()}catch{}this.q=q;this.board=null;
+    const ws=this.ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/api/world/"+q);
+    ws.onopen=()=>{this.tries=0;ws.send(JSON.stringify({t:"hello",name:S.nick||"Player"}))};
+    ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch{return}if(m.t==="board"){this.board=m;worldBoardUpdate()}};
+    ws.onclose=()=>{if(this.ws!==ws)return;this.ws=null;if(S.R&&S.R.mode==="world"&&this.tries++<6)setTimeout(()=>this.connect(q),1000*this.tries)}},
+  score(R){if(!R.done||!this.ws||this.ws.readyState!==1)return;this.sent={k:R.cycle,score:R.done.score,el:R.done.el};
+    this.ws.send(JSON.stringify({t:"score",k:R.cycle,score:R.done.score,s:R.done.s,el:R.done.el}))},
+  forRound(k){return this.board&&this.board.k===k?this.board:null}};
+function wlLiveText(R){const b=WL.board;if(!b)return"";const r=WL.forRound(R.cycle);
+  return`<b>${fmt(b.online)}</b> playing now${r&&r.players?` · <b>${fmt(r.players)}</b> scored this round`:""}`}
+function worldBoardUpdate(){const R=S.R;if(!R||R.mode!=="world")return;if(S.screen==="results")render();else{const el=$("#wlLive");if(el)el.innerHTML=wlLiveText(R)}}
 async function startWorld(scr=0){scr=scr===2?2:0;await Promise.race([clockSync,new Promise(r=>setTimeout(r,1500))]);
   const t=worldNow();let k=Math.floor(t/60000);
   if(t-k*60000>=GAME.JOIN_MS+GAME.REVEAL_MS+GAME.FINAL_WINDOW_MS)k++; // arriving during results: wait for the next round
   const w=worldRound(k,scr),revealWall=k*60000+GAME.JOIN_MS;
   const R=newRound("world",{N:w.N,photo:w.photo,seed:w.seed,revealStart:now()+(revealWall-t),scr,roundNo:k});
-  R.cycle=k;R.bots=makeBots(w.N,scr,mulberry(w.botSeed));R.players=1200+(w.botSeed%900);preload(w.photo);run(R)}
+  R.cycle=k;R.bots=makeBots(w.N,scr,mulberry(w.botSeed));R.players=1200+(w.botSeed%900);preload(w.photo);WL.connect(String(scr));run(R)}
 function startPractice(){const pp=S.practiceSrc==="pack"?nextPackPhoto():null;run(newRound("practice",{N:S.practiceN,photo:pp?toPlayPhoto(pp):randomPhoto(),seed:(Math.random()*2**32)>>>0,revealStart:now()+3000,hint:S.hint,scr:S.practiceScr}))}
 function run(R){cancelAnimationFrame(S.raf);S.R=R;S.screen="play";render();tick()}
 
@@ -332,6 +347,7 @@ function submit(ev){ev.preventDefault();const R=S.R;if(!R.frozen)return;const t=
   if(R.partialOpen){R.lastFail=null;R.log.push(`half credit banked: ${fmt(R.done.score)} pts, 1 freeze left for the full answer`);return render()}
   if(R.mode==="practice")return endPractice();
   if(R.mode==="blitz")return blitzNext(R.done.score,R.done.partial?"Half credit":"Correct");
+  if(R.mode==="world")WL.score(R);
   render()}
 document.addEventListener("visibilitychange",()=>{const R=S.R;if(document.hidden&&R&&R.frozen&&(R.mode==="world"||R.mode==="blitz"||R.mode==="group"))failFreeze("App left while frozen (ranked rule)")});
 function endPractice(){const R=S.R;cancelAnimationFrame(S.raf);R.frozen=null;R.endedEarly=true;S.screen="results";render()}
@@ -518,7 +534,7 @@ function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN")
     app.innerHTML=`<div class="hud"><div><div class="title">${R.mode==="world"&&R.scr?"World Live: Scrambled":MODE_NAME[R.mode]}</div><div class="sub">${R.mode==="group"?`Room ${esc(G.code)} · round ${R.roundNo} of ${G.game?G.game.rounds:"?"}`:"Round #"+R.roundNo}</div></div><button class="btn ghost" id="quit">${R.mode==="group"?"Leave":"Quit"}</button></div>
     <div class="lobby"><div class="note">Next round starting soon</div><div class="ring" id="cd">0:05</div>
       <div class="qq"><div><b>??</b>Photo</div><div><b>${hidden?"??":R.N}</b>Grid size</div><div><b>${R.hint?esc(R.photo.category):"??"}</b>Category</div></div>
-      ${R.mode==="world"?`<div class="card" style="width:100%;text-align:center"><b>${fmt(R.players)}</b> players waiting <span class="badge">simulated</span></div>`:""}
+      ${R.mode==="world"?`<div class="card" style="width:100%;text-align:center" id="wlLive">${WL.board?wlLiveText(R):`<b>${fmt(R.players)}</b> players waiting <span class="badge">simulated</span>`}</div>`:""}
       ${R.mode==="group"?`<div class="players">${groupTable(0).map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")}</div>`:""}
       <div class="note">Same photo for everyone. Same reveal order. Same clock.</div></div>`;
     $("#quit").onclick=()=>R.mode==="group"?groupLeave():(S.screen="home",render());return}
@@ -544,7 +560,7 @@ function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN")
        ${R.mode==="practice"?`<button class="btn ghost" id="giveup">Give up &amp; reveal</button>`:""}
        ${R.mode==="blitz"?`<div class="grid2"><button class="btn" id="skip" ${R.flash?"disabled":""}>${R.done?`Next photo (keep ${fmt(R.done.score)} pts)`:"Skip photo (0 pts)"}</button><button class="btn ghost" id="endRun">End run</button></div>`:""}
        ${R.lastFail&&!R.done&&!R.flash?`<div class="note" style="color:var(--bad)">${esc(R.lastFail)}</div>`:""}`}
-    ${R.mode==="group"?`<div class="card live" id="live"></div>`:""}`;
+    ${R.mode==="group"?`<div class="card live" id="live"></div>`:""}${R.mode==="world"?`<div class="note" id="wlLive" style="text-align:center">${wlLiveText(R)}</div>`:""}`;
   $("#tiles").innerHTML=tilesHTML(R);R.drawnCount=-1;
   if(f){$("#af").onsubmit=submit;$("#unfreeze").onclick=()=>failFreeze("Unfrozen");const i=$("#ans");i.value=keep;i.focus()}
   else{$("#fz").onclick=freeze;const g=$("#giveup");if(g)g.onclick=()=>{R.log.push("gave up");endPractice()};
@@ -582,13 +598,13 @@ function breakdownHTML(R,d){const f=d.freezeNo,H=(R.N-d.s)/R.N,tl=Math.max(0,300
     <div class="note">You typed “${esc(d.text)}” · ${esc(d.why)} · frozen at ${d.el} ms</div>`}
 
 function renderResults(){const R=S.R,d=R.done,p=R.photo;let head=d?(d.partial?"Close enough":"Correct!"):R.out?"Out of freezes":R.endedEarly?"Revealed":"No answer",cls=d?(d.partial?"part":"good"):"bad",lb="";
-  if(R.mode==="world"){const rows=R.bots.filter(b=>b.score!==null);if(d)rows.push({name:"You",s:d.s,score:d.score,ts:d.el,me:true});rows.sort((a,b)=>b.score-a.score||a.ts-b.ts);
+  if(R.mode==="world"){const live=WL.forRound(R.cycle),me=S.nick||"Player",sent=WL.sent&&WL.sent.k===R.cycle?WL.sent:null;const real=live?live.rows.filter(r=>!(d&&sent&&r.name===me&&r.score===sent.score&&r.el===sent.el)).map(r=>({name:r.name,s:r.s??"?",score:r.score,ts:r.el,live:true})):[];const rows=[...real,...R.bots.filter(b=>b.score!==null).map(b=>({...b,bot:true}))];if(d)rows.push({name:"You",s:d.s,score:d.score,ts:d.el,me:true});rows.sort((a,b)=>b.score-a.score||a.ts-b.ts);
     const mi=rows.findIndex(r=>r.me);
     lb=`<div class="card"><div class="hud"><div class="title">${R.scr?"World Live: Scrambled":"World Live"} Leaderboard</div><span class="sub">#${R.roundNo}</span></div>
       <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Player</th><th class="n">Frozen at</th><th class="n">Score</th></tr></thead><tbody>
-      ${rows.slice(0,10).map((r,i)=>`<tr class="${r.me?"me":""}"><td>${i+1}</td><td>${esc(r.name)}</td><td class="n">${r.s}/${R.N}</td><td class="n">${fmt(r.score)}</td></tr>`).join("")}
+      ${rows.slice(0,10).map((r,i)=>`<tr class="${r.me?"me":""}"><td>${i+1}</td><td>${esc(r.name)}${r.bot?` <span class="badge">bot</span>`:""}</td><td class="n">${r.s}/${R.N}</td><td class="n">${fmt(r.score)}</td></tr>`).join("")}
       ${mi>=10?`<tr class="me"><td>${mi+1}</td><td>You</td><td class="n">${d.s}/${R.N}</td><td class="n">${fmt(d.score)}</td></tr>`:""}
-      </tbody></table></div><div class="note">Ranked by score, then exact freeze time. Rivals are bots in this preview.</div></div>`}
+      </tbody></table></div><div class="note">Ranked by score, then exact freeze time. ${live?`${fmt(live.players)} real player${live.players===1?"":"s"} scored this round, ${fmt(live.online)} playing now. `:""}Bots fill the board in this preview.</div></div>`}
   if(R.mode==="group"){const rows=groupTable(R.roundNo).sort((a,b)=>b.total-a.total);
     lb=teamTableHTML(teamTable(R.roundNo),true)+`<div class="card"><div class="hud"><div class="title">Room ${esc(G.code)}</div><span class="sub">after round ${R.roundNo} of ${G.game?G.game.rounds:"?"}</span></div>
       <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Player</th><th class="n">This round</th><th class="n">Total</th></tr></thead><tbody>

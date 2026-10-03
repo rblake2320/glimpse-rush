@@ -32,6 +32,7 @@ export const REGISTRY = {
     rev: ui("Tiles revealed counter", "practice_full", "display"),
     worldAt: ui("Live tile count while frozen", "practice_full", "display"),
     cd: ui("Join countdown ring before a synced round", "world", "display"),
+    wlLive: ui("World Live: how many are playing now and how many scored this round (live)", "world_live_board", "display"),
     quit: ui("Leave a round during the join countdown", "world", "round_abandon"),
     fz: ui("FREEZE: stop the board and answer", "practice_full", "freeze"),
     af: ui("Answer form", "practice_full", "answer"),
@@ -117,6 +118,7 @@ export const REGISTRY = {
     "api/feedback": ui("Ingest tester feedback", "feedback_form", "display"),
     "api/admin/summary": ui("Aggregated results for the owner", "admin", "display"),
     "api/room/[name]": ui("WebSocket into a live room (Durable Object)", "group", "display"),
+    "api/world/[q]": ui("WebSocket into the live World Live board for a queue", "world_live_board", "display"),
     "api/time": ui("Server clock that aligns World Live on every device", "world_same", "display"),
     "api/admin/session": ui("One session's rows (wire map proof, deletion requests)", "admin", "display"),
   },
@@ -139,7 +141,7 @@ export const REGISTRY = {
   // Promises the owner has made that have no code yet. Listed so they cannot be forgotten.
   promise: {
     "group-realtime": ui("Friends and family join one shared link and play in real time with no noticeable delay", "group", "round_end"),
-    "world-real-board": ui("World Live leaderboard shows the real people playing that same round (today: shared bots + you)", null, "none", "planned"),
+    "world-real-board": ui("World Live leaderboard shows the real people playing that same round, live", "world_live_board", "round_end"),
     "ai-agents": ui("People can connect their AI agents to play (agent API / MCP seat in a room)", null, "none", "planned"),
     "pack-persist": ui("My own photos survive a page reload", "pack_persist", "none", "gap"),
     "anti-capture": ui("Discourage screenshots / phone capture of photos (native app: Android FLAG_SECURE, iOS capture detection; web can only deter)", null, "none", "planned"),

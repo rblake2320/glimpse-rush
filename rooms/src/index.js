@@ -15,6 +15,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/health") return new Response("ok");
+    const w = url.pathname.match(/^\/(?:api\/)?world\/([02])$/);
+    if (w) return worldFetch(request, env.WORLD, w[1]);
     const m = url.pathname.match(/^\/(?:api\/)?room\/([^/]+)$/);
     if (!m) return new Response("not found", { status: 404 });
     return roomFetch(request, env.ROOM, decodeURIComponent(m[1]));
@@ -102,4 +104,72 @@ export class Room {
   async webSocketError(ws) {
     await this.gone(ws);
   }
+}
+
+// ---------------------------------------------------------------- World Live board
+// One object per World Live queue ("0" plain, "2" scrambled). Rounds are minutes of server time (spec §3); players
+// post one score per round and everyone connected gets the round's live board and the number of people playing.
+//   client → server  {t:"hello", name}            {t:"score", k, score, s, el}
+//   server → client  {t:"board", k, online, rows:[{name, score, s, el}], players}
+export const WORLD = { maxScore: 8910, nameMax: 20, top: 20, keepRounds: 3 };
+
+export function worldFetch(request, ns, queue) {
+  if (request.headers.get("upgrade")?.toLowerCase() !== "websocket") return new Response("expected websocket", { status: 426 });
+  return ns.get(ns.idFromName("world-" + queue)).fetch(request);
+}
+
+export class WorldBoard {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.rounds = new Map(); // k -> Map(socketId -> {name, score, s, el})
+    this.pending = null;
+  }
+  sockets() { return this.ctx.getWebSockets().filter((ws) => ws.readyState === 1); }
+  async fetch() {
+    const { 0: client, 1: server } = new WebSocketPair();
+    const id = crypto.randomUUID().slice(0, 12);
+    this.ctx.acceptWebSocket(server, [id]);
+    server.serializeAttachment({ id, name: "Player" });
+    server.send(JSON.stringify(this.board(Math.floor(Date.now() / 60000))));
+    this.schedule();
+    return new Response(null, { status: 101, webSocket: client });
+  }
+  board(k) {
+    const r = this.rounds.get(k) ?? new Map();
+    const rows = [...r.values()].sort((a, b) => b.score - a.score || a.el - b.el).slice(0, WORLD.top);
+    return { t: "board", k, online: this.sockets().length, players: r.size, rows };
+  }
+  // batch updates: at most one broadcast per 250 ms, however many scores arrive
+  schedule() {
+    if (this.pending) return;
+    this.pending = setTimeout(() => {
+      this.pending = null;
+      const k = Math.floor(Date.now() / 60000);
+      const msg = JSON.stringify(this.board(k));
+      for (const ws of this.sockets()) { try { ws.send(msg); } catch {} }
+    }, 250);
+  }
+  webSocketMessage(ws, data) {
+    if (typeof data !== "string" || data.length > 512) return;
+    let m; try { m = JSON.parse(data); } catch { return; }
+    const att = ws.deserializeAttachment() ?? {};
+    if (m.t === "hello") {
+      att.name = String(m.name || "Player").replace(/[^\p{L}\p{N} _.-]/gu, "").trim().slice(0, WORLD.nameMax) || "Player";
+      ws.serializeAttachment(att); return;
+    }
+    if (m.t !== "score") return;
+    const now = Math.floor(Date.now() / 60000), k = Number(m.k);
+    // only the current round (or the one that just ended, for answers in its last seconds)
+    if (!Number.isInteger(k) || k > now || k < now - 1) return;
+    const score = Number(m.score), s = Number(m.s), el = Number(m.el);
+    if (!Number.isInteger(score) || score < 0 || score > WORLD.maxScore || !Number.isInteger(el) || el < 0 || el > 40000) return;
+    if (!this.rounds.has(k)) this.rounds.set(k, new Map());
+    const r = this.rounds.get(k);
+    if (r.has(att.id)) return; // one score per player per round
+    r.set(att.id, { name: att.name, score, s: Number.isInteger(s) ? s : null, el });
+    for (const old of this.rounds.keys()) if (old < now - WORLD.keepRounds) this.rounds.delete(old);
+    this.schedule();
+  }
+  webSocketClose(ws, code, reason) { this.schedule(); try { ws.close(code === 1005 ? 1000 : code, reason); } catch {} }
+  webSocketError() { this.schedule(); }
 }

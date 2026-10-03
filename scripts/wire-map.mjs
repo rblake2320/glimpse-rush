@@ -226,6 +226,13 @@ const WIRES = {
     must(/^PASS/m.test(out), (out.match(/^FAIL.*$/m) || ["no result"])[0]);
     return "guest + host reload mid-game, scores kept, game continued";
   }],
+  world_live_board: ["World Live is live: players in the same round see each other's real scores within a second", async () => {
+    const { spawnSync } = await import("node:child_process");
+    const r = spawnSync(process.execPath, [join(ROOT, "scripts/world-live-e2e.mjs"), BASE], { encoding: "utf8", timeout: 200000 });
+    const out = (r.stdout || "") + (r.stderr || "");
+    must(/^PASS/m.test(out), (out.match(/^FAIL.*$/m) || ["no result"])[0]);
+    return (out.match(/both boards had both within \d+ ms/) || ["live"])[0];
+  }],
   world_same: ["World Live is the same round on every device at the same moment, even with a wrong device clock", async () => {
     const real = await browser.newContext({ viewport: { width: 1280, height: 800 } });
     const skew = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

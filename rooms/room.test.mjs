@@ -121,3 +121,46 @@ test("F a room of 12 players all converge on everyone's presence", async () => {
   }
   cs.forEach((c) => c.ws.close());
 });
+
+// ---------------------------------------------------------------- World Live board
+function worldClient(q, name) {
+  return new Promise((ok, no) => {
+    const ws = new WebSocket(`${BASE}/world/${q}`);
+    const c = { ws, msgs: [], waiters: [] };
+    ws.onopen = () => { ws.send(JSON.stringify({ t: "hello", name })); ok(c); };
+    ws.onmessage = (e) => { const m = JSON.parse(e.data); c.msgs.push(m); c.waiters = c.waiters.filter((w) => (w.pred(m) ? (w.ok(m), false) : true)); };
+    ws.onerror = () => no(new Error("socket error"));
+  });
+}
+const kNow = () => Math.floor(Date.now() / 60000);
+
+test("G world board: every player sees everyone's scores for the round, best first, and the live player count", async () => {
+  const q = "0";
+  const a = await worldClient(q, "Ann"), b = await worldClient(q, "Bob");
+  await new Promise((r) => setTimeout(r, 300));
+  const k = kNow();
+  send(a, { t: "score", k, score: 1200, s: 9, el: 6000 });
+  send(b, { t: "score", k, score: 2400, s: 4, el: 3000 });
+  const seenByA = await wait(a, (m) => m.t === "board" && m.k === k && m.rows.length >= 2 && m.rows.some((r) => r.name === "Bob"));
+  const mine = seenByA.rows.filter((r) => r.name === "Ann" || r.name === "Bob");
+  assert.deepEqual(mine.map((r) => [r.name, r.score]), [["Bob", 2400], ["Ann", 1200]]);
+  assert.ok(seenByA.online >= 2, "online count includes both");
+  await wait(b, (m) => m.t === "board" && m.k === k && m.rows.some((r) => r.name === "Ann"));
+  a.ws.close(); b.ws.close();
+});
+
+test("H world board: one score per player per round; out-of-range scores, bad names and stale rounds are dropped; queues are separate", async () => {
+  const a = await worldClient("2", "<b>Eve</b>"), watcher = await worldClient("2", "Watch"), plain = await worldClient("0", "Plain");
+  await new Promise((r) => setTimeout(r, 300));
+  const k = kNow();
+  send(a, { t: "score", k, score: 99999, s: 1, el: 100 });       // above the maximum possible score
+  send(a, { t: "score", k: k - 5, score: 500, s: 1, el: 100 });   // a round long gone
+  send(a, { t: "score", k, score: 700, s: 2, el: 2000 });
+  send(a, { t: "score", k, score: 900, s: 2, el: 2000 });         // second score in the same round
+  const m = await wait(watcher, (x) => x.t === "board" && x.k === k && x.rows.some((r) => r.name === "bEveb"));
+  const eve = m.rows.filter((r) => r.name === "bEveb");
+  assert.deepEqual(eve.map((r) => r.score), [700], "only the first valid score counts; markup stripped from the name");
+  await new Promise((r) => setTimeout(r, 400));
+  assert.ok(!plain.msgs.some((x) => x.t === "board" && x.rows.some((r) => r.name === "bEveb")), "the scrambled queue's scores never reach the plain queue");
+  a.ws.close(); watcher.ws.close(); plain.ws.close();
+});

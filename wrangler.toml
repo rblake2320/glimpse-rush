@@ -11,3 +11,8 @@ database_id = "df2a3489-b959-4779-a519-edd871a24f5b"
 name = "ROOMS"
 class_name = "Room"
 script_name = "glimpse-rush-rooms"
+
+[[durable_objects.bindings]]
+name = "WORLD"
+class_name = "WorldBoard"
+script_name = "glimpse-rush-rooms"
