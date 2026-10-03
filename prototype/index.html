@@ -1,0 +1,650 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style></head><body>
+<title>Glimpse Rush Playtest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,900&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one phone-width column, screen swaps (home / play / results), arcade-night single dark look taken from the brand mockup */
+:root{
+  --night:#060d22; --panel:#0c1a3d; --panel-2:#11234f; --line:#1f3a7a;
+  --ink:#e8f0ff; --dim:#8fa6d6; --volt:#2f8bff; --volt-hi:#5fb0ff; --gold:#ffcf3f;
+  --good:#3ddc84; --bad:#ff5a6a; --warn:#ffb020;
+  --display:"Exo 2", "Arial Black", system-ui, sans-serif;
+  --body:"Barlow", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", Consolas, ui-monospace, monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:radial-gradient(120% 60% at 50% 0%,#0f2a66 0%,var(--night) 60%) fixed,var(--night);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:16px 32px}
+.app{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,.display{font-family:var(--display);font-style:italic;letter-spacing:.01em;margin:0;text-wrap:balance}
+.brand{display:flex;flex-direction:column;align-items:center;gap:4px;padding-block:8px}
+.brand h1{font-size:2.6rem;font-weight:900;line-height:1;background:linear-gradient(180deg,#fff 0%,#cfe2ff 55%,var(--volt-hi) 56%,var(--volt) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--volt-hi);font-weight:700}
+.note{font-size:.82rem;color:var(--dim)}
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:14px}
+.mode{display:flex;gap:12px;align-items:center;width:100%;text-align:left;color:var(--ink);font:inherit;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.mode:hover,.mode:focus-visible{border-color:var(--volt-hi);outline:none;box-shadow:0 0 0 2px #2f8bff55}
+.mode.primary{background:linear-gradient(180deg,#2a7cff,#1556d6);border-color:#6fb6ff}
+.mode b{font-family:var(--display);font-style:italic;font-size:1.15rem;display:block}
+.mode small{color:var(--dim)} .mode.primary small{color:#dbe8ff}
+.mode[disabled]{opacity:.45;cursor:not-allowed}
+.icon{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:10px;background:#ffffff14;font-weight:800;font-family:var(--mono)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.btn{font:600 .9rem var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--volt);border-color:var(--volt-hi)}
+.btn:focus-visible,.seg button:focus-visible{outline:2px solid var(--volt-hi);outline-offset:2px}
+.btn.big{width:100%;padding:14px;font:900 1.35rem var(--display);font-style:italic;letter-spacing:.06em;border-radius:12px}
+.btn.freeze{background:linear-gradient(180deg,#2f8bff,#1450c8);border-color:#8cc8ff;box-shadow:0 0 24px #2f8bff66}
+.btn.go{background:linear-gradient(180deg,#2f8bff,#1450c8);border-color:#8cc8ff}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
+label.chk{display:flex;gap:8px;align-items:center;font-weight:600}
+.hud{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.hud .title{font:900 1.3rem var(--display);font-style:italic}
+.hud .sub{font-size:.8rem;color:var(--dim)}
+.clock{font:700 1.6rem var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.bar{height:8px;border-radius:99px;background:#ffffff14;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--good),var(--volt-hi))}
+.bar.red>i{background:linear-gradient(90deg,var(--bad),var(--warn))}
+.board{position:relative;width:100%;max-width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;border:2px solid var(--volt);box-shadow:0 0 28px #2f8bff44;background:#000}
+.board .pic{position:absolute;inset:0;display:grid;place-items:center;container-type:size;overflow:hidden}
+.board .pic span{font-size:280px;font-size:70cqw;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;transform:translateY(4%);user-select:none}
+.tiles{position:absolute;inset:0;display:grid}
+.tiles>div,.tiles .cover{background:linear-gradient(135deg,#132c6a,#0b1d4a);border:1px solid #2a4f9e;transition:opacity .14s}
+.tiles:not(.scr)>div.off{opacity:0}
+.tiles.scr{background:#000}
+.tiles.scr>div{position:relative;overflow:hidden;background:none;border:1px solid #000}
+.tiles.scr .rot,.tiles.scr .cover{position:absolute;inset:0}
+.tiles.scr .cover{z-index:1;border-color:#2a4f9e}
+.tiles.scr .piece{position:absolute}
+.tiles.scr>div.off .cover{opacity:0}
+.board .overlay{position:absolute;inset:auto 0 0 0;padding:8px 10px;background:#000a;font-size:.82rem;text-align:center}
+.stat{display:flex;justify-content:space-between;font-size:.9rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.stat b{color:var(--ink)}
+.answer{display:flex;flex-direction:column;gap:8px}
+.answer input{font:600 1.05rem var(--body);color:var(--ink);background:#050b1e;border:1px solid var(--volt);border-radius:10px;padding:12px}
+.answer input:focus-visible{outline:2px solid var(--volt-hi)}
+.frozen-h{font:900 1.5rem var(--display);font-style:italic;text-align:center}
+.lobby{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0}
+.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;border:8px solid var(--volt);box-shadow:0 0 30px #2f8bff66 inset,0 0 30px #2f8bff55;font:700 2.6rem var(--mono)}
+.qq{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.qq div{background:var(--panel);border:1px solid var(--line);border-radius:10px;text-align:center;padding:10px 4px;font-size:.78rem;color:var(--dim)}
+.qq b{display:block;font:900 1.4rem var(--display);color:var(--ink)}
+.result-h{font:900 2rem var(--display);font-style:italic;text-align:center}
+.result-h.good{color:var(--good)} .result-h.bad{color:var(--bad)} .result-h.part{color:var(--warn)}
+.breakdown{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:.92rem;font-variant-numeric:tabular-nums}
+.breakdown span:nth-child(even){text-align:right;font-family:var(--mono)}
+.breakdown .tot{font:900 1.2rem var(--display);font-style:italic;color:var(--gold);padding-top:6px;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+th{color:var(--dim);font-weight:600;text-align:left;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 6px}
+td{padding:6px;border-top:1px solid #ffffff12}
+td.n,th.n{text-align:right;font-family:var(--mono)}
+tr.me td{background:#2f8bff33;font-weight:700}
+.log{font:500 .78rem var(--mono);color:var(--dim);max-height:140px;overflow:auto;white-space:pre-wrap}
+.pass{color:var(--good)} .fail{color:var(--bad)}
+.badge{display:inline-block;font:700 .7rem var(--mono);padding:2px 6px;border-radius:6px;background:#ffffff14;color:var(--dim)}
+.field{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:.88rem}
+.field input,.field select{font:600 1rem var(--body);color:var(--ink);background:#050b1e;border:1px solid var(--line);border-radius:9px;padding:10px}
+.field input:focus-visible,.field select:focus-visible{outline:2px solid var(--volt-hi)}
+.code{font:700 2rem var(--mono);letter-spacing:.2em;text-align:center;color:var(--gold)}
+.players{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:600 .82rem var(--body);padding:4px 10px;border-radius:99px;background:#ffffff14;border:1px solid var(--line)}
+.chip.me{border-color:var(--volt-hi);background:#2f8bff33}
+.chip.host::after{content:" ★";color:var(--gold)}
+.flash{position:absolute;inset:0;display:grid;place-items:center;background:#0008;font:900 2.4rem var(--display);font-style:italic;color:var(--good);text-shadow:0 2px 12px #000}
+.flash.miss{color:var(--warn)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:380px){.grid2{grid-template-columns:1fr}}
+.board .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.pack-item{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start}
+.pack-item .thumb{width:96px;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.pack-item .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pack-fields{display:flex;flex-direction:column;gap:8px;min-width:0}
+.pack-fields .field{font-size:.8rem}
+.pack-fields .field input{padding:8px;font-size:.95rem}
+.sugg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sugg button{font:600 .78rem var(--body);color:var(--ink);background:#2f8bff22;border:1px dashed var(--volt-hi);border-radius:99px;padding:3px 9px;cursor:pointer}
+.sugg button.blk{background:#ff5a6a22;border-color:var(--bad)}
+.warn{color:var(--warn)}
+@media (max-width:380px){.pack-item{grid-template-columns:1fr}.pack-item .thumb{width:100%}}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.live{display:flex;flex-direction:column;gap:6px}
+.live .row{justify-content:space-between;font-size:.88rem;font-variant-numeric:tabular-nums}
+.teambar{height:6px;border-radius:99px;background:#ffffff14;overflow:hidden}.teambar>i{display:block;height:100%}
+.teampick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.teampick button{font:700 .95rem var(--body);color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;text-align:left}
+.teampick button[aria-pressed="true"]{border-color:var(--volt-hi);background:#2f8bff22}
+@media (prefers-reduced-motion:reduce){.tiles>div,.tiles .cover{transition:none}}
+</style>
+
+<div class="app" id="app"></div>
+
+<script>
+"use strict";
+/* ============ Spec v1.1 constants & integer scoring (mirrors scoring.mjs) ============ */
+const GAME={JOIN_MS:5000,REVEAL_MS:30000,FINAL_WINDOW_MS:10000,RESULTS_MS:15000,ANSWER_WINDOW_MS:7000,ANSWER_GRACE_MS:500,MAX_FREEZES:2,
+  G100:{4:50,9:75,16:90,25:100,36:150,64:200,100:300},WORLD_LIVE_GRIDS:[25,36,64,100],FINAL_FLAT:50,BLITZ_RUN_MS:120000,BLITZ_GRID:25};
+const divHalfUp=(num,den)=>Math.floor((2*num+den)/(2*den));
+const tilesShown=(N,el)=>Math.min(N,Math.floor(el*N/GAME.REVEAL_MS)+1);
+const SCR4=[4,5,6],SCR_NAME=["Off","Scrambled","Scrambled + turned"],SCR_X=["×1.0","×1.25","×1.5"];
+const mults=({freezeNo=1,partial=false,hint=false,scr=0})=>({P4:freezeNo===1?4:3,M:(partial?2:1)*(hint?2:1),S4:SCR4[scr]||4});
+const finalWindowScore=(N,o={})=>{const{P4,M,S4}=mults(o);return divHalfUp(GAME.FINAL_FLAT*GAME.G100[N]*P4*S4,1600*M)};
+const formulaScore=(N,el,o={})=>{const s=tilesShown(N,el),tl=Math.max(0,GAME.REVEAL_MS-el),{P4,M,S4}=mults(o);return divHalfUp(GAME.G100[N]*(N-s)*(30000+3*tl)*P4*S4,96000*N*M)};
+function revealScore(N,el,o={}){return Math.max(formulaScore(N,el,o),finalWindowScore(N,o))}
+const scoreFreeze=(N,el,o={})=>el<GAME.REVEAL_MS?revealScore(N,el,o):finalWindowScore(N,o);
+
+/* ============ Placeholder photo pool (emoji art stands in for licensed photos) ============ */
+const PHOTOS=[
+ ["🐕","Animals",["dog"],["animal","pet","puppy"],["#7a4a1c","#e8c38a"]],["🍕","Food",["pizza","pizza slice"],["food"],["#7a1d14","#f3b04a"]],
+ ["🎸","Music",["guitar","electric guitar"],["instrument"],["#2b1550","#d04aa8"]],["🚲","Vehicles",["bicycle","bike"],["vehicle"],["#0d4a52","#7fe0d0"]],
+ ["🐘","Animals",["elephant"],["animal"],["#3a3a3a","#c9b98f"]],["🦒","Animals",["giraffe"],["animal"],["#6b4a12","#f2d27a"]],
+ ["🌋","Nature",["volcano"],["mountain"],["#2a0a0a","#ff6a2a"]],["🍔","Food",["hamburger","burger","cheeseburger"],["food","sandwich"],["#5a2a08","#f6c35a"]],
+ ["⛵","Vehicles",["sailboat","sailing boat"],["boat","ship"],["#0a2a5a","#7ac8ff"]],["🐙","Animals",["octopus"],["animal","sea creature"],["#3a0a3a","#ff7ab0"]],
+ ["🌵","Nature",["cactus"],["plant"],["#5a3a0a","#f0d080"]],["🚁","Vehicles",["helicopter"],["aircraft","vehicle"],["#0a2a4a","#a0d8ff"]],
+ ["🎃","Holidays",["pumpkin","jack o lantern","jackolantern"],["vegetable"],["#1a0a2a","#ff8a1a"]],["🦉","Animals",["owl"],["bird","animal"],["#1a1a3a","#8a7ac8"]],
+ ["🍉","Food",["watermelon"],["fruit","melon"],["#0a3a1a","#ff6a7a"]],["🐢","Animals",["turtle","tortoise"],["animal","reptile"],["#0a3a3a","#8ae0a0"]],
+ ["🦩","Animals",["flamingo"],["bird","animal"],["#3a0a2a","#ffa0c8"]],["☂️","Objects",["umbrella"],[],["#0a1a3a","#5a8aff"]],
+ ["🐝","Animals",["bee","honeybee","bumblebee"],["insect","bug"],["#3a2a00","#ffd84a"]],["🦀","Animals",["crab"],["animal","sea creature"],["#0a2a4a","#ff7a5a"]],
+ ["🐎","Animals",["horse"],["animal"],["#3a2a1a","#d8b88a"]],["🚗","Vehicles",["car","automobile"],["vehicle"],["#1a1a2a","#ff5a5a"]],
+ ["🐈","Animals",["cat","kitten"],["animal","pet"],["#2a2a2a","#e8b878"]],["🚂","Vehicles",["train","locomotive","steam train"],["vehicle"],["#2a1a1a","#d8a070"]],
+ ["🦁","Animals",["lion"],["animal","big cat"],["#4a2a00","#f0c060"]],["🍩","Food",["donut","doughnut"],["food","dessert"],["#4a1a3a","#ffb0d0"]],
+ ["🚀","Vehicles",["rocket","spaceship"],["vehicle"],["#0a0a2a","#7a8aff"]],["🌻","Nature",["sunflower"],["flower","plant"],["#1a3a5a","#ffe060"]],
+].map(([emoji,category,accepted,partial,colors],id)=>({id,emoji,category,accepted,partial,colors}));
+const DICT=[...new Set(("apple banana bear bed bee bell bench bicycle bike bird boat book bottle bowl box bread bridge brush bucket burger bus butterfly cactus cake camel camera candle car carrot castle cat chair cheese cheeseburger chicken clock cloud coat cow crab crown cup deer desk dog doll dolphin donkey donut door doughnut dove dragon drum duck eagle egg elephant fan fence fish flag flamingo flower fog fork fox frog fruit giraffe glass glove goat guitar hammer hamburger hat helicopter hill horse hose house ice insect jacket jellyfish kangaroo key kite kitten knife ladder lamp leaf lemon line lion lizard lobster melon monkey moon mountain mouse mug octopus orange owl panda parrot pear pen pencil penguin piano pig pizza plane plant plate pumpkin puppy rabbit rain rat ring river robot rock rocket rose sailboat sandwich sea seal shark sheep ship shoe snake sock spider spoon star sun sunflower table tiger tomato tortoise tower train tree truck turtle umbrella van vase volcano watch watermelon whale wheel window wolf zebra"
+  ).split(" "))].sort();
+
+/* ============ Answer matching (Spec v1.1 §7) ============ */
+function norm(s){let t=String(s).toLowerCase().replace(/[-_/.]/g," ").replace(/[^\p{L}\p{N}\s]/gu,"").replace(/\s+/g," ").trim().replace(/^(a|an|the) /,"");
+  return t.split(" ").map(w=>/ies$/.test(w)&&w.length>4?w.slice(0,-3)+"y":(/[^su]s$/.test(w)&&w.length>3?w.slice(0,-1):w)).join(" ")}
+function lev(a,b){const m=a.length,n=b.length;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+const key=s=>norm(s).replace(/ /g,"");
+const DICTN=new Set(DICT.map(key));
+/* Order: host-blocked → accepted → partial → real-word guard → fuzzy (off when the host picks exact spelling). */
+function matchAnswer(input,photo){const t=key(input);if(!t)return{kind:"wrong",why:"empty"};
+  const acc=photo.accepted.map(key),par=(photo.partial||[]).map(key),blk=(photo.blocked||[]).map(key).filter(Boolean);
+  if(blk.includes(t))return{kind:"wrong",why:"host marked this answer as not accepted"};
+  if(acc.includes(t))return{kind:"correct",why:"exact"};if(par.includes(t))return{kind:"partial",why:"exact partial"};
+  if(photo.strict)return{kind:"wrong",why:"host requires exact spelling"};
+  if(DICTN.has(t))return{kind:"wrong",why:"real-word guard: '"+t+"' is a different noun"};
+  const tol=t.length<=3?0:t.length<=6?1:2;
+  if(blk.some(b=>lev(t,b)<=tol))return{kind:"wrong",why:"too close to an answer the host blocked"};
+  const hit=l=>{const h=l.filter(a=>lev(t,a)<=tol);return h.length===1?h[0]:null};
+  let h=hit(acc);if(h)return{kind:"correct",why:"fuzzy → "+h};h=hit(par);if(h)return{kind:"partial",why:"fuzzy → "+h};
+  return{kind:"wrong",why:"no match"}}
+
+/* ============ Photo rendering & tile order ============ */
+function picHTML(p,alt){if(p.src)return`<div class="pic"><img src="${esc(p.src)}" alt="${alt}" draggable="false"></div>`;
+  return`<div class="pic" role="img" aria-label="${alt}" style="background:radial-gradient(circle at 50% 43%,${p.colors[1]} 0%,${p.colors[0]} 72%)"><span aria-hidden="true">${p.emoji}</span></div>`}
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function rankFor(N,seed){const r=mulberry(seed),o=[...Array(N).keys()];for(let i=N-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}
+  const rank=new Array(N);o.forEach((pos,k)=>rank[pos]=k);return rank}
+
+/* ============ Helpers & state ============ */
+const $=s=>document.querySelector(s),app=$("#app");
+const now=()=>performance.now();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>Number(n).toLocaleString("en-US");
+const clk=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+const store={get(k,d){try{const v=localStorage.getItem("gr."+k);return v===null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem("gr."+k,JSON.stringify(v))}catch{}}};
+const S={screen:"home",practiceN:36,hint:false,practiceScr:0,salt:(Math.random()*2**32)>>>0,practiceSrc:"builtin",roundNo:4820,lastPhoto:-1,R:null,raf:0,blitz:null,nick:store.get("nick","")};
+const TEAMS=[{n:"Red",c:"#ff5a6a"},{n:"Blue",c:"#2f8bff"},{n:"Green",c:"#3ddc84"},{n:"Gold",c:"#ffcf3f"}];
+const MODE_NAME={world:"World Live",practice:"Solo Practice",blitz:"Solo Blitz",group:"Group Room"};
+/* ============ Custom photo packs (Spec v1.1 §10a) ============
+ A pack photo: {id, src, assetId?, accepted[], partial[], blocked[], strict, hint, blob?}.
+ Uploaded to the artifact's asset store when this viewer may upload (page owner/editors), otherwise kept in memory for this visit. */
+let ASSETS=null,SAMPLE=null;
+const PACK={name:store.get("packName","My photo pack"),photos:(store.get("packPhotos",[])||[]).filter(p=>p&&p.src&&p.accepted)};
+const savePack=()=>{store.set("packName",PACK.name);store.set("packPhotos",PACK.photos.filter(p=>p.assetId).map(({blob,...p})=>p))};
+const readyPhotos=()=>PACK.photos.filter(p=>p.accepted&&p.accepted.length);
+const list=s=>String(s||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,12);
+function toPlayPhoto(p){return{id:"c"+p.id,src:p.src,accepted:p.accepted,partial:p.partial||[],blocked:p.blocked||[],strict:!!p.strict,category:p.hint||"Custom photo",custom:true}}
+let packCursor=0;
+function nextPackPhoto(avoidIds=[]){const ps=readyPhotos();if(!ps.length)return null;
+  for(let i=0;i<ps.length;i++){const p=ps[(packCursor+i)%ps.length];if(!avoidIds.includes(p.id)){packCursor=(packCursor+i+1)%ps.length;return p}}
+  const p=ps[packCursor%ps.length];packCursor++;return p}
+async function prepImage(file){const url=URL.createObjectURL(file);try{const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("decode"));i.src=url});
+  const side=Math.min(img.naturalWidth,img.naturalHeight),c=document.createElement("canvas");c.width=c.height=Math.min(900,side);
+  c.getContext("2d").drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,c.width,c.height);
+  const blob=await new Promise(ok=>c.toBlob(ok,"image/jpeg",.85));return{blob,dataURL:c.toDataURL("image/jpeg",.85)}}finally{URL.revokeObjectURL(url)}}
+async function addFiles(files){const msg=$("#packMsg");let n=0,fail=0;
+  for(const f of[...files].slice(0,40)){if(msg)msg.textContent=`Adding photo ${n+fail+1} of ${files.length}…`;
+    try{const{blob,dataURL}=await prepImage(f);const ph={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),accepted:[],partial:[],blocked:[],strict:false,hint:"",blob,src:dataURL};
+      if(ASSETS){try{const up=await ASSETS.upload(blob);ph.assetId=up.id;ph.src=up.url}catch(e){ph.uploadErr=e&&e.code||"error"}}
+      PACK.photos.push(ph);n++}catch{fail++}}
+  savePack();render();const m=$("#packMsg");if(m)m.textContent=`Added ${n} photo${n===1?"":"s"}${fail?`, ${fail} could not be read`:""}. Now type the correct answer for each.`}
+async function suggestAnswers(ph){const box=$("#sg-"+ph.id);if(!SAMPLE||!box)return;
+  box.innerHTML=`<span class="note">Thinking…</span>`;
+  try{const caps=await SAMPLE.limits().catch(()=>null);const useImg=!!(caps&&caps.images&&ph.blob);
+    if(!ph.accepted.length&&!useImg){box.innerHTML=`<span class="note warn">Type the main correct answer first.</span>`;return}
+    const prompt=`You help a host set up a photo guessing game. Players see the photo slowly revealed and type what it is.
+${useImg?"The attached image is the photo.":""} Host's correct answer(s): ${JSON.stringify(ph.accepted)}. Host's hint/context: ${JSON.stringify(ph.hint||"")}.
+Suggest answer lists the host can approve:
+- accepted: other spellings, nicknames, or full/short forms that should earn FULL credit (same specific thing).
+- partial: broader but still meaningful answers for HALF credit.
+- blocked: answers that are too generic for this setting and should earn nothing (e.g. "car" at a car dealership).
+If the photo is a person, only suggest name variants of what the host typed; never guess identity from the image.
+Max 6 per list, lowercase, no duplicates of the host's answers. Reply as JSON {"accepted":[],"partial":[],"blocked":[]}.`;
+    const out=await SAMPLE.json(prompt,useImg?{images:[ph.blob],modelTier:"quick"}:{modelTier:"quick"});
+    const clean=a=>Array.isArray(a)?a.filter(x=>typeof x==="string").map(x=>x.trim().toLowerCase().slice(0,40)).filter(Boolean).slice(0,6):[];
+    const sg={accepted:clean(out&&out.accepted),partial:clean(out&&out.partial),blocked:clean(out&&out.blocked)};
+    const chip=(k,w)=>`<button type="button" class="${k==="blocked"?"blk":""}" data-k="${k}" data-w="${esc(w)}">+ ${esc(w)}</button>`;
+    box.innerHTML=["accepted","partial","blocked"].map(k=>sg[k].length?`<span class="note">${k==="accepted"?"Full":k==="partial"?"Half":"Block"}:</span>${sg[k].map(w=>chip(k,w)).join("")}`:"").join("")||`<span class="note">No suggestions.</span>`;
+    box.onclick=e=>{const b=e.target.closest("button");if(!b)return;const k=b.dataset.k,w=b.dataset.w;if(!ph[k].includes(w))ph[k].push(w);savePack();
+      const inp=$(`#f-${k}-${ph.id}`);if(inp)inp.value=ph[k].join(", ");b.remove()}}
+  catch(e){box.innerHTML=`<span class="note warn">${e&&e.code==="not_granted"?"Suggestions were not allowed.":e&&e.code==="rate_limited"?"Too many requests. Try again in a minute.":"Could not get suggestions."}</span>`}}
+
+function randomPhoto(avoid=[]){let i,n=0;do{i=Math.floor(Math.random()*PHOTOS.length)}while((i===S.lastPhoto||avoid.includes(i))&&++n<50);S.lastPhoto=i;return PHOTOS[i]}
+
+/* ============ Round engine ============
+ mode world/practice/group: synced phases JOIN → REVEAL → FINAL → RESULTS on revealStart (perf ms).
+ mode blitz: no JOIN, the photo clock pauses while frozen, FINAL lasts until answer/skip or the run clock ends. */
+function scrambleFor(N,seed){const r=mulberry(seed^0x5bd1e995),o=[...Array(N).keys()];
+  for(let i=N-1;i>0;i--){const j=Math.floor(r()*(i+1));[o[i],o[j]]=[o[j],o[i]]}
+  if(N>1&&o.every((v,i)=>v===i))[o[0],o[1]]=[o[1],o[0]];return{src:o,turn:o.map(()=>Math.floor(r()*4))}}
+function newRound(mode,{N,photo,seed,revealStart,hint=false,roundNo,scr=0,scrSeed}){
+  return{mode,N,photo,seed,scr,scramble:scr?scrambleFor(N,scrSeed??seed):null,rank:rankFor(N,seed),revealStart,hint,freezesUsed:0,frozen:null,done:null,out:false,lastFreezeAt:-1e9,
+    log:[],drawnCount:-1,phase:"",roundNo:roundNo??++S.roundNo,paused:0,pauseAt:null,flash:null}}
+function elOf(R,t){return R.mode==="blitz"?(R.pauseAt??t)-R.revealStart-R.paused:t-R.revealStart}
+function phaseOf(R,t){const el=elOf(R,t);if(el<0)return["JOIN",el];if(el<GAME.REVEAL_MS)return["REVEAL",el];
+  if(R.mode==="blitz"||el<GAME.REVEAL_MS+GAME.FINAL_WINDOW_MS)return["FINAL",el];return["RESULTS",el]}
+
+function startWorld(){const N=GAME.WORLD_LIVE_GRIDS[Math.floor(Math.random()*4)],photo=randomPhoto();
+  const R=newRound("world",{N,photo,seed:(Math.random()*2**32)>>>0,revealStart:now()+GAME.JOIN_MS});R.bots=makeBots(N);R.players=1200+Math.floor(Math.random()*900);run(R)}
+function startPractice(){const pp=S.practiceSrc==="pack"?nextPackPhoto():null;run(newRound("practice",{N:S.practiceN,photo:pp?toPlayPhoto(pp):randomPhoto(),seed:(Math.random()*2**32)>>>0,revealStart:now()+3000,hint:S.hint,scr:S.practiceScr}))}
+function run(R){cancelAnimationFrame(S.raf);S.R=R;S.screen="play";render();tick()}
+
+function makeBots(N){return["NovaStar","ByteBard","PixelPro","TrailSeeker","LensLegend","PhotoNinja","VisionMaster","SnapGuess","MindFrame","QuickIris","GlintGal","RetinaRex"].map(n=>{
+  const sk=Math.random(),el=Math.min(39999,Math.floor(1500+Math.pow(Math.random(),1.2-sk*.6)*30000));if(Math.random()>.85)return{name:n,score:null};
+  return{name:n,el,s:el>=30000?N:tilesShown(N,el),score:scoreFreeze(N,el,{partial:Math.random()<.08}),ts:el}})}
+
+function tick(){S.raf=requestAnimationFrame(tick);const R=S.R;if(!R)return;const t=now();
+  if(R.mode==="blitz")return blitzTick(R,t);
+  const[ph,el]=phaseOf(R,t);
+  if(ph!==R.phase){R.phase=ph;if(ph==="RESULTS"){if(R.frozen)failFreeze("Round ended");S.screen="results";render();return}if(S.screen==="play")render()}
+  if(S.screen==="results"){const left=GAME.REVEAL_MS+GAME.FINAL_WINDOW_MS+GAME.RESULTS_MS-el,nx=$("#nextIn");
+    if(nx)nx.textContent=clk(left);
+    if(left<=0){if(R.mode==="world")return startWorld();if(R.mode==="group"&&!R.advanced){R.advanced=true;groupResultsOver()}}return}
+  if(S.screen!=="play")return;
+  if(R.frozen&&t>R.frozen.deadline+GAME.ANSWER_GRACE_MS)failFreeze("Time ran out");
+  updatePlay(ph,el,t)}
+
+/* ============ Freeze flow (Spec §6) ============ */
+function freeze(){const R=S.R,t=now();const[ph,el]=phaseOf(R,t);
+  if(R.frozen||R.done||R.out||R.flash)return;if(!(ph==="REVEAL"||ph==="FINAL"))return;
+  if(t-R.lastFreezeAt<300){R.log.push("rate-limited");return}
+  if(R.freezesUsed>=GAME.MAX_FREEZES){R.log.push("3rd freeze rejected");return}
+  R.lastFreezeAt=t;R.freezesUsed++;const e=Math.floor(el);groupStatus(R,"frozen");
+  if(R.mode==="blitz"){R.pauseAt=t;S.blitz.pauseAt=t}
+  R.frozen={el:e,s:ph==="REVEAL"?tilesShown(R.N,e):R.N,freezeNo:R.freezesUsed,deadline:t+GAME.ANSWER_WINDOW_MS,inFinal:ph==="FINAL"};
+  R.log.push(`freeze #${R.freezesUsed} at ${e} ms → ${R.frozen.s}/${R.N}`);render()}
+function unpause(R){if(R.mode!=="blitz"||R.pauseAt===null)return;const t=now(),d=t-R.pauseAt;R.paused+=d;R.pauseAt=null;
+  S.blitz.paused+=t-S.blitz.pauseAt;S.blitz.pauseAt=null}
+function failFreeze(why){const R=S.R;if(!R||!R.frozen)return;R.log.push(`freeze #${R.frozen.freezeNo} failed: ${why}`);
+  R.lastFail=why;R.frozen=null;unpause(R);if(R.freezesUsed>=GAME.MAX_FREEZES)R.out=true;groupStatus(R,R.out?"out":"missed");
+  if(R.out&&R.mode==="practice"&&S.screen==="play")return endPractice();
+  if(R.out&&R.mode==="blitz")return blitzNext(0,"Out of freezes");
+  if(S.screen==="play")render()}
+function submit(ev){ev.preventDefault();const R=S.R;if(!R.frozen)return;const t=now();
+  if(t>R.frozen.deadline+GAME.ANSWER_GRACE_MS)return failFreeze("Time ran out");
+  const text=$("#ans").value,m=matchAnswer(text,R.photo);R.log.push(`answer "${text}" → ${m.kind} (${m.why})`);
+  if(m.kind==="wrong")return failFreeze(`"${text}" is wrong`);
+  const f=R.frozen,partial=m.kind==="partial",o={freezeNo:f.freezeNo,partial,hint:R.hint,scr:R.scr};
+  const score=f.inFinal?finalWindowScore(R.N,o):revealScore(R.N,f.el,o);
+  R.done={...f,text,partial,score,why:m.why};R.frozen=null;unpause(R);
+  if(R.mode==="practice")return endPractice();
+  if(R.mode==="blitz")return blitzNext(score,partial?"Half credit":"Correct");
+  if(R.mode==="group"){groupReport(R);groupStatus(R,"done")}
+  render()}
+document.addEventListener("visibilitychange",()=>{const R=S.R;if(document.hidden&&R&&R.frozen&&(R.mode==="world"||R.mode==="blitz"||R.mode==="group"))failFreeze("App left while frozen (ranked rule)")});
+function endPractice(){const R=S.R;cancelAnimationFrame(S.raf);R.frozen=null;R.endedEarly=true;S.screen="results";render()}
+
+/* ============ Solo Blitz (Spec §10) ============ */
+function startBlitz(){S.blitz={start:now(),paused:0,pauseAt:null,total:0,photos:[],used:[],over:false};blitzPhoto()}
+function blitzPhoto(){const B=S.blitz;if(B.pauseAt!==null){B.paused+=now()-B.pauseAt;B.pauseAt=null}const photo=randomPhoto(B.used);B.used.push(photo.id);
+  run(newRound("blitz",{N:GAME.BLITZ_GRID,photo,seed:(Math.random()*2**32)>>>0,revealStart:now()}))}
+function blitzLeft(t){const B=S.blitz;return GAME.BLITZ_RUN_MS-((B.pauseAt??t)-B.start-B.paused)}
+function blitzNext(score,label){const R=S.R,B=S.blitz;R.frozen=null;unpause(R);B.total+=score;B.pauseAt=now();
+  B.photos.push({answer:R.photo.accepted[0],emoji:R.photo.emoji,score,label,s:R.done?R.done.s:null});
+  R.flash={label:score?`+${fmt(score)}`:label,miss:!score,until:now()+1300};R.drawnCount=-1;render()}
+function blitzTick(R,t){if(S.screen!=="play")return;
+  if(R.flash){if(t>=R.flash.until){if(blitzLeft(t)<=0)return blitzEnd();blitzPhoto()}return}
+  if(R.frozen&&t>R.frozen.deadline+GAME.ANSWER_GRACE_MS)return failFreeze("Time ran out");
+  if(!R.frozen&&blitzLeft(t)<=0)return blitzEnd();
+  const[ph,el]=phaseOf(R,t);if(ph!==R.phase){R.phase=ph;render();return}
+  updatePlay(ph,el,t)}
+function blitzEnd(){const B=S.blitz;B.over=true;cancelAnimationFrame(S.raf);const best=store.get("blitzBest",0);B.prevBest=best;
+  if(B.total>best)store.set("blitzBest",B.total);S.screen="blitzResults";render()}
+
+/* ============ Group Room (Spec §10) — live via the room capability ============
+ Host presence carries the game: {role:"host", nick, clock, game:{id, rounds, grid, hint, state, roundNo, N, photoId, seed, startAt}}.
+ Players' presence carries {nick, sc:{g:gameId, r:{"1":score,...}}}. Everyone derives the same round from the host's presence.
+ Scores are self-reported in this preview; the real build scores on the server. */
+let ROOM=null;const G={room:null,code:"",isHost:false,peers:[],offset:null,game:null,startedKey:"",used:[],clockTimer:0,settings:{grid:"mixed",rounds:5,hint:false,src:"builtin",scr:0,scrEach:false,teams:0},myTeam:store.get("team",null),scores:{},err:""};
+(async()=>{try{if(window.claude&&window.claude.use){ROOM=await window.claude.use("room");if(S.screen==="home")render()}}catch{}})();
+(async()=>{try{if(window.claude&&window.claude.use){[ASSETS,SAMPLE]=await Promise.all([window.claude.use("assets").catch(()=>null),window.claude.use("sample").catch(()=>null)]);
+  if(S.screen==="pack"||S.screen==="groupSetup")render()}}catch{}})();
+const codeChars="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const newCode=()=>Array.from({length:6},()=>codeChars[Math.floor(Math.random()*codeChars.length)]).join("");
+function groupStatus(R,s){if(R.mode!=="group"||!G.room)return;G.room.presence({st:{g:R.gameId,r:R.roundNo,s}}).catch(()=>{})}
+function setTeam(i){G.myTeam=i;store.set("team",i);G.room&&G.room.presence({team:i}).catch(()=>{});render()}
+async function groupEnter(code,asHost){
+  G.err="";const nick=($("#nick")?.value||"").trim().slice(0,20);if(!nick){G.err="Enter your name first.";return render()}
+  S.nick=nick;store.set("nick",nick);code=code.toUpperCase().replace(/[^A-Z0-9]/g,"");if(code.length!==6){G.err="Room codes are 6 letters or numbers.";return render()}
+  try{G.room=await ROOM.join("gr-"+code.toLowerCase())}catch(e){G.err="Could not open that room ("+(e&&e.code||"error")+"). Try again.";return render()}
+  G.code=code;G.isHost=asHost;G.scores={};G.offset=null;G.startedKey="";G.game=null;G.used=[];
+  G.room.onPeers(ch=>{G.peers=ch.peers;groupSync()},e=>{G.err="Room connection ended ("+e.code+").";render()});
+  if(asHost){G.game={id:Date.now().toString(36),...G.settings,state:"lobby",roundNo:0};hostPublish()}
+  else await G.room.presence({nick,role:"player",sc:null,team:G.myTeam});
+  S.screen="groupLobby";render()}
+function hostPublish(){if(!G.isHost||!G.room)return;G.room.presence({nick:S.nick,role:"host",clock:Date.now(),game:G.game,team:G.myTeam});
+  clearInterval(G.clockTimer);G.clockTimer=setInterval(()=>G.room&&G.isHost&&G.room.presence({clock:Date.now()}),2000)}
+function hostPeer(){return G.peers.find(p=>p.presence&&p.presence.role==="host"&&p.presence.game)}
+function groupSync(){const h=hostPeer();
+  if(h){if(!h.isMe&&typeof h.presence.clock==="number"){const off=h.updatedAt-h.presence.clock;G.offset=G.offset===null?off:Math.min(G.offset,off)}
+    G.game=h.presence.game;if(h.isMe)G.offset=0}
+  const g=G.game;
+  if(g&&g.state==="play"&&g.roundNo>0){const key=g.id+":"+g.roundNo;
+    if(key!==G.startedKey&&G.offset!==null){G.startedKey=key;startGroupRound(g)}}
+  if(g&&g.state==="over"&&S.screen!=="play"&&!(S.screen==="results"&&S.R&&!S.R.advanced)){S.screen="groupFinal"}
+  if(g&&g.state==="lobby"&&S.screen==="groupFinal"){S.screen="groupLobby"}
+  if(["groupLobby","results","groupFinal"].includes(S.screen))render();else if(S.screen==="play")renderLive()}
+function startGroupRound(g){const photo=g.cp?{id:"c"+g.cp.i,src:String(g.cp.u),accepted:g.cp.a||[],partial:g.cp.p||[],blocked:g.cp.b||[],strict:!!g.cp.x,category:g.cp.h||"Custom photo",custom:true}:PHOTOS[g.photoId%PHOTOS.length];
+  // host time → local perf: local wall = host wall + offset
+  const revealWall=g.startAt+GAME.JOIN_MS+G.offset,revealStart=now()+(revealWall-Date.now());
+  const R=newRound("group",{N:g.N,photo,seed:g.seed,revealStart,hint:g.hint,roundNo:g.roundNo,scr:g.scr||0,scrSeed:g.scrEach?(g.seed^S.salt)>>>0:g.seed});R.gameId=g.id;run(R)}
+function hostStartRound(n){const g=G.game;const N=g.grid==="mixed"?GAME.WORLD_LIVE_GRIDS[Math.floor(Math.random()*4)]:+g.grid;
+  let photoId=0,cp=null;
+  if(g.src==="pack"){const pp=nextPackPhoto(G.used);G.used.push(pp.id);cp={i:pp.id,u:pp.src,a:pp.accepted,p:pp.partial||[],b:pp.blocked||[],x:!!pp.strict,h:pp.hint||""}}
+  else{const photo=randomPhoto(G.used);G.used.push(photo.id);photoId=photo.id}
+  G.game={...g,state:"play",roundNo:n,N,photoId,cp,seed:(Math.random()*2**32)>>>0,startAt:Date.now()};hostPublish()}
+function groupReport(R){if(R.gameId!==(G.game&&G.game.id))return;if(G.scoresGame!==R.gameId){G.scores={};G.scoresGame=R.gameId}G.scores[R.roundNo]=R.done.score;
+  G.room&&G.room.presence({sc:{g:R.gameId,r:G.scores}})}
+function groupResultsOver(){if(!G.isHost){if(G.game&&G.game.state==="over")S.screen="groupFinal";return render()}const g=G.game;if(g.roundNo<g.rounds)hostStartRound(g.roundNo+1);
+  else{G.game={...g,state:"over"};hostPublish();S.screen="groupFinal";render()}}
+function groupTable(roundNo){const g=G.game;if(!g)return[];
+  return G.peers.filter(p=>p.presence&&p.presence.nick).map(p=>{const sc=p.presence.sc&&p.presence.sc.g===g.id?p.presence.sc.r||{}:{};
+    const round=roundNo?sc[roundNo]:undefined,total=Object.values(sc).reduce((a,b)=>a+(+b||0),0);
+    const team=g.teams&&Number.isInteger(p.presence.team)&&p.presence.team>=0&&p.presence.team<g.teams?p.presence.team:null;
+    const st=p.presence.st&&p.presence.st.g===g.id&&p.presence.st.r===g.roundNo?p.presence.st.s:null;
+    return{name:String(p.presence.nick).slice(0,20),me:p.sameTab,host:p.presence.role==="host",round,total,team,st,sc}})}
+/* Team score per round = average of its current members' round scores (no answer = 0), rounded half-up. Total = sum of round scores. */
+function teamTable(uptoRound){const g=G.game;if(!g||!g.teams)return[];const rows=groupTable(0);
+  return TEAMS.slice(0,g.teams).map((tm,i)=>{const mem=rows.filter(r=>r.team===i);let total=0,last=0;
+    for(let r=1;r<=uptoRound;r++){const sum=mem.reduce((a,m)=>a+(+m.sc[r]||0),0);last=mem.length?divHalfUp(sum,mem.length):0;total+=last}
+    return{i,...tm,members:mem,round:last,total}}).sort((a,b)=>b.total-a.total)}
+function teamTableHTML(rows,showRound){if(!rows.length)return"";
+  return`<div class="card" style="overflow-x:auto"><div class="title display" style="margin-bottom:6px">Teams</div><table><thead><tr><th>#</th><th>Team</th><th class="n">Players</th>${showRound?`<th class="n">This round</th>`:""}<th class="n">Total</th></tr></thead><tbody>
+  ${rows.map((r,k)=>`<tr><td>${k+1}</td><td><span class="dot" style="background:${r.c}"></span>${r.n}</td><td class="n">${r.members.length}</td>${showRound?`<td class="n">${fmt(r.round)}</td>`:""}<td class="n">${fmt(r.total)}</td></tr>`).join("")}
+  </tbody></table><div class="note">Team score each round is the average of its players, so small teams aren't at a disadvantage.</div></div>`}
+function renderLive(){const el=$("#live");if(!el||!G.game)return;const g=G.game,rows=groupTable(g.roundNo);
+  const icon={frozen:"❄ answering",done:"✓ locked in",missed:"✗ missed",out:"out"};const locked=rows.filter(r=>r.st==="done").length;
+  const teams=teamTable(g.roundNo),max=Math.max(1,...teams.map(x=>x.total));
+  el.innerHTML=`<div class="stat"><span>Live · round ${g.roundNo}</span><b>${locked}/${rows.length} locked in</b></div>
+   ${teams.map(x=>`<div><div class="row"><span><span class="dot" style="background:${x.c}"></span>${x.n}</span><b>${fmt(x.total)}</b></div><div class="teambar"><i style="width:${x.total/max*100}%;background:${x.c}"></i></div></div>`).join("")}
+   <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""}">${r.team!==null?`<span class="dot" style="background:${TEAMS[r.team].c}"></span>`:""}${esc(r.name)}${r.st?` · ${icon[r.st]||""}`:""}${r.st==="done"&&r.round!==undefined?` ${fmt(r.round)}`:""}</span>`).join("")}</div>`}
+async function groupLeave(){clearInterval(G.clockTimer);try{G.room&&await G.room.leave()}catch{}G.room=null;G.game=null;G.peers=[];S.screen="home";render()}
+function takeOverHost(){G.isHost=true;G.game={...(G.game||{id:Date.now().toString(36),...G.settings,roundNo:0}),state:G.game&&G.game.state==="play"?"play":"lobby"};hostPublish();if(S.screen==="results"&&S.R&&S.R.advanced)return groupResultsOver();render()}
+
+/* ============ Rendering ============ */
+function render(){({home:renderHome,play:renderPlay,results:renderResults,blitzResults:renderBlitzResults,groupSetup:renderGroupSetup,pack:renderPack,groupLobby:renderGroupLobby,groupFinal:renderGroupFinal})[S.screen]()}
+const setPressed=(sel,attr,val)=>document.querySelectorAll(sel+" button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset[attr]===String(val))));
+
+function renderHome(){cancelAnimationFrame(S.raf);S.R=null;
+  const grids=[4,9,16,25,36,64,100].map(n=>`<button type="button" data-n="${n}" aria-pressed="${n===S.practiceN}">${n}</button>`).join("");
+  const best=store.get("blitzBest",0);
+  app.innerHTML=`
+  <div class="brand"><h1>GLIMPSE RUSH</h1><div class="tag">Same photo. Same clock. See it first.</div></div>
+  <div class="card row" style="justify-content:space-between"><label class="field" style="flex:1;min-width:0">Your player name<input id="profName" maxlength="20" value="${esc(S.nick)}" placeholder="Pick a name"></label>
+    <div class="note" style="flex-basis:100%">Saved on this device. Best Blitz: ${fmt(store.get("blitzBest",0))}${G.myTeam!==null&&G.myTeam!==undefined?` · last team: ${TEAMS[G.myTeam]?TEAMS[G.myTeam].n:"none"}`:""}. Accounts that sync across devices come with the real backend.</div></div>
+  <button class="mode primary" id="goWorld"><span class="icon">60s</span><span><b>World Live</b><small>Play everyone. Simulated here with 12 bot rivals.</small></span></button>
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div class="tag" style="color:var(--dim)">Play alone</div>
+    <button class="mode" id="goBlitz"><span class="icon">2:00</span><span><b>Solo Blitz</b><small>As many 25-tile photos as you can in 2 minutes. Your best: ${fmt(best)}</small></span></button>
+    <div class="mode" style="cursor:default"><span class="icon">1P</span><span style="flex:1"><b>Solo Practice</b><small>Any grid, no clock pressure, unranked</small>
+      <div class="seg" id="grids" aria-label="Grid size" style="margin-top:8px">${grids}</div>
+      <div class="seg" id="pSrc" aria-label="Photos" style="margin-top:8px"><button type="button" data-s="builtin" aria-pressed="${S.practiceSrc==="builtin"}">Built-in photos</button><button type="button" data-s="pack" aria-pressed="${S.practiceSrc==="pack"}" ${readyPhotos().length?"":"disabled"}>My photos (${readyPhotos().length})</button></div>
+      <div class="note" style="margin-top:8px">Scramble: pieces are shuffled${"" } so the photo must be put together in your head.</div><div class="seg" id="pScr" aria-label="Scramble">${[0,1,2].map(n=>`<button type="button" data-c="${n}" aria-pressed="${S.practiceScr===n}">${SCR_NAME[n]}${n?" "+SCR_X[n]:""}</button>`).join("")}</div>
+      <label class="chk" style="margin-top:8px"><input type="checkbox" id="hint" ${S.hint?"checked":""}> Show category hint (×0.5)</label>
+      <button class="btn go" id="goPractice" style="margin-top:8px;width:100%">Play ${S.practiceN}-tile practice</button></span></div>
+  </div>
+  <button class="mode" id="goPack"><span class="icon">+</span><span><b>Your own photos</b><small>Upload photos (family, team, products), type the correct answers, and choose how strict the answers are. ${PACK.photos.length} in your pack.</small></span></button>
+  <button class="mode" id="goGroup"><span class="icon">GR</span><span><b>Group Room</b><small>Your own private game for family, friends, a team or a company. Host picks the rules, everyone joins with a code.</small></span></button>
+  <details class="card"><summary><b>Scoring self-test</b> <span class="note">Spec v1.1 §11 vectors run in this page</span></summary><div class="log" id="vec" style="margin-top:8px;max-height:none"></div></details>
+  <p class="note">Playtest build. Photos are emoji placeholders and World Live rivals are bots. Group Room is live between real people who open this page. Scoring, tile order, freeze rules and answer matching follow Spec v1.1.</p>`;
+  $("#profName").onchange=e=>{S.nick=e.target.value.trim().slice(0,20);store.set("nick",S.nick)};
+  $("#goWorld").onclick=startWorld;$("#goPractice").onclick=startPractice;$("#goBlitz").onclick=startBlitz;
+  $("#goGroup").onclick=()=>{S.screen="groupSetup";render()};$("#goPack").onclick=()=>{S.screen="pack";render()};
+  $("#pSrc").onclick=e=>{const s=e.target.dataset.s;if(s&&!e.target.disabled){S.practiceSrc=s;setPressed("#pSrc","s",s)}};
+  $("#hint").onchange=e=>S.hint=e.target.checked;
+  $("#pScr").onclick=e=>{const c=e.target.dataset.c;if(c!==undefined){S.practiceScr=+c;setPressed("#pScr","c",c)}};
+  $("#grids").onclick=e=>{const n=+e.target.dataset.n;if(n){S.practiceN=n;setPressed("#grids","n",n);$("#goPractice").textContent=`Play ${n}-tile practice`}};
+  runVectors()}
+
+function runVectors(){const V=[["TV01",36,0,1,0,2917],["TV02",36,7000,1,0,1856],["TV03",36,7083,1,0,1852],["TV04",36,7500,1,0,1760],["TV05",36,12400,1,0,1208],
+  ["TV06",25,0,1,0,1920],["TV07",25,10000,1,0,960],["TV08",64,5000,1,0,2898],["TV09",100,2950,1,0,5002],["TV10",100,15000,1,0,1838],["TV11",36,29990,1,0,75],
+  ["TV12",36,12400,2,0,906],["TV13",36,112,1,0,2909],["TV14",25,21,1,1,959],["TV15",36,28000,1,0,75],["TV16",36,28000,2,0,56],["FW36",36,30000,1,0,75],["FW100",100,35000,1,0,150],["TV17",36,7000,1,0,2320,1],["TV18",36,7000,1,0,2784,2],["TV19",36,30000,1,0,113,2],["TV20",100,0,1,0,8910,2]];
+  let pass=0;const lines=V.map(([id,N,el,fz,p,exp,scr=0])=>{const got=scoreFreeze(N,el,{freezeNo:fz,partial:!!p,scr}),ok=got===exp;pass+=ok;
+    return`<span class="${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</span> ${id} N=${N} t=${el} → ${got} (exp ${exp})`});
+  const gr={accepted:["golden retriever"],partial:["dog"]};
+  const PORSCHE={accepted:["porsche 911 gt3","911 gt3"],partial:["porsche","911"],blocked:["car","sports car"]},JIMBOB={accepted:["uncle jim bob","jim bob"],partial:[],blocked:[],strict:true};
+  [["golden retriver",gr,"correct"],["dog",gr,"partial"],["labrador",gr,"wrong"],["hose",{accepted:["horse"],partial:[]},"wrong"],["horce",{accepted:["horse"],partial:[]},"correct"],
+   ["car",{accepted:["cat"],partial:[]},"wrong"],["The Octopuses",{accepted:["octopus"],partial:[]},"correct"],
+   ["911 GT3",PORSCHE,"correct"],["porsche 911 gt-3",PORSCHE,"correct"],["Porsche",PORSCHE,"partial"],["car",PORSCHE,"wrong"],["cars",PORSCHE,"wrong"],
+   ["Uncle Jim-Bob",JIMBOB,"correct"],["jim bob",JIMBOB,"correct"],["uncle jim bobb",JIMBOB,"wrong"],["engine",{accepted:["v8 engine"],partial:["engine"],blocked:[]},"partial"]].forEach(([t,ph,exp])=>{const got=matchAnswer(t,ph).kind,ok=got===exp;pass+=ok;
+    lines.push(`<span class="${ok?"pass":"fail"}">${ok?"PASS":"FAIL"}</span> match "${t}" → ${got} (exp ${exp})`)});
+  $("#vec").innerHTML=`<b>${pass}/${lines.length} pass</b>\n`+lines.join("\n")}
+
+function hudTitle(R){const extra=R.mode==="group"?` <span class="badge">${esc(G.code)} · round ${R.roundNo}/${G.game?G.game.rounds:"?"}</span>`:"";
+  return`${MODE_NAME[R.mode]} <span class="badge">${R.N} tiles</span>${R.hint?` <span class="badge">hint: ${esc(R.photo.category)}</span>`:""}${R.scr?` <span class="badge">${SCR_NAME[R.scr].toLowerCase()}</span>`:""}${extra}`}
+
+function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN");
+  if(ph==="JOIN"){const hidden=R.mode==="world"||(R.mode==="group"&&G.game&&G.game.grid==="mixed");
+    app.innerHTML=`<div class="hud"><div><div class="title">${MODE_NAME[R.mode]}</div><div class="sub">${R.mode==="group"?`Room ${esc(G.code)} · round ${R.roundNo} of ${G.game?G.game.rounds:"?"}`:"Round #"+R.roundNo}</div></div><button class="btn ghost" id="quit">${R.mode==="group"?"Leave":"Quit"}</button></div>
+    <div class="lobby"><div class="note">Next round starting soon</div><div class="ring" id="cd">0:05</div>
+      <div class="qq"><div><b>??</b>Photo</div><div><b>${hidden?"??":R.N}</b>Grid size</div><div><b>${R.hint?esc(R.photo.category):"??"}</b>Category</div></div>
+      ${R.mode==="world"?`<div class="card" style="width:100%;text-align:center"><b>${fmt(R.players)}</b> players waiting <span class="badge">simulated</span></div>`:""}
+      ${R.mode==="group"?`<div class="players">${groupTable(0).map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")}</div>`:""}
+      <div class="note">Same photo for everyone. Same reveal order. Same clock.</div></div>`;
+    $("#quit").onclick=()=>R.mode==="group"?groupLeave():(S.screen="home",render());return}
+  const f=R.frozen,keep=$("#ans")?$("#ans").value:"",B=S.blitz;
+  app.innerHTML=`
+    <div class="hud"><div><div class="title">${hudTitle(R)}</div><div class="sub" id="phaseLbl"></div></div>
+      <div><div class="sub" style="text-align:right">${R.mode==="blitz"?"Run clock":"Time left"}</div><div class="clock" id="clock">0:30</div></div></div>
+    ${R.mode==="blitz"?`<div class="stat"><span>Photo <b>${B.photos.length+1}</b> · Run score <b>${fmt(B.total)}</b></span><span>Photo time <b id="photoClock"></b></span></div>`:""}
+    <div class="bar ${ph==="FINAL"?"red":""}"><i id="prog"></i></div>
+    ${f?`<div class="frozen-h">You're Frozen!</div><div class="stat"><span>Frozen at <b>${f.s} / ${R.N}</b>${f.inFinal?" (final window)":""}</span>
+      ${R.mode==="blitz"?`<span>Clocks paused</span>`:`<span>World is now at <b id="worldAt"></b></span>`}</div>`:""}
+    <div class="board">${R.scramble?"":picHTML(R.photo,"Hidden photo")}<div class="tiles ${R.scramble?"scr":""}" id="tiles" style="grid-template-columns:repeat(${Math.sqrt(R.N)},1fr)" ${R.scramble?`role="img" aria-label="Scrambled hidden photo"`:""}></div>
+      ${R.flash?`<div class="flash ${R.flash.miss?"miss":""}">${esc(R.flash.label)}<div class="note" style="font-size:1rem;color:var(--ink);text-transform:capitalize">${esc(R.photo.accepted[0])}</div></div>`
+       :R.done?`<div class="overlay" style="color:var(--good)">Locked in: ${fmt(R.done.score)} pts. Waiting for results…</div>`:R.out?`<div class="overlay">Out of freezes. Watching the rest of the round.</div>`:""}</div>
+    ${f?`<form class="answer" id="af" autocomplete="off"><div class="stat"><span>You have 7 seconds to answer.</span><b id="ansClock">0:07</b></div>
+        <div class="bar red"><i id="ansBar"></i></div>
+        <input id="ans" list="dict" placeholder="Type your answer…" aria-label="Your answer">
+        <button class="btn big go" type="submit">Submit Answer</button>
+        <button class="btn" type="button" id="unfreeze">Unfreeze — ${f.freezeNo===1?"1 freeze left":"last freeze"}</button></form>
+        <datalist id="dict">${DICT.map(w=>`<option value="${w}">`).join("")}</datalist>`
+     :`<div class="stat"><span>Revealed: <b id="rev"></b></span><span>Freezes left: <b>${GAME.MAX_FREEZES-R.freezesUsed}</b></span></div>
+       <button class="btn big freeze" id="fz" ${R.done||R.out||R.flash?"disabled":""}>❄ FREEZE</button>
+       ${R.mode==="practice"?`<button class="btn ghost" id="giveup">Give up &amp; reveal</button>`:""}
+       ${R.mode==="blitz"?`<div class="grid2"><button class="btn" id="skip" ${R.flash?"disabled":""}>Skip photo (0 pts)</button><button class="btn ghost" id="endRun">End run</button></div>`:""}
+       ${R.lastFail&&!R.done&&!R.flash?`<div class="note" style="color:var(--bad)">${esc(R.lastFail)}</div>`:""}`}
+    ${R.mode==="group"?`<div class="card live" id="live"></div>`:""}`;
+  $("#tiles").innerHTML=tilesHTML(R);R.drawnCount=-1;
+  if(f){$("#af").onsubmit=submit;$("#unfreeze").onclick=()=>failFreeze("Unfrozen");const i=$("#ans");i.value=keep;i.focus()}
+  else{$("#fz").onclick=freeze;const g=$("#giveup");if(g)g.onclick=()=>{R.log.push("gave up");endPractice()};
+    const sk=$("#skip");if(sk)sk.onclick=()=>blitzNext(0,"Skipped");const er=$("#endRun");if(er)er.onclick=blitzEnd}
+  if(R.mode==="group")renderLive();
+  updatePlay(ph,elOf(R,now()),now())}
+
+/* Scrambled board: grid cell i shows source piece scramble.src[i], turned scramble.turn[i]×90° at level 2. Reveal order stays by cell. */
+function tilesHTML(R){if(!R.scramble)return Array.from({length:R.N},()=>"<div></div>").join("");
+  const k=Math.sqrt(R.N),pic=picHTML(R.photo,"");
+  return R.scramble.src.map((sp,i)=>{const r=Math.floor(sp/k),c=sp%k,turn=R.scr===2?R.scramble.turn[i]*90:0;
+    return`<div><div class="rot" style="transform:rotate(${turn}deg)"><div class="piece" style="width:${k*100}%;height:${k*100}%;left:${-c*100}%;top:${-r*100}%">${pic}</div></div><div class="cover"></div></div>`}).join("")}
+function updatePlay(ph,el,t){const R=S.R;
+  if(ph==="JOIN"){const cd=$("#cd");if(cd)cd.textContent=clk(-el);return}
+  const live=R.flash?R.N:ph==="REVEAL"?tilesShown(R.N,Math.floor(el)):R.N,shown=R.frozen?R.frozen.s:live;
+  if(shown!==R.drawnCount){const cells=$("#tiles").children;for(let i=0;i<R.N;i++)cells[i].classList.toggle("off",R.rank[i]<shown);R.drawnCount=shown}
+  const rev=$("#rev");if(rev)rev.textContent=`${live} / ${R.N} (${Math.round(live/R.N*100)}%)`;
+  const wa=$("#worldAt");if(wa)wa.textContent=`${live} / ${R.N}`;
+  const inFinal=ph==="FINAL";
+  if(R.mode==="blitz"){const left=blitzLeft(t);$("#clock").textContent=clk(left);$("#prog").style.width=Math.max(0,left/GAME.BLITZ_RUN_MS*100)+"%";
+    $("#photoClock").textContent=inFinal?"all tiles":clk(GAME.REVEAL_MS-el);$("#phaseLbl").textContent=R.frozen?"Clocks paused while you answer":inFinal?"All tiles showing: flat low score":"Live reveal"}
+  else{const left=inFinal?GAME.REVEAL_MS+GAME.FINAL_WINDOW_MS-el:GAME.REVEAL_MS-el;$("#clock").textContent=clk(left);
+    $("#phaseLbl").textContent=inFinal?"Final answer window: flat low score":"Live reveal";
+    $("#prog").style.width=(inFinal?left/GAME.FINAL_WINDOW_MS:left/GAME.REVEAL_MS)*100+"%"}
+  if(R.frozen){const a=R.frozen.deadline-t;$("#ansClock").textContent=clk(a);$("#ansBar").style.width=Math.max(0,a/GAME.ANSWER_WINDOW_MS*100)+"%"}}
+
+function breakdownHTML(R,d){const f=d.freezeNo,H=(R.N-d.s)/R.N,tl=Math.max(0,30000-d.el),T=.5+1.5*tl/30000,G1=GAME.G100[R.N]/100;
+  const formula=d.inFinal?null:formulaScore(R.N,d.el,{freezeNo:f,partial:d.partial,hint:R.hint,scr:R.scr});
+  return`<div class="card breakdown">
+    ${d.inFinal?`<span>Final-window flat</span><span>50 × ${G1}</span>`:`<span>Base points</span><span>1,000</span><span>Grid multiplier (${R.N} tiles)</span><span>${G1} ×</span>
+    <span>Hidden fraction (${R.N-d.s} / ${R.N})</span><span>${H.toFixed(4)}</span><span>Time multiplier (${(tl/1000).toFixed(3)} s left)</span><span>${T.toFixed(4)} ×</span>`}
+    <span>Freeze</span><span>${f===1?"1st · 1.0":"2nd · 0.75"}</span>${d.partial?`<span>Partial answer</span><span>× 0.5</span>`:""}${R.hint?`<span>Hint</span><span>× 0.5</span>`:""}${R.scr?`<span>${SCR_NAME[R.scr]}</span><span>${SCR_X[R.scr]}</span>`:""}
+    ${formula!==null&&formula<d.score?`<span>Late-reveal floor (§5.4a)</span><span>${formula} → ${d.score}</span>`:""}
+    <span class="tot">TOTAL SCORE</span><span class="tot">★ ${fmt(d.score)}</span></div>
+    <div class="note">You typed “${esc(d.text)}” · ${esc(d.why)} · frozen at ${d.el} ms</div>`}
+
+function renderResults(){const R=S.R,d=R.done,p=R.photo;let head=d?(d.partial?"Close enough":"Correct!"):R.out?"Out of freezes":R.endedEarly?"Revealed":"No answer",cls=d?(d.partial?"part":"good"):"bad",lb="";
+  if(R.mode==="world"){const rows=R.bots.filter(b=>b.score!==null);if(d)rows.push({name:"You",s:d.s,score:d.score,ts:d.el,me:true});rows.sort((a,b)=>b.score-a.score||a.ts-b.ts);
+    const mi=rows.findIndex(r=>r.me);
+    lb=`<div class="card"><div class="hud"><div class="title">World Live Leaderboard</div><span class="sub">#${R.roundNo}</span></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Player</th><th class="n">Frozen at</th><th class="n">Score</th></tr></thead><tbody>
+      ${rows.slice(0,10).map((r,i)=>`<tr class="${r.me?"me":""}"><td>${i+1}</td><td>${esc(r.name)}</td><td class="n">${r.s}/${R.N}</td><td class="n">${fmt(r.score)}</td></tr>`).join("")}
+      ${mi>=10?`<tr class="me"><td>${mi+1}</td><td>You</td><td class="n">${d.s}/${R.N}</td><td class="n">${fmt(d.score)}</td></tr>`:""}
+      </tbody></table></div><div class="note">Ranked by score, then exact freeze time. Rivals are bots in this preview.</div></div>`}
+  if(R.mode==="group"){const rows=groupTable(R.roundNo).sort((a,b)=>b.total-a.total);
+    lb=teamTableHTML(teamTable(R.roundNo),true)+`<div class="card"><div class="hud"><div class="title">Room ${esc(G.code)}</div><span class="sub">after round ${R.roundNo} of ${G.game?G.game.rounds:"?"}</span></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>#</th><th>Player</th><th class="n">This round</th><th class="n">Total</th></tr></thead><tbody>
+      ${rows.map((r,i)=>`<tr class="${r.me?"me":""}"><td>${i+1}</td><td>${r.team!==null?`<span class="dot" style="background:${TEAMS[r.team].c}"></span>`:""}${esc(r.name)}${r.host?" ★":""}</td><td class="n">${r.round===undefined?"—":fmt(r.round)}</td><td class="n">${fmt(r.total)}</td></tr>`).join("")}
+      </tbody></table></div></div>`}
+  const isLastGroup=R.mode==="group"&&G.game&&R.roundNo>=G.game.rounds;
+  const nextBtn=R.mode==="world"?`<button class="btn big go" id="next">Next Round (<span id="nextIn">0:15</span>)</button>`
+    :R.mode==="group"?`<div class="card" style="width:100%;text-align:center">${isLastGroup?"Final standings in":"Next round in"} <b id="nextIn">0:15</b>${!hostPeer()?`<div class="note">The host left. <button class="btn" id="takeover">Take over as host</button></div>`:""}</div>`
+    :`<button class="btn big go" id="next">Play again</button>`;
+  app.innerHTML=`<div class="result-h ${cls}">${head}</div>
+    <div class="board">${picHTML(p,esc(p.accepted[0]))}</div>
+    <h2 style="text-align:center;text-transform:capitalize">${esc(p.accepted[0])}</h2>
+    <div class="note" style="text-align:center">Also accepted: ${esc(p.accepted.slice(1).join(", ")||"none")} · Half credit: ${esc(p.partial.join(", ")||"none")}</div>
+    ${d?breakdownHTML(R,d):""}${lb}<div class="row">${nextBtn}</div>
+    <button class="btn ghost" id="home">${R.mode==="group"?"Leave room":"Back to menu"}</button>
+    <details class="card"><summary>Round log</summary><div class="log">seed ${R.seed} · ${R.N} tiles\n${esc(R.log.join("\n")||"no actions")}</div></details>`;
+  const nx=$("#next");if(nx)nx.onclick=()=>R.mode==="world"?startWorld():startPractice();
+  const to=$("#takeover");if(to)to.onclick=takeOverHost;
+  $("#home").onclick=()=>R.mode==="group"?groupLeave():(S.screen="home",render())}
+
+function renderBlitzResults(){const B=S.blitz,best=Math.max(B.prevBest,B.total),isBest=B.total>B.prevBest&&B.total>0;
+  app.innerHTML=`<div class="result-h ${isBest?"good":""}">${isBest?"New best run!":"Run over"}</div>
+    <div class="card breakdown"><span>Photos played</span><span>${B.photos.length}</span><span>Solved</span><span>${B.photos.filter(p=>p.score).length}</span>
+      <span>Your best on this device</span><span>${fmt(best)}</span><span class="tot">RUN SCORE</span><span class="tot">★ ${fmt(B.total)}</span></div>
+    <div class="card" style="overflow-x:auto"><table><thead><tr><th>#</th><th>Photo</th><th>Result</th><th class="n">Points</th></tr></thead><tbody>
+      ${B.photos.map((p,i)=>`<tr><td>${i+1}</td><td style="text-transform:capitalize">${p.emoji} ${esc(p.answer)}</td><td>${esc(p.label)}${p.s?` · ${p.s}/25`:""}</td><td class="n">${fmt(p.score)}</td></tr>`).join("")||`<tr><td colspan="4">No photos finished.</td></tr>`}
+    </tbody></table></div>
+    <button class="btn big go" id="again">Run again</button><button class="btn ghost" id="home">Back to menu</button>
+    <p class="note">The friends Blitz board needs accounts (M4). This preview keeps your best score on this device only.</p>`;
+  $("#again").onclick=startBlitz;$("#home").onclick=()=>{S.screen="home";render()}}
+
+function renderGroupSetup(){const s=G.settings,code=location.hash.replace("#","").toUpperCase();
+  if(!ROOM){app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="back">Back</button></div>
+    <div class="card"><p>Group Room connects real people who have this page open at the same time.</p>
+    <p class="note">This view can't join a live room. It needs the page opened in claude.ai by a signed-in person it has been shared with. If you just opened it, wait a few seconds and try again.</p>
+    <button class="btn" id="retry">Try again</button></div>`;$("#back").onclick=()=>{S.screen="home";render()};$("#retry").onclick=render;return}
+  const gridBtns=["mixed",4,9,16,25,36,64,100].map(n=>`<button type="button" data-g="${n}" aria-pressed="${String(s.grid)===String(n)}">${n==="mixed"?"Mixed":n}</button>`).join("");
+  app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="back">Back</button></div>
+    <label class="field">Your name<input id="nick" maxlength="20" value="${esc(S.nick)}" placeholder="e.g. Ron"></label>
+    ${G.err?`<div class="note" style="color:var(--bad)">${esc(G.err)}</div>`:""}
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><b class="display" style="font-size:1.2rem">Join a game</b>
+      <label class="field">Room code<input id="joinCode" maxlength="6" value="${esc(/^[A-Z0-9]{6}$/.test(code)?code:"")}" placeholder="6 letters" style="text-transform:uppercase;letter-spacing:.2em"></label>
+      <button class="btn go" id="join">Join room</button></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:10px"><b class="display" style="font-size:1.2rem">Host a game</b>
+      <div class="field">Grid<div class="seg" id="gGrid">${gridBtns}</div></div>
+      <div class="field">Rounds<div class="seg" id="gRounds">${[5,10].map(n=>`<button type="button" data-r="${n}" aria-pressed="${s.rounds===n}">${n}</button>`).join("")}</div></div>
+      <div class="field">Photos<div class="seg" id="gSrc"><button type="button" data-s="builtin" aria-pressed="${s.src==="builtin"}">Built-in</button><button type="button" data-s="pack" aria-pressed="${s.src==="pack"}">My photos (${readyPhotos().length})</button></div></div>
+      <div class="note" id="srcNote">${packNote()}</div>
+      <div class="field">Scramble<div class="seg" id="gScr" aria-label="Scramble">${[0,1,2].map(n=>`<button type="button" data-c="${n}" aria-pressed="${s.scr===n}">${SCR_NAME[n]}${n?" "+SCR_X[n]:""}</button>`).join("")}</div></div>
+      <label class="chk"><input type="checkbox" id="gScrEach" ${s.scrEach?"checked":""}> Different scramble for each player</label>
+      <div class="field">Teams<div class="seg" id="gTeams">${[0,2,3,4].map(n=>`<button type="button" data-t="${n}" aria-pressed="${s.teams===n}">${n?n+" teams":"Everyone for themselves"}</button>`).join("")}</div></div>
+      <label class="chk"><input type="checkbox" id="gHint" ${s.hint?"checked":""}> Show category hint (×0.5)</label>
+      <button class="btn go" id="host">Create room</button>
+      <div class="note">Mixed lets the game pick 25, 36, 64 or 100 each round. Up to 50 players.</div></div>`;
+  $("#back").onclick=()=>{S.screen="home";render()};
+  $("#gGrid").onclick=e=>{const g=e.target.dataset.g;if(g){s.grid=g==="mixed"?"mixed":+g;setPressed("#gGrid","g",g)}};
+  $("#gRounds").onclick=e=>{const r=+e.target.dataset.r;if(r){s.rounds=r;setPressed("#gRounds","r",r)}};
+  $("#gHint").onchange=e=>s.hint=e.target.checked;
+  $("#gScr").onclick=e=>{const c=e.target.dataset.c;if(c!==undefined){s.scr=+c;setPressed("#gScr","c",c)}};
+  $("#gScrEach").onchange=e=>s.scrEach=e.target.checked;
+  $("#gTeams").onclick=e=>{const v=e.target.dataset.t;if(v!==undefined){s.teams=+v;setPressed("#gTeams","t",v)}};
+  $("#gSrc").onclick=e=>{const v=e.target.dataset.s;if(v){s.src=v;setPressed("#gSrc","s",v);$("#srcNote").innerHTML=packNote()}};
+  $("#join").onclick=()=>groupEnter($("#joinCode").value,false);
+  $("#host").onclick=()=>{const bad=packProblem();if(bad){G.err=bad;return render()}groupEnter(newCode(),true)}}
+function packProblem(){if(G.settings.src!=="pack")return"";const ps=readyPhotos();if(!ps.length)return"Add photos with correct answers first (Your own photos).";
+  if(ps.some(p=>!p.assetId))return"Some of your photos are only on this device, so other players can't see them. Upload works for the page owner; remove those photos or use Built-in.";
+  return""}
+function packNote(){const s=G.settings;if(s.src!=="pack")return"Built-in photos.";const ps=readyPhotos();
+  return ps.length?`${ps.length} of your photos are ready.${ps.length<s.rounds?` Fewer than ${s.rounds} rounds, so some will repeat.`:""} Correct answers stay with you as host until each round starts.`:`No ready photos yet. Open “Your own photos” from the menu.`}
+
+function renderPack(){const ps=PACK.photos;
+  app.innerHTML=`<div class="hud"><div class="title">Your own photos</div><button class="btn ghost" id="back">Done</button></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px">
+      <label class="field">Pack name<input id="packName" maxlength="40" value="${esc(PACK.name)}"></label>
+      <label class="btn go" style="text-align:center">Add photos<input type="file" id="files" accept="image/*" multiple hidden></label>
+      <div class="note" id="packMsg">${ASSETS?"Photos upload to this game page so players in your Group Room can see them.":"Photos stay on this device for this visit (Solo Practice). Only the page owner can upload photos for Group Rooms."}</div></div>
+    <div class="card note">For each photo, type what players must answer. Use commas for more than one.
+      <b>Correct</b> earns full points, <b>Half credit</b> earns 50%, and <b>Not accepted</b> earns nothing even if close (for example “car” at a car dealership).
+      Turn on <b>Exact spelling</b> when a name must be typed exactly, like “Uncle Jim Bob”.</div>
+    ${ps.map((p,i)=>`<div class="card pack-item"><div class="thumb"><img src="${esc(p.src)}" alt="Photo ${i+1}"></div><div class="pack-fields">
+      <div class="stat"><b>Photo ${i+1}</b><span>${p.accepted.length?`<span class="pass">Ready</span>`:`<span class="warn">Needs an answer</span>`}${p.uploadErr?` · <span class="fail">upload failed (${esc(p.uploadErr)})</span>`:p.assetId?"":" · this device only"}</span></div>
+      <label class="field">Correct answers<input id="f-accepted-${p.id}" data-id="${p.id}" data-k="accepted" value="${esc(p.accepted.join(", "))}" placeholder="e.g. Porsche 911 GT3, 911 GT3"></label>
+      <label class="field">Half credit (optional)<input id="f-partial-${p.id}" data-id="${p.id}" data-k="partial" value="${esc((p.partial||[]).join(", "))}" placeholder="e.g. Porsche"></label>
+      <label class="field">Not accepted (optional)<input id="f-blocked-${p.id}" data-id="${p.id}" data-k="blocked" value="${esc((p.blocked||[]).join(", "))}" placeholder="e.g. car, sports car"></label>
+      <label class="field">Hint shown when hints are on (optional)<input id="f-hint-${p.id}" data-id="${p.id}" data-k="hint" value="${esc(p.hint||"")}" placeholder="e.g. On our lot"></label>
+      <label class="chk"><input type="checkbox" data-id="${p.id}" data-k="strict" ${p.strict?"checked":""}> Exact spelling only (no typos allowed)</label>
+      <div class="row">${SAMPLE?`<button class="btn" data-sg="${p.id}">Suggest answers</button>`:""}<button class="btn ghost" data-rm="${p.id}">Remove</button></div>
+      <div class="sugg" id="sg-${p.id}"></div></div></div>`).join("")||`<div class="card note">No photos yet. Tap <b>Add photos</b>. Square photos work best; others are cropped to the center.</div>`}
+    ${ps.length?`<button class="btn big go" id="tryIt" ${readyPhotos().length?"":"disabled"}>Practice with these photos</button>`:""}
+    <p class="note">Only add photos you have the right to use. In this preview, people in your Group Room can see any photo you upload here.</p>`;
+  $("#back").onclick=()=>{S.screen="home";render()};
+  $("#packName").onchange=e=>{PACK.name=e.target.value.trim()||"My photo pack";savePack()};
+  $("#files").onchange=e=>{if(e.target.files.length)addFiles(e.target.files)};
+  app.querySelectorAll("[data-k]").forEach(el=>el.onchange=()=>{const ph=PACK.photos.find(x=>x.id===el.dataset.id);if(!ph)return;const k=el.dataset.k;
+    ph[k]=k==="strict"?el.checked:k==="hint"?el.value.trim().slice(0,60):list(el.value);savePack();if(k==="accepted")renderKeepScroll()});
+  app.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{const i=PACK.photos.findIndex(x=>x.id===b.dataset.rm);if(i<0)return;const[ph]=PACK.photos.splice(i,1);
+    if(ph.assetId&&ASSETS)ASSETS.delete(ph.assetId).catch(()=>{});savePack();renderKeepScroll()});
+  app.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{const ph=PACK.photos.find(x=>x.id===b.dataset.sg);if(ph)suggestAnswers(ph)});
+  const tr=$("#tryIt");if(tr)tr.onclick=()=>{S.practiceSrc="pack";startPractice()}}
+function renderKeepScroll(){const y=window.scrollY;render();window.scrollTo(0,y)}
+
+function renderGroupLobby(){const g=G.game,rows=groupTable(0),h=hostPeer();
+  app.innerHTML=`<div class="hud"><div class="title">Group Room</div><button class="btn ghost" id="leave">Leave</button></div>
+    <div class="card" style="text-align:center"><div class="note">Room code</div><div class="code">${esc(G.code)}</div>
+      <div class="note">Share this page and the code. Everyone taps Group Room → Join.</div><button class="btn" id="copy" style="margin-top:8px">Copy code</button></div>
+    <div class="card"><div class="stat" style="margin-bottom:8px"><span>Players here</span><b>${rows.length}</b></div>
+      <div class="players">${rows.map(r=>`<span class="chip ${r.me?"me":""} ${r.host?"host":""}">${esc(r.name)}</span>`).join("")||`<span class="note">Connecting…</span>`}</div></div>
+    ${g&&g.teams?`<div class="card"><div class="stat" style="margin-bottom:8px"><span>Pick your team</span>${G.myTeam===null||G.myTeam>=g.teams?`<b class="warn">Not on a team yet</b>`:""}</div>
+      <div class="teampick" id="tpick">${TEAMS.slice(0,g.teams).map((tm,i)=>{const mem=rows.filter(r=>r.team===i);
+        return`<button type="button" data-team="${i}" aria-pressed="${G.myTeam===i}"><span class="dot" style="background:${tm.c}"></span>${tm.n} <span class="note">(${mem.length})</span><div class="note">${mem.map(m=>esc(m.name)).join(", ")||"empty"}</div></button>`}).join("")}</div></div>`:""}
+    ${g?`<div class="card breakdown"><span>Teams</span><span>${g.teams?g.teams+" teams · average score":"Off"}</span><span>Grid</span><span>${g.grid==="mixed"?"Mixed":g.grid}</span><span>Rounds</span><span>${g.rounds}</span><span>Hint</span><span>${g.hint?"On (×0.5)":"Off"}</span><span>Scramble</span><span>${SCR_NAME[g.scr||0]}${g.scr?" "+SCR_X[g.scr]+(g.scrEach?" · each player differs":" · same for all"):""}</span></div>`:""}
+    ${G.isHost?`<button class="btn big go" id="start">Start game</button>`:h?`<div class="note" style="text-align:center">Waiting for ${esc(String(h.presence.nick||"the host"))} to start…</div>`
+      :`<div class="note" style="text-align:center">No host in this room yet. <button class="btn" id="takeover">Host this room</button></div>`}
+    ${G.err?`<div class="note" style="color:var(--bad)">${esc(G.err)}</div>`:""}`;
+  $("#leave").onclick=groupLeave;
+  $("#copy").onclick=e=>{navigator.clipboard?.writeText(G.code).then(()=>e.target.textContent="Copied",()=>e.target.textContent=G.code)};
+  const st=$("#start");if(st)st.onclick=()=>{G.used=[];G.game={...G.game,id:Date.now().toString(36)};G.scores={};hostStartRound(1)};
+  const to=$("#takeover");if(to)to.onclick=takeOverHost;
+  const tp=$("#tpick");if(tp)tp.onclick=e=>{const b=e.target.closest("[data-team]");if(b)setTeam(+b.dataset.team)}}
+
+function renderGroupFinal(){const rows=groupTable(0).sort((a,b)=>b.total-a.total);
+  const tt=teamTable(G.game?G.game.roundNo:0);
+  app.innerHTML=`<div class="result-h good">${tt.length?`${esc(tt[0].n)} team wins!`:"Final standings"}</div>${teamTableHTML(tt,false)}
+    <div class="card" style="overflow-x:auto"><table><thead><tr><th>#</th><th>Player</th><th class="n">Total</th></tr></thead><tbody>
+      ${rows.map((r,i)=>`<tr class="${r.me?"me":""}"><td>${i+1}</td><td>${esc(r.name)}${r.host?" ★":""}</td><td class="n">${fmt(r.total)}</td></tr>`).join("")}</tbody></table></div>
+    ${G.isHost?`<button class="btn big go" id="again">New game, same room</button>`:`<div class="note" style="text-align:center">The host can start a new game in this room.</div>`}
+    <button class="btn ghost" id="leave">Leave room</button>`;
+  const a=$("#again");if(a)a.onclick=()=>{G.game={...G.game,state:"lobby",roundNo:0};hostPublish();S.screen="groupLobby";render()};
+  $("#leave").onclick=groupLeave}
+
+render();
+</script>
+
+</body></html>
