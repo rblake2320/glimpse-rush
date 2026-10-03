@@ -137,7 +137,8 @@
     return orig(score, label);
   });
   wrap("blitzEnd", (orig, a) => {
-    const B = S.blitz;
+    const B = S.blitz, R = S.R;
+    safe(() => { if (R && R.done && R.partialOpen && !R.flash) reportEnd(R, "partial"); }); // run ended on a banked half answer
     const out = orig(...a);
     safe(() => track("blitz_end", { mode: "blitz", data: { total: B.total, photos: B.used.length } }));
     safe(addRunFeedback);

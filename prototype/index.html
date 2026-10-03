@@ -271,7 +271,7 @@ function tick(){S.raf=requestAnimationFrame(tick);const R=S.R;if(!R)return;const
 
 /* ============ Freeze flow (Spec §6) ============ */
 function freeze(){const R=S.R,t=now();const[ph,el]=phaseOf(R,t);
-  if(R.frozen||R.done||R.out||R.flash)return;if(!(ph==="REVEAL"||ph==="FINAL"))return;
+  if(R.frozen||(R.done&&!R.partialOpen)||R.out||R.flash)return;if(!(ph==="REVEAL"||ph==="FINAL"))return;
   if(t-R.lastFreezeAt<300){R.log.push("rate-limited");return}
   if(R.freezesUsed>=GAME.MAX_FREEZES){R.log.push("3rd freeze rejected");return}
   R.lastFreezeAt=t;R.freezesUsed++;const e=Math.floor(el);groupStatus(R,"frozen");
@@ -281,9 +281,9 @@ function freeze(){const R=S.R,t=now();const[ph,el]=phaseOf(R,t);
 function unpause(R){if(R.mode!=="blitz"||R.pauseAt===null)return;const t=now(),d=t-R.pauseAt;R.paused+=d;R.pauseAt=null;
   S.blitz.paused+=t-S.blitz.pauseAt;S.blitz.pauseAt=null}
 function failFreeze(why){const R=S.R;if(!R||!R.frozen)return;R.log.push(`freeze #${R.frozen.freezeNo} failed: ${why}`);
-  R.lastFail=why;R.frozen=null;unpause(R);if(R.freezesUsed>=GAME.MAX_FREEZES)R.out=true;groupStatus(R,R.out?"out":"missed");
+  R.lastFail=why;R.frozen=null;unpause(R);if(R.freezesUsed>=GAME.MAX_FREEZES){R.out=true;R.partialOpen=false}groupStatus(R,R.out?"out":"missed");
   if(R.out&&R.mode==="practice"&&S.screen==="play")return endPractice();
-  if(R.out&&R.mode==="blitz")return blitzNext(0,"Out of freezes");
+  if(R.out&&R.mode==="blitz")return blitzNext(R.done?R.done.score:0,R.done?"Half credit":"Out of freezes");
   if(S.screen==="play")render()}
 function submit(ev){ev.preventDefault();const R=S.R;if(!R.frozen)return;const t=now();
   if(t>R.frozen.deadline+GAME.ANSWER_GRACE_MS)return failFreeze("Time ran out");
@@ -291,10 +291,15 @@ function submit(ev){ev.preventDefault();const R=S.R;if(!R.frozen)return;const t=
   if(m.kind==="wrong")return failFreeze(`"${text}" is wrong`);
   const f=R.frozen,partial=m.kind==="partial",o={freezeNo:f.freezeNo,partial,hint:R.hint,scr:R.scr};
   const score=f.inFinal?finalWindowScore(R.N,o):revealScore(R.N,f.el,o);
-  R.done={...f,text,partial,score,why:m.why};R.frozen=null;unpause(R);
-  if(R.mode==="practice")return endPractice();
-  if(R.mode==="blitz")return blitzNext(score,partial?"Half credit":"Correct");
+  if(!R.done||score>R.done.score)R.done={...f,text,partial,score,why:m.why};/* a later answer can only raise the round's score */
+  R.frozen=null;unpause(R);
+  /* Half credit on freeze 1 is banked and the round keeps running: one more freeze (x0.75) to go for the full answer.
+     World Live (ranked) is unchanged: any correct or half answer ends the player's round. */
+  R.partialOpen=partial&&f.freezeNo<GAME.MAX_FREEZES&&R.mode!=="world";
   if(R.mode==="group"){groupReport(R);groupStatus(R,"done")}
+  if(R.partialOpen){R.lastFail=null;R.log.push(`half credit banked: ${fmt(R.done.score)} pts, 1 freeze left for the full answer`);return render()}
+  if(R.mode==="practice")return endPractice();
+  if(R.mode==="blitz")return blitzNext(R.done.score,R.done.partial?"Half credit":"Correct");
   render()}
 document.addEventListener("visibilitychange",()=>{const R=S.R;if(document.hidden&&R&&R.frozen&&(R.mode==="world"||R.mode==="blitz"||R.mode==="group"))failFreeze("App left while frozen (ranked rule)")});
 function endPractice(){const R=S.R;cancelAnimationFrame(S.raf);R.frozen=null;R.endedEarly=true;S.screen="results";render()}
@@ -313,7 +318,7 @@ function blitzTick(R,t){if(S.screen!=="play")return;
   if(!R.frozen&&blitzLeft(t)<=0)return blitzEnd();
   const[ph,el]=phaseOf(R,t);if(ph!==R.phase){R.phase=ph;render();return}
   updatePlay(ph,el,t)}
-function blitzEnd(){const B=S.blitz;B.over=true;cancelAnimationFrame(S.raf);const best=store.get("blitzBest",0);B.prevBest=best;
+function blitzEnd(){const B=S.blitz,R=S.R;if(R&&R.done&&R.partialOpen&&!R.flash){R.partialOpen=false;B.total+=R.done.score;B.photos.push({answer:R.photo.accepted[0],emoji:R.photo.emoji,score:R.done.score,label:"Half credit",s:R.done.s})}B.over=true;cancelAnimationFrame(S.raf);const best=store.get("blitzBest",0);B.prevBest=best;
   if(B.total>best)store.set("blitzBest",B.total);S.screen="blitzResults";render()}
 
 /* ============ Group Room (Spec §10) — live via the room capability ============
@@ -457,7 +462,7 @@ function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN")
       ${R.mode==="blitz"?`<span>Clocks paused</span>`:`<span>World is now at <b id="worldAt"></b></span>`}</div>`:""}
     <div class="board">${R.scramble?"":picHTML(R.photo,"Hidden photo")}<div class="tiles ${R.scramble?"scr":""}" id="tiles" style="grid-template-columns:repeat(${Math.sqrt(R.N)},1fr)" ${R.scramble?`role="img" aria-label="Scrambled hidden photo"`:""}></div>
       ${R.flash?`<div class="flash ${R.flash.miss?"miss":""}">${esc(R.flash.label)}<div class="note" style="font-size:1rem;color:var(--ink);text-transform:capitalize">${esc(R.photo.accepted[0])}</div></div>`
-       :R.done?`<div class="overlay" style="color:var(--good)">Locked in: ${fmt(R.done.score)} pts. Waiting for results…</div>`:R.out?`<div class="overlay">Out of freezes. Watching the rest of the round.</div>`:""}</div>
+       :R.done?(R.partialOpen?`<div class="overlay" style="color:var(--warn)">Half credit banked: ${fmt(R.done.score)} pts. ${f?"Type the full answer to beat it.":"Freeze again for the full answer."}</div>`:`<div class="overlay" style="color:var(--good)">Locked in: ${fmt(R.done.score)} pts. Waiting for results…</div>`):R.out?`<div class="overlay">Out of freezes. Watching the rest of the round.</div>`:""}</div>
     ${f?`<form class="answer" id="af" autocomplete="off"><div class="stat"><span>You have 7 seconds to answer.</span><b id="ansClock">0:07</b></div>
         <div class="bar red"><i id="ansBar"></i></div>
         <input id="ans" list="dict" placeholder="Type your answer…" aria-label="Your answer">
@@ -465,15 +470,15 @@ function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN")
         <button class="btn" type="button" id="unfreeze">Unfreeze — ${f.freezeNo===1?"1 freeze left":"last freeze"}</button></form>
         <datalist id="dict">${DICT.map(w=>`<option value="${w}">`).join("")}</datalist>`
      :`<div class="stat"><span>Revealed: <b id="rev"></b></span><span>Freezes left: <b>${GAME.MAX_FREEZES-R.freezesUsed}</b></span></div>
-       <button class="btn big freeze" id="fz" ${R.done||R.out||R.flash?"disabled":""}>❄ FREEZE</button>
+       <button class="btn big freeze" id="fz" ${(R.done&&!R.partialOpen)||R.out||R.flash?"disabled":""}>❄ FREEZE</button>
        ${R.mode==="practice"?`<button class="btn ghost" id="giveup">Give up &amp; reveal</button>`:""}
-       ${R.mode==="blitz"?`<div class="grid2"><button class="btn" id="skip" ${R.flash?"disabled":""}>Skip photo (0 pts)</button><button class="btn ghost" id="endRun">End run</button></div>`:""}
+       ${R.mode==="blitz"?`<div class="grid2"><button class="btn" id="skip" ${R.flash?"disabled":""}>${R.done?`Next photo (keep ${fmt(R.done.score)} pts)`:"Skip photo (0 pts)"}</button><button class="btn ghost" id="endRun">End run</button></div>`:""}
        ${R.lastFail&&!R.done&&!R.flash?`<div class="note" style="color:var(--bad)">${esc(R.lastFail)}</div>`:""}`}
     ${R.mode==="group"?`<div class="card live" id="live"></div>`:""}`;
   $("#tiles").innerHTML=tilesHTML(R);R.drawnCount=-1;
   if(f){$("#af").onsubmit=submit;$("#unfreeze").onclick=()=>failFreeze("Unfrozen");const i=$("#ans");i.value=keep;i.focus()}
   else{$("#fz").onclick=freeze;const g=$("#giveup");if(g)g.onclick=()=>{R.log.push("gave up");endPractice()};
-    const sk=$("#skip");if(sk)sk.onclick=()=>blitzNext(0,"Skipped");const er=$("#endRun");if(er)er.onclick=blitzEnd}
+    const sk=$("#skip");if(sk)sk.onclick=()=>blitzNext(R.done?R.done.score:0,R.done?"Half credit":"Skipped");const er=$("#endRun");if(er)er.onclick=blitzEnd}
   if(R.mode==="group")renderLive();
   updatePlay(ph,elOf(R,now()),now())}
 

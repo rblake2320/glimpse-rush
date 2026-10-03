@@ -135,6 +135,7 @@ Rank by score desc, then by `freeze_server_ts` asc, then by `answer_submit_ts` a
 3. Answer window: **7,000 ms** + 500 ms server grace for latency.
 4. Outcomes:
    - Correct → score locked using values from step 1.
+   - **Partial (v1.1.1):** in World Live (ranked) a partial answer locks the score like a correct one. In Solo Practice, Solo Blitz and Group Room, a partial answer on the **first** freeze banks its score and the round keeps running; the player may use the second freeze (P = 0.75) to try for the full answer. The round scores the **higher** of the banked partial and the second-freeze result; a wrong answer, timeout, Unfreeze or Give up on the second freeze keeps the banked partial. A partial on the second freeze ends the round as usual.
    - Wrong, timeout, or **Unfreeze** tapped → board jumps to live state; freezes remaining decrements. No score.
 5. **Max 2 freezes per round.** Second freeze uses P = 0.75. After the second failure, player is out for the round (spectates).
 6. Unfreeze button label: "Unfreeze — 1 freeze left" (or "— last freeze" on the second).
@@ -195,7 +196,7 @@ Implementation: Redis sorted sets per (board, scope, period) for live ranks; Pos
 
 **Solo Blitz:** 120,000 ms total run clock. Photos at N=25 with 30 s reveal each; next photo starts immediately after an answer or Skip. Run clock **pauses** during a freeze answer window (max 7 s each). Run score = sum of photo scores. Skip = 0 for that photo, no other penalty. **(v1.1)** The photo's own reveal clock pauses with the run clock during a freeze. After every answer, skip, or two failed freezes, the full photo and points show for 1.3 s with the run clock paused, then the next photo starts. After a photo's 30 s reveal, all tiles stay up (final-window flat score) until answer, skip, or run end. Run ends at 0:00 or **End run**.
 
-**Solo Practice:** Any grid, hint optional, no leaderboard, unlimited plays. Uses a separate practice photo pool (never ranked photos). **Early end (v1.1):** a correct or partial answer ends the round immediately and reveals the full photo with the score breakdown; so does using both freezes, or tapping **Give up & reveal** (scores 0). Synced modes (World Live, Daily, Group Room) still run the full clock.
+**Solo Practice:** Any grid, hint optional, no leaderboard, unlimited plays. Uses a separate practice photo pool (never ranked photos). **Early end (v1.1, amended v1.1.1):** a correct answer ends the round immediately (a partial answer on the first freeze is banked and the round continues; see §6 step 4) and reveals the full photo with the score breakdown; so does using both freezes, or tapping **Give up & reveal** (scores 0). Synced modes (World Live, Daily, Group Room) still run the full clock.
 
 **Group Room:** Any user (parent, friend, team lead, company admin) creates a private room → 6-char code (A–Z minus I/L/O, 2–9) + invite link (deep link). Host settings: grid (any single size, or **Mixed** = server picks 25/36/64/100 per round), rounds (5 or 10), hint on/off, start now or schedule. Max 50 players. Synced clock like World Live; results feed that group's board only. **(v1.1)** Each round shows a room board (this round + running total); the game ends with final standings and the host can start a new game in the same room. If the host disconnects, any member can take over as host. Players can join mid-round (no score advantage) or mid-game (earlier rounds count as 0).
 
@@ -507,6 +508,7 @@ Authorization is enforced in the API: group owner/admin manage teams and setting
 | v1.1 | 16 no-repeat window 30 days → 24 hours | Doc divergence: 1,500 photos cannot cover 30 days |
 | v1.1 | 11 vectors TV13–TV16 | Lock rounding mode, multiplier order, floor |
 | v1.1 | 10 Solo Practice early end + Give up | Solo has no shared clock to wait for |
+| v1.1.1 | 6.4 partial on the first freeze banks and continues in Solo Practice, Solo Blitz and Group Room (World Live unchanged); round scores the higher result; 10 Practice early end amended | Owner playtest feedback: a close answer ended the round with no chance to name it properly. `test/flow.test.mjs` A–I (6 fail on the v1.1 page, 3 guard unchanged behaviour) |
 | v1.1 | 20 Profiles, room + persistent teams (average scoring), live leaderboards; 21 backend services, image pipeline, REST API, integrity ledger, retention; schema.sql + 21 tests | Teams and live boards need accounts and stored data behind them |
 | v1.1 | 4a Scramble levels (Off / Scrambled ×1.25 / Scrambled + turned ×1.5), same-for-all or per-player; TV17–TV20 | Harder option for groups that want more challenge |
 | v1.1 | 10a Custom photo packs: host answers, half credit, not-accepted list, exact spelling, AI suggestions with host approval, privacy and safety rules | Families, friend groups, and businesses need their own photos and their own answer strictness |
