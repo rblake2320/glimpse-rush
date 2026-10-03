@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Glimpse Rush Playtest Results</title>
+<style>
+:root{--night:#060d22;--panel:#0c1a3d;--line:#1f3a7a;--ink:#e8f0ff;--dim:#8fa6d6;--volt:#2f8bff;--good:#3ddc84;--bad:#ff5a6a;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--night);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,sans-serif;padding:16px;max-width:1100px;margin-inline:auto}
+h1{font-size:1.4rem;margin:0 0 4px}h2{font-size:1.05rem;margin:24px 0 8px;color:var(--volt)}.dim{color:var(--dim)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.card b{display:block;font-size:1.6rem}.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--dim);font-weight:600}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+input,button{font:inherit;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px}button{cursor:pointer;background:var(--volt)}
+.fb{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}.fb small{color:var(--dim)}.fb p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-right:4px;font-size:.78rem}
+</style></head><body>
+<h1>Glimpse Rush playtest results</h1>
+<p class="dim" id="status">Enter the admin token to load results.</p>
+<form id="login"><input id="tok" type="password" placeholder="Admin token" autocomplete="current-password" aria-label="Admin token"> <button>Load</button></form>
+<div id="out"></div>
+<script>
+const $=s=>document.querySelector(s), out=$("#out");
+const h=(tag,props={},...kids)=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(props))k==="class"?e.className=v:e.setAttribute(k,v);for(const c of kids)e.append(c instanceof Node?c:String(c??""));return e};
+const table=(rows,cols)=>{ if(!rows.length)return h("p",{class:"dim"},"No data yet.");
+  return h("div",{class:"wrap"},h("table",{},h("thead",{},h("tr",{},...cols.map(([k,l,num])=>h("th",{class:num?"n":""},l)))),
+   h("tbody",{},...rows.map(r=>h("tr",{},...cols.map(([k,l,num])=>h("td",{class:num?"n":""},r[k]??"—")))))))};
+const section=(title,note,node)=>{out.append(h("h2",{},title));if(note)out.append(h("p",{class:"dim"},note));out.append(node)};
+const when=t=>new Date(t).toLocaleString();
+function render(s){
+  out.replaceChildren();
+  const T=s.totals;
+  out.append(h("div",{class:"cards"},...[["Testers",T.sessions],["Active (24h)",T.sessions_24h],["Events",T.events],["Feedback",T.feedback],["Avg rating",(s.rating.avg??"—")+(s.rating.n?` (${s.rating.n})`:"")]].map(([l,v])=>h("div",{class:"card"},h("span",{class:"dim"},l),h("b",{},v)))));
+  section("Rounds by mode","Started vs finished vs abandoned. A high abandon rate on one mode means people are bailing there.",table(s.funnel.map(r=>({...r,abandon:r.started?Math.round(100*r.abandoned/r.started)+"%":"—"})),[["mode","Mode"],["started","Started",1],["ended","Finished",1],["abandoned","Abandoned",1],["abandon","Abandon %",1]]));
+  section("Outcomes","What happened at the end of each round.",table(s.outcomes,[["mode","Mode"],["outcome","Outcome"],["n","Rounds",1],["avg_score","Avg score",1]]));
+  section("By grid size","Is a grid too easy (frozen early, always right) or too hard?",table(s.byGrid,[["grid","Tiles",1],["rounds","Rounds",1],["pct_correct","% correct",1],["avg_tiles_at_freeze","Avg tiles shown at freeze",1],["avg_score","Avg score",1]]));
+  section("Hardest photos","Lowest solve rate first. Very low = hard photo or missing accepted answers.",table(s.photos,[["photo_id","Photo"],["rounds","Rounds",1],["pct_solved","% solved",1],["avg_tiles_at_freeze","Avg tiles at freeze",1]]));
+  section("Most common wrong answers","If a wrong answer repeats for one photo, it probably should be accepted.",table(s.wrongAnswers,[["photo_id","Photo"],["text","Typed"],["n","Times",1]]));
+  section("“My answer should count”","Players who flagged a rejected answer.",table(s.disputes,[["photo_id","Photo"],["answer","Answer"],["n","Flags",1]]));
+  section("Round thumbs by photo","",table(s.rounds,[["photo_id","Photo"],["up","\u{1F44D}",1],["down","\u{1F44E}",1]]));
+  section("What testers tagged","",table(s.tags,[["tag","Tag"],["n","Count",1]]));
+  section("Devices and countries","",h("div",{class:"cards"},h("div",{},table(s.devices,[["device","Device"],["n","Testers",1]])),h("div",{},table(s.countries,[["country","Country"],["n","Testers",1]]))));
+  out.append(h("h2",{},"Written feedback (newest first)"));
+  if(!s.recent.length)out.append(h("p",{class:"dim"},"None yet."));
+  for(const f of s.recent){
+    const box=h("div",{class:"fb"},h("small",{},`${when(f.srv_ts)} · ${f.kind}${f.rating!==null?` · rating ${f.rating}`:""}${f.photo_id?` · photo ${f.photo_id}`:""}${f.contact?` · ${f.contact}`:""}`));
+    if(f.tags)box.append(h("div",{},...f.tags.split(",").map(t=>h("span",{class:"tag"},t))));
+    for(const[l,v]of[["Liked",f.liked],["Didn't like",f.disliked],["Bug",f.bug],["Answer to accept",f.answer]])if(v)box.append(h("p",{},h("b",{},l+": "),v));
+    out.append(box);
+  }
+}
+async function load(){
+  const tok=$("#tok").value.trim();if(!tok)return;
+  $("#status").textContent="Loading…";
+  try{
+    const r=await fetch("/api/admin/summary",{headers:{authorization:"Bearer "+tok},cache:"no-store"});
+    if(r.status===401){$("#status").textContent="Wrong token.";return}
+    if(!r.ok)throw new Error(r.status);
+    const s=await r.json();$("#status").textContent="Updated "+when(s.generated);render(s);
+  }catch(e){$("#status").textContent="Couldn't load: "+e.message}
+}
+$("#login").addEventListener("submit",e=>{e.preventDefault();load()});
+</script></body></html>

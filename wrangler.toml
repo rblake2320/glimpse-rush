@@ -1,0 +1,8 @@
+name = "glimpse-rush"
+pages_build_output_dir = "prototype"
+compatibility_date = "2026-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "glimpse-rush-playtest"
+database_id = "df2a3489-b959-4779-a519-edd871a24f5b"

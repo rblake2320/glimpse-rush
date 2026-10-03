@@ -6,11 +6,13 @@
   "author": "Ron Blake",
   "license": "UNLICENSED",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22.13" },
   "scripts": {
-    "test": "node --test packages/scoring/scoring.test.mjs backend/schema.test.mjs",
+    "test": "node --test packages/scoring/scoring.test.mjs backend/schema.test.mjs playtest/playtest.test.mjs",
     "test:scoring": "node --test packages/scoring/scoring.test.mjs",
-    "test:db": "node --test backend/schema.test.mjs"
+    "test:db": "node --test backend/schema.test.mjs",
+    "test:playtest": "node --test playtest/playtest.test.mjs",
+    "deploy": "wrangler pages deploy prototype --project-name glimpse-rush --branch main"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.2.17"
