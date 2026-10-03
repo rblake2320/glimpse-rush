@@ -1,14 +1,14 @@
 {
  "base": "https://glimpse-rush.pages.dev",
- "ran": "2026-10-03T21:56:18.480Z",
+ "ran": "2026-10-03T22:40:25.304Z",
  "red": 0,
  "inventory": {
   "counts": {
-   "ui": 76,
+   "ui": 77,
    "screen": 8,
    "mode": 4,
    "api": 5,
-   "event": 10,
+   "event": 12,
    "tag": 11
   },
   "problems": [],
@@ -43,7 +43,7 @@
    "promise": "Home loads with every mode and no errors",
    "state": "green",
    "detail": "5 mode controls visible",
-   "ms": 359,
+   "ms": 389,
    "failing_since": null,
    "elements": 2
   },
@@ -51,7 +51,7 @@
    "promise": "Declining consent sends nothing and stores no id",
    "state": "green",
    "detail": "0 requests, no id stored",
-   "ms": 9410,
+   "ms": 9460,
    "failing_since": null,
    "elements": 1
   },
@@ -59,7 +59,7 @@
    "promise": "Accepting consent records session_start and screens",
    "state": "green",
    "detail": "session_start, screen landed",
-   "ms": 576,
+   "ms": 551,
    "failing_since": null,
    "elements": 4
   },
@@ -67,7 +67,7 @@
    "promise": "Practice: freeze, correct answer, results with credit; events land",
    "state": "green",
    "detail": "photo loaded (900px), credit shown, 4 events landed",
-   "ms": 4601,
+   "ms": 4575,
    "failing_since": null,
    "elements": 20
   },
@@ -75,7 +75,7 @@
    "promise": "Half answer banks and continues; wrong 2nd answer keeps half credit",
    "state": "green",
    "detail": "banked, continued, kept",
-   "ms": 9968,
+   "ms": 10040,
    "failing_since": null,
    "elements": 0
   },
@@ -83,7 +83,7 @@
    "promise": "Give up reveals the photo and records the outcome; Back returns home",
    "state": "green",
    "detail": "gave_up landed, home reached",
-   "ms": 5598,
+   "ms": 5543,
    "failing_since": null,
    "elements": 2
   },
@@ -91,7 +91,7 @@
    "promise": "Unfreeze spends a freeze and is recorded",
    "state": "green",
    "detail": "freeze spent, freeze_fail landed",
-   "ms": 4711,
+   "ms": 4997,
    "failing_since": null,
    "elements": 2
   },
@@ -99,7 +99,7 @@
    "promise": "Practice grid, scramble and hint options reach the round",
    "state": "green",
    "detail": "9 tiles, scramble 1, hint on",
-   "ms": 5444,
+   "ms": 5512,
    "failing_since": null,
    "elements": 3
   },
@@ -107,7 +107,7 @@
    "promise": "Blitz: answer, skip, end run, run again; run total recorded",
    "state": "green",
    "detail": "run total 1900 recorded",
-   "ms": 5245,
+   "ms": 5294,
    "failing_since": null,
    "elements": 8
   },
@@ -115,7 +115,7 @@
    "promise": "World Live: join, freeze, answer, results with leaderboard, next round",
    "state": "green",
    "detail": "leaderboard shown, round_end landed",
-   "ms": 49167,
+   "ms": 48991,
    "failing_since": null,
    "elements": 6
   },
@@ -123,15 +123,31 @@
    "promise": "Quitting a round before it ends is recorded",
    "state": "green",
    "detail": "round_abandon landed",
-   "ms": 5490,
+   "ms": 5364,
    "failing_since": null,
    "elements": 1
+  },
+  "visit_data": {
+   "promise": "Visit data lands: device details, page speed, answer time, play time, errors",
+   "state": "green",
+   "detail": "windows/chrome, first byte 113 ms, 4 s active, error captured",
+   "ms": 5043,
+   "failing_since": null,
+   "elements": 2
+  },
+  "owner_device": {
+   "promise": "?owner=1 marks a device so its plays are never counted",
+   "state": "green",
+   "detail": "owner plays stored, excluded from stats",
+   "ms": 919,
+   "failing_since": null,
+   "elements": 0
   },
   "feedback_form": {
    "promise": "Feedback form: rating, tags, text, send; stored with context",
    "state": "green",
    "detail": "feedback stored (1 rows for this session)",
-   "ms": 5530,
+   "ms": 5547,
    "failing_since": null,
    "elements": 22
   },
@@ -139,23 +155,23 @@
    "promise": "Round thumbs and 'should count' flag are stored per photo",
    "state": "green",
    "detail": "thumbs + dispute stored",
-   "ms": 5365,
+   "ms": 5261,
    "failing_since": null,
    "elements": 1
   },
   "admin": {
    "promise": "Admin results are locked without the token, load with it, and exclude test traffic",
    "state": "green",
-   "detail": "locked, renders, 1 real testers counted",
-   "ms": 755,
+   "detail": "locked, renders, 2 real testers counted",
+   "ms": 886,
    "failing_since": null,
-   "elements": 6
+   "elements": 7
   },
   "api_guard": {
    "promise": "APIs reject garbage, oversize and empty input",
    "state": "green",
    "detail": "400 / 413 / 400",
-   "ms": 198,
+   "ms": 180,
    "failing_since": null,
    "elements": 0
   },
@@ -163,7 +179,7 @@
    "promise": "Security and no-index headers are served",
    "state": "green",
    "detail": "noindex on /admin, nosniff",
-   "ms": 239,
+   "ms": 120,
    "failing_since": null,
    "elements": 0
   },
@@ -171,7 +187,7 @@
    "promise": "Every built-in photo loads at 900x900 with an allowed licence, answers and a credit",
    "state": "green",
    "detail": "63 photos OK",
-   "ms": 1126,
+   "ms": 1145,
    "failing_since": null,
    "elements": 0
   },
@@ -179,7 +195,7 @@
    "promise": "Scoring self-test in the page passes every spec vector",
    "state": "green",
    "detail": "38/38 pass",
-   "ms": 382,
+   "ms": 381,
    "failing_since": null,
    "elements": 1
   },
@@ -187,7 +203,7 @@
    "promise": "Your own photos: add a photo from the device, name the pack, back out",
    "state": "green",
    "detail": "1 photo added",
-   "ms": 480,
+   "ms": 443,
    "failing_since": null,
    "elements": 8
   },
@@ -195,23 +211,23 @@
    "promise": "Your own photos survive a reload",
    "state": "amber",
    "detail": "after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site)",
-   "ms": 626,
-   "failing_since": "2026-10-03T21:55:29.917Z",
+   "ms": 709,
+   "failing_since": "2026-10-03T22:39:36.793Z",
    "elements": 1
   },
   "profile": {
    "promise": "Player name is saved on the device",
    "state": "green",
    "detail": "kept after reload",
-   "ms": 616,
+   "ms": 699,
    "failing_since": null,
    "elements": 1
   },
   "group": {
    "promise": "Group Room: host shares a link, a friend joins with just a name, both play the same round live",
    "state": "green",
-   "detail": "joined via invite in 336 ms, round start skew 19 ms, boards match",
-   "ms": 47914,
+   "detail": "joined via invite in 258 ms, round start skew 12 ms, boards match",
+   "ms": 47775,
    "failing_since": null,
    "elements": 27
   }
@@ -902,6 +918,15 @@
    "status": "live"
   },
   {
+   "kind": "ui",
+   "name": "dl",
+   "purpose": "Admin: download every number as JSON (for ads, buyers, investors)",
+   "wire": "admin",
+   "done": "none: owner download",
+   "state": "green",
+   "status": "live"
+  },
+  {
    "kind": "screen",
    "name": "home",
    "purpose": "Mode menu",
@@ -1140,6 +1165,24 @@
    "name": "feedback_open",
    "purpose": "Opened the feedback form",
    "wire": "feedback_form",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "heartbeat",
+   "purpose": "Play time per visit (active minutes, rounds), server reply time, live-room delay",
+   "wire": "visit_data",
+   "done": "display",
+   "state": "green",
+   "status": "live"
+  },
+  {
+   "kind": "event",
+   "name": "client_error",
+   "purpose": "Crashes and failed files on testers' devices",
+   "wire": "visit_data",
    "done": "display",
    "state": "green",
    "status": "live"

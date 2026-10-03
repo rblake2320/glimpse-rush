@@ -185,3 +185,25 @@ test("I world live (ranked): a half answer still ends the player's round (unchan
     assert.equal(s.fzDisabled, true, "no second chance in World Live");
   } finally { await p.close(); }
 });
+
+test("J custom photos: a tall phone photo is kept whole (fitted, not cropped)", async () => {
+  const p = await open();
+  try {
+    const px = await p.evaluate(async () => {
+      const c = document.createElement("canvas"); c.width = 600; c.height = 1200; const g = c.getContext("2d");
+      g.fillStyle = "#00ff00"; g.fillRect(0, 0, 600, 1200);
+      g.fillStyle = "#ff0000"; g.fillRect(0, 0, 600, 150);    // top band
+      g.fillStyle = "#0000ff"; g.fillRect(0, 1050, 600, 150); // bottom band
+      const blob = await new Promise((ok) => c.toBlob(ok, "image/png"));
+      const { dataURL } = await prepImage(new File([blob], "tall.png", { type: "image/png" }));
+      const img = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.src = dataURL; });
+      const k = document.createElement("canvas"); k.width = img.width; k.height = img.height; const q = k.getContext("2d"); q.drawImage(img, 0, 0);
+      const at = (x, y) => Array.from(q.getImageData(x, y, 1, 1).data.slice(0, 3));
+      return { size: [img.width, img.height], top: at(img.width / 2, img.height * 0.05), bottom: at(img.width / 2, img.height * 0.95), mid: at(img.width / 2, img.height / 2) };
+    });
+    assert.deepEqual(px.size, [900, 900]);
+    assert.ok(px.top[0] > 200 && px.top[1] < 60, "top band (red) survives: " + px.top);
+    assert.ok(px.bottom[2] > 200 && px.bottom[0] < 60, "bottom band (blue) survives: " + px.bottom);
+    assert.ok(px.mid[1] > 200, "middle is the photo: " + px.mid);
+  } finally { await p.close(); }
+});

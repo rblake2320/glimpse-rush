@@ -93,6 +93,7 @@ export const REGISTRY = {
     login: ui("Admin: load results", "admin", "display"),
     status: ui("Admin: load status", "admin", "display"),
     out: ui("Admin: results tables and comments", "admin", "display"),
+    dl: ui("Admin: download every number as JSON (for ads, buyers, investors)", "admin", "none: owner download"),
   },
   screen: {
     home: ui("Mode menu", "home", "screen"),
@@ -128,6 +129,8 @@ export const REGISTRY = {
     round_abandon: ui("Left mid-round (menu or closed)", "abandon", "display"),
     blitz_end: ui("Blitz run total", "blitz", "display"),
     feedback_open: ui("Opened the feedback form", "feedback_form", "display"),
+    heartbeat: ui("Play time per visit (active minutes, rounds), server reply time, live-room delay", "visit_data", "display"),
+    client_error: ui("Crashes and failed files on testers' devices", "visit_data", "display"),
   },
   tag: Object.fromEntries(["fun", "too_hard", "too_easy", "unfair_scoring", "confusing", "too_slow", "photo_issue",
     "answer_rejected", "layout", "performance", "other"].map((t) => [t, ui("Feedback tag: " + t, "feedback_form", "feedback:general")])),

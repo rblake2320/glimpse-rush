@@ -10,7 +10,7 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "test": "node --test packages/scoring/scoring.test.mjs backend/schema.test.mjs playtest/playtest.test.mjs",
+    "test": "npm run check && node --test packages/scoring/scoring.test.mjs backend/schema.test.mjs playtest/playtest.test.mjs",
     "test:scoring": "node --test packages/scoring/scoring.test.mjs",
     "test:db": "node --test backend/schema.test.mjs",
     "test:playtest": "node --test playtest/playtest.test.mjs",
@@ -19,7 +19,8 @@
     "map": "node scripts/wire-map.mjs",
     "test:rooms": "node --test --test-concurrency=1 rooms/room.test.mjs",
     "deploy:rooms": "cd rooms && wrangler deploy",
-    "photos": "python tools/fetch_photos.py"
+    "photos": "python tools/fetch_photos.py",
+    "check": "node --check prototype/playtest.js && node --check functions/_lib/store.js && node --check functions/_lib/ingest.js && node --check rooms/src/index.js && node --check scripts/wire-map.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.2.17",

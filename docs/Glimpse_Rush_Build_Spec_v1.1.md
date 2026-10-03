@@ -442,7 +442,7 @@ Per player: `answering` (frozen), `locked in` (+ points), `missed` (wrong/timeou
 ### 21.2 Image storage pipeline
 1. Client asks the API for an upload slot → presigned PUT to the **quarantine** bucket (15 MB cap, image types only).
 2. Worker: hash-match against known child-abuse image lists, nudity/violence classifier. Fail → `media_assets.status = 'blocked'`, file kept only as the law requires, uploader notified.
-3. Pass → strip EXIF/GPS, center-crop square (or the uploader's crop), resize to 1080 px, write `originals/{assetId}.jpg`.
+3. Pass → strip EXIF/GPS, **fit the whole photo into a square (v1.1.2: no cropping; empty edges filled with a blurred, darkened copy of the photo)** unless the uploader chose a crop, resize to 1080 px, write `originals/{assetId}.jpg`.
 4. Cut tiles for every grid size (4 + 9 + 16 + 25 + 36 + 64 + 100 = 254 tiles per photo) to `tiles/{photoId}/{N}/{index}.jpg`. Scrambled rounds serve the same tiles to different cells; rotation is applied by a signed image-transform parameter so the client never sees the source index.
 5. `status = 'clean'`, photo becomes playable.
 
@@ -508,6 +508,7 @@ Authorization is enforced in the API: group owner/admin manage teams and setting
 | v1.1 | 16 no-repeat window 30 days → 24 hours | Doc divergence: 1,500 photos cannot cover 30 days |
 | v1.1 | 11 vectors TV13–TV16 | Lock rounding mode, multiplier order, floor |
 | v1.1 | 10 Solo Practice early end + Give up | Solo has no shared clock to wait for |
+| v1.1.2 | 21.2 uploaded photos are fitted whole into the square instead of centre-cropped | Playtest report 2026-10-03: "Did not load the whole photo from the phone" (a tall phone photo lost its top and bottom). `test/flow.test.mjs` J |
 | v1.1.1 | 6.4 partial on the first freeze banks and continues in Solo Practice, Solo Blitz and Group Room (World Live unchanged); round scores the higher result; 10 Practice early end amended | Owner playtest feedback: a close answer ended the round with no chance to name it properly. `test/flow.test.mjs` A–I (6 fail on the v1.1 page, 3 guard unchanged behaviour) |
 | v1.1 | 20 Profiles, room + persistent teams (average scoring), live leaderboards; 21 backend services, image pipeline, REST API, integrity ledger, retention; schema.sql + 21 tests | Teams and live boards need accounts and stored data behind them |
 | v1.1 | 4a Scramble levels (Off / Scrambled ×1.25 / Scrambled + turned ×1.5), same-for-all or per-player; TV17–TV20 | Harder option for groups that want more challenge |

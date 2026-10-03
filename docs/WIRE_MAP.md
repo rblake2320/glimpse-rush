@@ -1,12 +1,12 @@
 # Glimpse Rush wire map
 
-Run 2026-10-03T21:56:18.480Z against https://glimpse-rush.pages.dev. **All wired.** Regenerate: `node scripts/wire-map.mjs`.
+Run 2026-10-03T22:40:25.304Z against https://glimpse-rush.pages.dev. **All wired.** Regenerate: `node scripts/wire-map.mjs`.
 
 🟢 works and its completion is recorded · 🟡 promised but not built yet (kept visible) · 🔴 broken, unregistered or dead (fails the build)
 
 ## Inventory
 
-Discovered in code: 76 ui, 8 screen, 4 mode, 5 api, 10 event, 11 tag. Photos: 63 in the pool of 82 catalogued (not sourced yet: eiffel-tower, statue-of-liberty, taj-mahal, christ-the-redeemer, angkor-wat, burj-khalifa, mount-fuji, brooklyn-bridge, hollywood-sign, golden-retriever, lion, cow, chair, guitar, piano, typewriter, hot-air-balloon, lighthouse, strawberry).
+Discovered in code: 77 ui, 8 screen, 4 mode, 5 api, 12 event, 11 tag. Photos: 63 in the pool of 82 catalogued (not sourced yet: eiffel-tower, statue-of-liberty, taj-mahal, christ-the-redeemer, angkor-wat, burj-khalifa, mount-fuji, brooklyn-bridge, hollywood-sign, golden-retriever, lion, cow, chair, guitar, piano, typewriter, hot-air-balloon, lighthouse, strawberry).
 
 - No unregistered, dead or mismatched elements.
 
@@ -25,17 +25,19 @@ Discovered in code: 76 ui, 8 screen, 4 mode, 5 api, 10 event, 11 tag. Photos: 63
 | 🟢 | blitz | Blitz: answer, skip, end run, run again; run total recorded | run total 1900 recorded |  |
 | 🟢 | world | World Live: join, freeze, answer, results with leaderboard, next round | leaderboard shown, round_end landed |  |
 | 🟢 | abandon | Quitting a round before it ends is recorded | round_abandon landed |  |
+| 🟢 | visit_data | Visit data lands: device details, page speed, answer time, play time, errors | windows/chrome, first byte 113 ms, 4 s active, error captured |  |
+| 🟢 | owner_device | ?owner=1 marks a device so its plays are never counted | owner plays stored, excluded from stats |  |
 | 🟢 | feedback_form | Feedback form: rating, tags, text, send; stored with context | feedback stored (1 rows for this session) |  |
 | 🟢 | round_reaction | Round thumbs and 'should count' flag are stored per photo | thumbs + dispute stored |  |
-| 🟢 | admin | Admin results are locked without the token, load with it, and exclude test traffic | locked, renders, 1 real testers counted |  |
+| 🟢 | admin | Admin results are locked without the token, load with it, and exclude test traffic | locked, renders, 2 real testers counted |  |
 | 🟢 | api_guard | APIs reject garbage, oversize and empty input | 400 / 413 / 400 |  |
 | 🟢 | headers | Security and no-index headers are served | noindex on /admin, nosniff |  |
 | 🟢 | photos | Every built-in photo loads at 900x900 with an allowed licence, answers and a credit | 63 photos OK |  |
 | 🟢 | selftest | Scoring self-test in the page passes every spec vector | 38/38 pass |  |
 | 🟢 | pack | Your own photos: add a photo from the device, name the pack, back out | 1 photo added |  |
-| 🟡 | pack_persist | Your own photos survive a reload | after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site) | 2026-10-03T21:55:29.917Z |
+| 🟡 | pack_persist | Your own photos survive a reload | after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site) | 2026-10-03T22:39:36.793Z |
 | 🟢 | profile | Player name is saved on the device | kept after reload |  |
-| 🟢 | group | Group Room: host shares a link, a friend joins with just a name, both play the same round live | joined via invite in 336 ms, round start skew 19 ms, boards match |  |
+| 🟢 | group | Group Room: host shares a link, a friend joins with just a name, both play the same round live | joined via invite in 258 ms, round start skew 12 ms, boards match |  |
 
 ## Open promises
 
@@ -126,6 +128,7 @@ Discovered in code: 76 ui, 8 screen, 4 mode, 5 api, 10 event, 11 tag. Photos: 63
 | 🟢 | ui | `login` | Admin: load results | admin | display |
 | 🟢 | ui | `status` | Admin: load status | admin | display |
 | 🟢 | ui | `out` | Admin: results tables and comments | admin | display |
+| 🟢 | ui | `dl` | Admin: download every number as JSON (for ads, buyers, investors) | admin | none: owner download |
 | 🟢 | screen | `home` | Mode menu | home | screen |
 | 🟢 | screen | `play` | A round in progress | practice_full | screen |
 | 🟢 | screen | `results` | Round result, score breakdown, board, reaction | practice_full | round_end |
@@ -153,6 +156,8 @@ Discovered in code: 76 ui, 8 screen, 4 mode, 5 api, 10 event, 11 tag. Photos: 63
 | 🟢 | event | `round_abandon` | Left mid-round (menu or closed) | abandon | display |
 | 🟢 | event | `blitz_end` | Blitz run total | blitz | display |
 | 🟢 | event | `feedback_open` | Opened the feedback form | feedback_form | display |
+| 🟢 | event | `heartbeat` | Play time per visit (active minutes, rounds), server reply time, live-room delay | visit_data | display |
+| 🟢 | event | `client_error` | Crashes and failed files on testers' devices | visit_data | display |
 | 🟢 | tag | `fun` | Feedback tag: fun | feedback_form | feedback:general |
 | 🟢 | tag | `too_hard` | Feedback tag: too_hard | feedback_form | feedback:general |
 | 🟢 | tag | `too_easy` | Feedback tag: too_easy | feedback_form | feedback:general |

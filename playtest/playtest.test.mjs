@@ -181,3 +181,56 @@ test("G synthetic (wire-map) sessions are stored but never counted; the session 
   assert.deepEqual(rows.events.map((e) => e.type), ["round_start", "round_end"]);
   assert.equal(rows.feedback[0].rating, 1);
 });
+
+test("H engagement: play time per visit, daily players, retention, errors, platforms and speed medians", async () => {
+  const db = d1();
+  const env = { DB: db, ADMIN_TOKEN: "t" };
+  const DAY = 864e5, now = Date.now(), d0 = now - 10 * DAY; // first day 10 days ago
+  const ins = db.raw.prepare("INSERT INTO events(sid,ts,srv_ts,type,mode,photo_id,grid,data) VALUES(?,?,?,?,?,?,?,?)");
+  const put = (sid, t, type, data, mode = null) => ins.run(sid, t, t, type, mode, null, null, JSON.stringify(data));
+  const A = "aaaaaaaaaaaaaaaa-1", B = "bbbbbbbbbbbbbbbb-2", SYNX = "5e5e5e5e-map-zzzzzzzzzz";
+  // A: day 0 visit 4 min (2 rounds), comes back day 1 for 20 min, and day 8 for 0.5 min
+  put(A, d0, "session_start", { visit: "a1", os: "ios", browser: "safari", net: "4g", page: { ttfb: 100, load: 900, kb: 300 } });
+  put(A, d0 + 1000, "round_start", { img_ms: 120 }, "practice"); put(A, d0 + 2000, "round_start", { img_ms: 80 }, "practice");
+  put(A, d0 + 3000, "answer", { kind: "correct", rt: 2000 }, "practice"); put(A, d0 + 4000, "answer", { kind: "wrong", rt: 4000 }, "practice");
+  put(A, d0 + 5000, "heartbeat", { visit: "a1", active_ms: 120000, rounds: 1, api_ms: 50 });
+  put(A, d0 + 6000, "heartbeat", { visit: "a1", active_ms: 240000, rounds: 2, api_ms: 70, room_rtt: 40 });
+  put(A, d0 + DAY, "session_start", { visit: "a2", os: "ios", browser: "safari", page: { ttfb: 300, load: 1100 } });
+  put(A, d0 + DAY + 1, "heartbeat", { visit: "a2", active_ms: 1200000, rounds: 9 });
+  put(A, d0 + 8 * DAY, "heartbeat", { visit: "a3", active_ms: 30000, rounds: 0 });
+  // B: one visit on day 0, never returns; one JS error seen twice, one failed image
+  put(B, d0 + 500, "session_start", { visit: "b1", os: "android", browser: "chrome", net: "3g", page: { ttfb: 200, load: 2000 } });
+  put(B, d0 + 600, "heartbeat", { visit: "b1", active_ms: 600000, rounds: 5, api_ms: 90 });
+  put(B, d0 + 700, "client_error", { kind: "js", msg: "x is undefined", where: "/index.html:10:5" });
+  put(B, d0 + 800, "client_error", { kind: "js", msg: "x is undefined", where: "/index.html:10:5" });
+  put(B, d0 + 900, "client_error", { kind: "resource", msg: "img failed to load", where: "/photos/owl.jpg" });
+  put(B, d0 + 950, "answer", { kind: "correct", rt: 1000 }, "blitz");
+  // synthetic traffic must not move any number
+  put(SYNX, d0, "heartbeat", { visit: "s1", active_ms: 9e6, rounds: 99 });
+  put(SYNX, d0, "client_error", { kind: "js", msg: "probe", where: "" });
+
+  const s = await (await getSummary({ request: new Request("https://x.test/api/admin/summary", { headers: { authorization: "Bearer t" } }), env })).json();
+  assert.equal(s.audience.players, 2);
+  assert.equal(s.audience.returning_players, 1);
+  assert.deepEqual(s.audience.retention_d1, { eligible: 2, returned: 1, pct: 50 });
+  assert.deepEqual(s.audience.retention_d7, { eligible: 2, returned: 0, pct: 0 }, "A came back on day 8, not day 7");
+  assert.equal(s.audience.retention_d30.eligible, 0, "nobody started 30+ days ago");
+  assert.equal(s.audience.visits, 4);
+  assert.equal(s.playTime.visits, 4);
+  assert.equal(s.playTime.median_min, 10, "visits 0.5, 4, 10, 20 min -> median (upper) 10");
+  assert.equal(s.playTime.total_hours, 0.6, "34.5 min");
+  assert.deepEqual(s.playTime.buckets.map((b) => b.n), [1, 1, 1, 1, 0]);
+  assert.equal(s.playTime.rounds_per_visit, 4, "(2+9+0+5)/4");
+  const day0 = s.daily.find((r) => r.day === new Date(d0).toISOString().slice(0, 10));
+  assert.equal(day0.players, 2); assert.equal(day0.new_players, 2); assert.equal(day0.rounds, 2); assert.equal(day0.visits, 2);
+  const day1 = s.daily.find((r) => r.day === new Date(d0 + DAY).toISOString().slice(0, 10));
+  assert.equal(day1.new_players, 0); assert.equal(day1.active_min, 20);
+  assert.deepEqual(s.errors.map((e) => [e.kind, e.n, e.players]), [["js", 2, 1], ["resource", 1, 1]]);
+  assert.deepEqual(Object.fromEntries(s.platforms.os.map((o) => [o.os, o.n])), { ios: 2, android: 1 });
+  assert.equal(s.speed.page_ttfb_ms, 200);
+  assert.equal(s.speed.photo_ms, 120, "median of 80,120 (upper)");
+  assert.equal(s.speed.api_ms, 70);
+  assert.equal(s.speed.room_rtt_ms, 40);
+  const pr = s.speed.answer_ms.find((x) => x.mode === "practice");
+  assert.deepEqual([pr.answers, pr.median_ms, pr.correct_median_ms], [2, 4000, 2000]);
+});

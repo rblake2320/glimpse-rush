@@ -208,8 +208,12 @@ function nextPackPhoto(avoidIds=[]){const ps=readyPhotos();if(!ps.length)return 
   for(let i=0;i<ps.length;i++){const p=ps[(packCursor+i)%ps.length];if(!avoidIds.includes(p.id)){packCursor=(packCursor+i+1)%ps.length;return p}}
   const p=ps[packCursor%ps.length];packCursor++;return p}
 async function prepImage(file){const url=URL.createObjectURL(file);try{const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("decode"));i.src=url});
-  const side=Math.min(img.naturalWidth,img.naturalHeight),c=document.createElement("canvas");c.width=c.height=Math.min(900,side);
-  c.getContext("2d").drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,c.width,c.height);
+  /* Whole photo, never cropped (v1.1.2): fit it inside the square; the empty edges get a blurred, darkened copy of the photo. */
+  const w=img.naturalWidth,h=img.naturalHeight,S=Math.min(900,Math.max(w,h)),c=document.createElement("canvas");c.width=c.height=S;
+  const ctx=c.getContext("2d"),cover=Math.max(S/w,S/h),fit=Math.min(S/w,S/h);
+  if("filter" in ctx){ctx.filter="blur(28px) brightness(0.55)";ctx.drawImage(img,(S-w*cover)/2,(S-h*cover)/2,w*cover,h*cover);ctx.filter="none"}
+  else{ctx.fillStyle="#0c1a3d";ctx.fillRect(0,0,S,S)}
+  ctx.drawImage(img,(S-w*fit)/2,(S-h*fit)/2,w*fit,h*fit);
   const blob=await new Promise(ok=>c.toBlob(ok,"image/jpeg",.85));return{blob,dataURL:c.toDataURL("image/jpeg",.85)}}finally{URL.revokeObjectURL(url)}}
 async function addFiles(files){const msg=$("#packMsg");let n=0,fail=0;
   for(const f of[...files].slice(0,40)){if(msg)msg.textContent=`Adding photo ${n+fail+1} of ${files.length}…`;
@@ -344,7 +348,7 @@ const WSROOM={join(name){return new Promise((resolve,reject)=>{
   let best=1e9,seq=0;const sent=new Map();
   const ping=()=>{if(ws&&ws.readyState===1){const id=++seq;sent.set(id,Date.now());ws.send(JSON.stringify({t:"ping",id}))}};
   let pinger=null;
-  const room={serverOffset:null,presence(patch){Object.assign(mine,patch);if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"presence",patch}));return Promise.resolve()},
+  const room={serverOffset:null,rtt:null,presence(patch){Object.assign(mine,patch);if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"presence",patch}));return Promise.resolve()},
     onPeers(c,e){cb=c;onErr=e;emit()},leave(){left=true;clearInterval(pinger);try{ws&&ws.close(1000)}catch{}return Promise.resolve()},
     get status(){return ws&&ws.readyState===1?"live":"reconnecting"}};
   const open=()=>{ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/api/room/"+encodeURIComponent(name));
@@ -355,7 +359,7 @@ const WSROOM={join(name){return new Promise((resolve,reject)=>{
         if(first){first=false;resolve(room)}emit()}
       else if(m.t==="peer"){peers.set(m.id,mk(m.id,m.presence||{},now));emit()}
       else if(m.t==="leave"){peers.delete(m.id);emit()}
-      else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}}};
+      else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);room.rtt=rtt;if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}}};
     ws.onclose=()=>{if(left)return;if(first&&tries>=2)return reject({code:"connect_failed"});
       if(tries++>=8){onErr&&onErr({code:"disconnected"});return}setTimeout(open,Math.min(500*2**tries,5000))}};
   addEventListener("online",()=>{if(!left&&ws&&ws.readyState>1){tries=0;open()}});

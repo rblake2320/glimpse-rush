@@ -225,6 +225,35 @@ const WIRES = {
     await landed(p.sid, (r) => ev(r, "round_abandon"), "round_abandon");
     noErrors(p); await close(p); return "round_abandon landed";
   }],
+  visit_data: ["Visit data lands: device details, page speed, answer time, play time, errors", async () => {
+    const p = await page();
+    await p.click("#goPractice"); await p.waitForFunction(() => S.R && S.R.photo);
+    await freezeAnswer(p, (await answers(p)).full);
+    await p.waitForSelector(".result-h");
+    await p.evaluate(() => setTimeout(() => { throw new Error("wire-map probe"); }, 0));
+    await p.waitForTimeout(500);
+    const sid = p.sid;
+    await p.close({ runBeforeUnload: true }); // pagehide -> final heartbeat by beacon
+    await p.context().close();
+    const rows = await landed(sid, (r) => ev(r, "session_start", (e, d) => d.os && d.browser && d.visit && d.page && d.page.ttfb >= 0)
+      && ev(r, "answer", (e, d) => Number.isFinite(d.rt) && d.rt > 0 && d.rt < 8000)
+      && ev(r, "heartbeat", (e, d) => d.active_ms > 0 && d.rounds >= 1)
+      && ev(r, "client_error", (e, d) => d.kind === "js" && /wire-map probe/.test(d.msg)), "session_start details + answer rt + heartbeat + client_error");
+    const hb = rows.events.filter((e) => e.type === "heartbeat").map((e) => JSON.parse(e.data)).pop();
+    const st = JSON.parse(rows.events.find((e) => e.type === "session_start").data);
+    return `${st.os}/${st.browser}, first byte ${st.page.ttfb} ms, ${Math.round(hb.active_ms / 1000)} s active, error captured`;
+  }],
+  owner_device: ["?owner=1 marks a device so its plays are never counted", async () => {
+    const ctx = await browser.newContext();
+    const p = await ctx.newPage();
+    await p.goto(BASE + "/?owner=1"); await p.waitForSelector("#pt-yes"); await p.click("#pt-yes");
+    await p.goto(BASE + "/"); await p.waitForSelector("#goPractice");
+    const sid = await p.evaluate(() => window.__playtest.sid);
+    await ctx.close();
+    must(sid.startsWith("5e5e5e5e-owner-"), "owner device id is " + sid);
+    await landed(sid, (r) => ev(r, "session_start"), "owner session stored");
+    return "owner plays stored, excluded from stats";
+  }],
   feedback_form: ["Feedback form: rating, tags, text, send; stored with context", async () => {
     const p = await page();
     await p.click(".pt-fab"); await p.click("#pt-cancel");
@@ -256,6 +285,8 @@ const WIRES = {
     await p.goto(BASE + "/admin/"); await p.fill("#tok", TOKEN); await p.click("#login button");
     await p.waitForFunction(() => /Updated/.test(document.querySelector("#status").textContent), null, { timeout: 10000 });
     must(await p.locator("text=Rounds by mode").isVisible(), "dashboard did not render");
+    for (const h of ["Audience", "Play time", "Daily", "Speed", "Errors on testers' devices", "Platforms"]) must(await p.locator("h2", { hasText: h }).count(), "dashboard section missing: " + h);
+    must(await p.locator("#dl").isVisible(), "download button missing");
     await p.close(); return `locked, renders, ${s.totals.sessions} real testers counted`;
   }],
   api_guard: ["APIs reject garbage, oversize and empty input", async () => {

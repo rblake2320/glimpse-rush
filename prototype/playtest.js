@@ -13,8 +13,12 @@
     set(k, v) { try { localStorage.setItem("gr.pt." + k, v); } catch { /* private mode */ } },
   };
   const rid = () => (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(16).slice(2).padEnd(24, "0") + Date.now().toString(16));
+  // Owner/team devices: open the site once with ?owner=1 and this browser's plays are stored but never counted in the stats.
+  if (/[?&]owner=1/.test(location.search)) { ls.set("owner", "1"); ls.set("sid", ""); }
+  const owner = ls.get("owner") === "1";
   let sid = ls.get("sid");
-  if (!sid) { sid = rid(); }
+  if (owner && sid && !sid.startsWith("5e5e5e5e")) sid = "";
+  if (!sid) { sid = owner ? "5e5e5e5e-owner-" + rid().replace(/-/g, "").slice(0, 16) : rid(); }
   let consent = ls.get("consent"); // "yes" | "no" | null
   if (consent === "yes") ls.set("sid", sid);
 
@@ -22,6 +26,26 @@
     device: (/Mobi|Android|iPhone|iPad/.test(navigator.userAgent) ? "mobile" : "desktop") + (matchMedia("(pointer:coarse)").matches ? "-touch" : "-mouse"),
     viewport: innerWidth + "x" + innerHeight, lang: navigator.language, build: BUILD,
   });
+
+  const ua = navigator.userAgent;
+  const platform = () => ({
+    os: /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? "ios" : /Android/.test(ua) ? "android"
+      : /Windows/.test(ua) ? "windows" : /Mac OS X/.test(ua) ? "mac" : /CrOS/.test(ua) ? "chromeos" : /Linux/.test(ua) ? "linux" : "other",
+    browser: /SamsungBrowser/.test(ua) ? "samsung" : /Edg\//.test(ua) ? "edge" : /OPR\//.test(ua) ? "opera" : /FxiOS|Firefox/.test(ua) ? "firefox"
+      : /CriOS|Chrome/.test(ua) ? "chrome" : /Safari/.test(ua) ? "safari" : "other",
+    inapp: /FBAN|FBAV|Instagram|Line\/|wv\)|GSA\//.test(ua),
+    screen: screen.width + "x" + screen.height, dpr: Math.round(devicePixelRatio * 100) / 100,
+    net: navigator.connection?.effectiveType ?? null, save_data: !!navigator.connection?.saveData,
+    standalone: matchMedia("(display-mode: standalone)").matches,
+  });
+  // page speed from the browser's own timing (ms)
+  const pageTiming = () => {
+    const n = performance.getEntriesByType("navigation")[0];
+    if (!n) return null;
+    const r = (v) => (v > 0 ? Math.round(v) : null);
+    return { ttfb: r(n.responseStart), dom_ready: r(n.domContentLoadedEventEnd), load: r(n.loadEventEnd), kb: n.transferSize ? Math.round(n.transferSize / 1024) : null };
+  };
+  const median = (a) => { if (!a.length) return null; const b = [...a].sort((x, y) => x - y); return b[Math.floor(b.length / 2)]; };
 
   /* ---------- event queue ---------- */
   let q = [];
@@ -38,11 +62,42 @@
       if (navigator.sendBeacon("/api/e", new Blob([body], { type: "application/json" }))) q = q.slice(batch.length);
       return;
     }
+    const t0 = performance.now();
     fetch("/api/e", { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true })
-      .then((r) => { if (r.ok || r.status === 400) q = q.slice(batch.length); })
+      .then((r) => { apiMs.push(Math.round(performance.now() - t0)); if (apiMs.length > 50) apiMs.shift(); if (r.ok || r.status === 400) q = q.slice(batch.length); })
       .catch(() => {});
   };
   setInterval(() => flush(false), 4000);
+  const apiMs = [];
+
+  /* ---------- play time: active = page visible; heartbeat every 30 s and whenever the page is hidden ---------- */
+  const visit = rid().slice(0, 12); // one page load; a player (sid) has many visits
+  let activeMs = 0, visibleSince = document.hidden ? null : performance.now(), rounds = 0;
+  const active = () => activeMs + (visibleSince !== null ? performance.now() - visibleSince : 0);
+  const heartbeat = (final) => {
+    const roomRtt = typeof G !== "undefined" && G.room && G.room.rtt ? G.room.rtt : null;
+    track("heartbeat", { mode: S.R ? S.R.mode : null, data: { visit, active_ms: Math.round(active()), total_ms: Math.round(performance.now()), rounds,
+      screen: S.screen, api_ms: median(apiMs), room_rtt: roomRtt, final: !!final } });
+  };
+  setInterval(() => { if (!document.hidden) heartbeat(false); }, 30000);
+
+  /* ---------- errors on the tester's device (deduped, max 10 per visit) ---------- */
+  const seenErr = new Set();
+  const reportError = (kind, msg, where, stack) => {
+    const key = kind + "|" + msg + "|" + where;
+    if (seenErr.has(key) || seenErr.size >= 10) return;
+    seenErr.add(key);
+    track("client_error", { mode: S.R ? S.R.mode : null, photo_id: S.R && S.R.photo ? String(S.R.photo.slug ?? S.R.photo.id) : null,
+      data: { kind, msg: String(msg).slice(0, 200), where: String(where || "").slice(0, 160), stack: String(stack || "").split("\n").slice(0, 4).join(" | ").slice(0, 400), screen: S.screen } });
+    flush(false);
+  };
+  addEventListener("error", (e) => {
+    const t = e.target;
+    if (t && t !== window && (t.tagName === "IMG" || t.tagName === "SCRIPT" || t.tagName === "LINK")) {
+      reportError("resource", t.tagName.toLowerCase() + " failed to load", (t.currentSrc || t.src || t.href || "").replace(location.origin, "").slice(0, 160));
+    } else reportError("js", e.message, `${(e.filename || "").replace(location.origin, "")}:${e.lineno}:${e.colno}`, e.error && e.error.stack);
+  }, true);
+  addEventListener("unhandledrejection", (e) => reportError("promise", e.reason && (e.reason.message || e.reason), "", e.reason && e.reason.stack));
 
   const abandonIfOpen = (reason) => {
     const R = S.R;
@@ -53,8 +108,11 @@
         data: { reason, phase: R.phase, frozen: !!R.frozen, freezes: R.freezesUsed, ms: Math.round(performance.now() - (R._t0 || 0)) } });
     }
   };
-  addEventListener("pagehide", () => { abandonIfOpen("closed"); flush(true); });
-  document.addEventListener("visibilitychange", () => { if (document.hidden) flush(true); });
+  addEventListener("pagehide", () => { abandonIfOpen("closed"); heartbeat(true); flush(true); });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { if (visibleSince !== null) { activeMs += performance.now() - visibleSince; visibleSince = null; } heartbeat(true); flush(true); }
+    else visibleSince = performance.now();
+  });
 
   /* ---------- wrap the game ---------- */
   const wrap = (name, fn) => {
@@ -62,15 +120,21 @@
     if (typeof orig !== "function") return;
     window[name] = function (...a) { return fn(orig, a, this); };
   };
+  const imgMs = (photo) => {
+    if (!photo || !photo.src || photo.src.startsWith("data:")) return null;
+    const e = performance.getEntriesByName(new URL(photo.src, location.href).href)[0];
+    return e ? Math.round(e.duration) : null;
+  };
   const safe = (f) => { try { f(); } catch (e) { /* telemetry must never break the game */ } };
   const pid = (R) => (R && R.photo ? String(R.photo.slug ?? R.photo.id) : null);
 
   wrap("run", (orig, [R]) => {
     const out = orig(R);
     safe(() => {
-      R._t0 = performance.now();
+      R._t0 = performance.now(); rounds++;
       track("round_start", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
-        data: { scr: R.scr, hint: !!R.hint, seed: R.seed, custom: !!(R.photo && R.photo.src) } });
+        data: { scr: R.scr, hint: !!R.hint, seed: R.seed, custom: !!(R.photo && R.photo.custom),
+          img_ms: imgMs(R.photo) } }); // how long the photo took to download (null if not yet loaded or embedded)
     });
     return out;
   });
@@ -95,7 +159,8 @@
         const text = String(a[0] ?? "").trim().slice(0, 80);
         if (m.kind === "wrong") (R._wrong = R._wrong || []).push(text);
         track("answer", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
-          data: { kind: m.kind, why: m.why, text, n: R.frozen.freezeNo } });
+          data: { kind: m.kind, why: m.why, text, n: R.frozen.freezeNo,
+            rt: Math.max(0, Math.round(GAME.ANSWER_WINDOW_MS - (R.frozen.deadline - performance.now()))) } }); // ms from freeze to submit
       }
     });
     return m;
@@ -125,6 +190,7 @@
     track("round_end", { mode: R.mode, round_no: R.roundNo, photo_id: pid(R), grid: R.N,
       data: { outcome, score: d ? d.score : 0, shown: d ? d.s : null, el: d ? d.el : null, freezes: R.freezesUsed,
         ms: Math.round(performance.now() - (R._t0 || 0)), hint: !!R.hint, scr: R.scr } });
+    heartbeat(false); // play time is saved at every round end, so a lost close-time message costs at most one round
   };
 
   wrap("renderResults", (orig, a) => {
@@ -141,7 +207,7 @@
     const B = S.blitz, R = S.R;
     safe(() => { if (R && R.done && R.partialOpen && !R.flash) reportEnd(R, "partial"); if (R) R._rep = 1; }); // run over: the open photo is not an abandon
     const out = orig(...a);
-    safe(() => track("blitz_end", { mode: "blitz", data: { total: B.total, photos: B.used.length } }));
+    safe(() => { track("blitz_end", { mode: "blitz", data: { total: B.total, photos: B.used.length } }); heartbeat(false); });
     safe(addRunFeedback);
     return out;
   });
@@ -284,7 +350,7 @@
   }
 
   function startSession() {
-    track("session_start", { data: { ref: document.referrer ? new URL(document.referrer).hostname : null, standalone: matchMedia("(display-mode: standalone)").matches } });
+    track("session_start", { data: { ref: document.referrer ? new URL(document.referrer).hostname : null, visit, ...platform(), page: pageTiming() } });
     track("screen", { data: { name: S.screen } });
     flush(false);
   }

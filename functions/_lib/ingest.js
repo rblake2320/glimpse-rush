@@ -1,7 +1,7 @@
 // Pure validation/sanitising for playtest payloads. No I/O, so it is unit-tested directly.
 export const EVENT_TYPES = new Set([
   "session_start", "round_start", "freeze", "answer", "freeze_fail", "round_end",
-  "round_abandon", "blitz_end", "screen", "feedback_open",
+  "round_abandon", "blitz_end", "screen", "feedback_open", "heartbeat", "client_error",
 ]);
 export const TAGS = new Set([
   "fun", "too_hard", "too_easy", "unfair_scoring", "confusing", "too_slow",

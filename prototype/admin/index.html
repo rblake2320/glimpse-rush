@@ -16,6 +16,7 @@ input,button{font:inherit;background:var(--panel);color:var(--ink);border:1px so
 <h1>Glimpse Rush playtest results</h1>
 <p class="dim" id="status">Enter the admin token to load results.</p>
 <form id="login"><input id="tok" type="password" placeholder="Admin token" autocomplete="current-password" aria-label="Admin token"> <button>Load</button></form>
+<p><button type="button" id="dl" hidden>Download all numbers (JSON)</button></p>
 <div id="out"></div>
 <script>
 const $=s=>document.querySelector(s), out=$("#out");
@@ -29,6 +30,19 @@ function render(s){
   out.replaceChildren();
   const T=s.totals;
   out.append(h("div",{class:"cards"},...[["Testers",T.sessions],["Active (24h)",T.sessions_24h],["Events",T.events],["Feedback",T.feedback],["Avg rating",(s.rating.avg??"—")+(s.rating.n?` (${s.rating.n})`:"")]].map(([l,v])=>h("div",{class:"card"},h("span",{class:"dim"},l),h("b",{},v)))));
+  const A=s.audience||{},P=s.playTime||{},V=s.speed||{},pct=r=>r&&r.pct!==null?`${r.pct}% (${r.returned}/${r.eligible})`:"not enough days yet";
+  const cards=(rows)=>h("div",{class:"cards"},...rows.map(([l,v])=>h("div",{class:"card"},h("span",{class:"dim"},l),h("b",{},v??"—"))));
+  section("Audience","Players are anonymous browser IDs from testers who agreed to share data. Day-N retention = share of players active exactly N days after their first day.",
+    cards([["Players",A.players],["Active today",A.active_1d],["Active 7 days",A.active_7d],["Active 30 days",A.active_30d],["Came back another day",A.returning_players],["Visits per player",A.visits_per_player],["Day-1 retention",pct(A.retention_d1)],["Day-7 retention",pct(A.retention_d7)],["Day-30 retention",pct(A.retention_d30)]]));
+  section("Play time","Active time with the game on screen, per visit.",cards([["Visits",P.visits],["Median visit",P.median_min!=null?P.median_min+" min":null],["Average visit",P.avg_min!=null?P.avg_min+" min":null],["Total play",P.total_hours!=null?P.total_hours+" h":null],["Rounds per visit",P.rounds_per_visit]]));
+  out.append(table(P.buckets||[],[["range","Visit length"],["n","Visits",1]]));
+  section("Daily","Last 30 days.",table(s.daily||[],[["day","Day"],["players","Players",1],["new_players","New",1],["visits","Visits",1],["rounds","Rounds",1],["active_min","Play min",1],["avg_visit_min","Avg visit min",1]]));
+  const am=(V.answer_ms||[]).map(r=>({...r,median_s:r.median_ms!=null?(r.median_ms/1000).toFixed(1)+" s":"—",correct_s:r.correct_median_ms!=null?(r.correct_median_ms/1000).toFixed(1)+" s":"—"}));
+  section("Speed","Medians measured on testers' devices.",cards([["Page first byte",V.page_ttfb_ms!=null?V.page_ttfb_ms+" ms":null],["Page fully loaded",V.page_load_ms!=null?V.page_load_ms+" ms":null],["Page size",V.page_kb!=null?V.page_kb+" KB":null],["Photo download",V.photo_ms!=null?V.photo_ms+" ms":null],["Server reply",V.api_ms!=null?V.api_ms+" ms":null],["Live room round trip",V.room_rtt_ms!=null?V.room_rtt_ms+" ms":null]]));
+  out.append(table(am,[["mode","Mode"],["answers","Answers",1],["median_s","Time to answer",1],["correct_s","Time to a correct answer",1]]));
+  section("Errors on testers' devices","Crashes and files that failed to load. Anything here is a bug to fix.",table((s.errors||[]).map(e=>({...e,last:when(e.last)})),[["kind","Kind"],["msg","Message"],["where","Where"],["n","Times",1],["players","Players",1],["last","Last seen"]]));
+  const pl=s.platforms||{};
+  section("Platforms",`In-app browsers (Facebook, Instagram…): ${pl.inapp??0} · installed to home screen: ${pl.standalone??0}`,h("div",{class:"cards"},h("div",{},table(pl.os||[],[["os","System"],["n","Visits",1]])),h("div",{},table(pl.browser||[],[["browser","Browser"],["n","Visits",1]])),h("div",{},table(pl.net||[],[["net","Network"],["n","Visits",1]]))));
   section("Rounds by mode","Started vs finished vs abandoned. A high abandon rate on one mode means people are bailing there.",table(s.funnel.map(r=>({...r,abandon:r.started?Math.round(100*r.abandoned/r.started)+"%":"—"})),[["mode","Mode"],["started","Started",1],["ended","Finished",1],["abandoned","Abandoned",1],["abandon","Abandon %",1]]));
   section("Outcomes","What happened at the end of each round.",table(s.outcomes,[["mode","Mode"],["outcome","Outcome"],["n","Rounds",1],["avg_score","Avg score",1]]));
   section("By grid size","Is a grid too easy (frozen early, always right) or too hard?",table(s.byGrid,[["grid","Tiles",1],["rounds","Rounds",1],["pct_correct","% correct",1],["avg_tiles_at_freeze","Avg tiles shown at freeze",1],["avg_score","Avg score",1]]));
@@ -55,6 +69,7 @@ async function load(){
     if(r.status===401){$("#status").textContent="Wrong token.";return}
     if(!r.ok)throw new Error(r.status);
     const s=await r.json();$("#status").textContent="Updated "+when(s.generated);render(s);
+    const dl=$("#dl");dl.hidden=false;dl.onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(s,null,1)],{type:"application/json"}));a.download="glimpse-rush-playtest-"+new Date(s.generated).toISOString().slice(0,10)+".json";a.click()};
   }catch(e){$("#status").textContent="Couldn't load: "+e.message}
 }
 $("#login").addEventListener("submit",e=>{e.preventDefault();load()});
