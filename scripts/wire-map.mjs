@@ -68,7 +68,7 @@ function inventory() {
   const pool = pjs ? JSON.parse(pjs.slice(pjs.indexOf("=") + 1).trim().replace(/;$/, "")) : [];
   const inPool = new Set(pool.map((p) => p.slug));
   const notSourced = catalog.filter((c) => !inPool.has(c.slug)).map((c) => c.slug);
-  for (const p of pool) if (!existsSync(join(ROOT, "prototype", p.src))) rows.push({ kind: "photo", name: p.slug, state: "red", why: "listed in photos.js but the image file is missing" });
+  for (const p of pool) if (!existsSync(join(ROOT, "prototype", p.src.split("?")[0]))) rows.push({ kind: "photo", name: p.slug, state: "red", why: "listed in photos.js but the image file is missing" });
   return { found, rows, emitted, photos: { catalog: catalog.length, pool: pool.length, notSourced }, pool };
 }
 

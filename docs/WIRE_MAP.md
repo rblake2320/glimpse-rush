@@ -1,12 +1,12 @@
 # Glimpse Rush wire map
 
-Run 2026-10-03T23:26:01.108Z against https://glimpse-rush.pages.dev. **All wired.** Regenerate: `node scripts/wire-map.mjs`.
+Run 2026-10-04T05:28:08.017Z against https://glimpse-rush.pages.dev. **All wired.** Regenerate: `node scripts/wire-map.mjs`.
 
 🟢 works and its completion is recorded · 🟡 promised but not built yet (kept visible) · 🔴 broken, unregistered or dead (fails the build)
 
 ## Inventory
 
-Discovered in code: 79 ui, 8 screen, 4 mode, 7 api, 12 event, 11 tag. Photos: 63 in the pool of 82 catalogued (not sourced yet: eiffel-tower, statue-of-liberty, taj-mahal, christ-the-redeemer, angkor-wat, burj-khalifa, mount-fuji, brooklyn-bridge, hollywood-sign, golden-retriever, lion, cow, chair, guitar, piano, typewriter, hot-air-balloon, lighthouse, strawberry).
+Discovered in code: 79 ui, 8 screen, 4 mode, 7 api, 12 event, 11 tag. Photos: 269 in the pool of 348 catalogued (not sourced yet: taj-mahal, christ-the-redeemer, angkor-wat, burj-khalifa, mount-fuji, hollywood-sign, golden-retriever, lion, cow, chair, guitar, piano, typewriter, hot-air-balloon, lighthouse, gorilla, rhinoceros, leopard, jaguar, llama, pig, donkey, otter, meerkat, seal, penguin-chick, lobster, stingray, scorpion, sacre-coeur, mont-saint-michel, florence-cathedral, sagrada-familia, kremlin, sphinx, victoria-falls, kilimanjaro, great-barrier-reef, golden-temple, sushi, spaghetti, popcorn, pretzel, cheese, coconut, broccoli, corn, teddy-bear, camera, radio, television, lamp, light-bulb, paintbrush, pencil, globe, lock, mailbox, traffic-light, ladder, watering-can, anchor, trumpet, saxophone, harp, accordion, banjo, xylophone, baseball, surfboard, skis, ice-skates, gondola, airplane, rocket, lightning, tornado, rose, moon).
 
 - No unregistered, dead or mismatched elements.
 
@@ -22,26 +22,29 @@ Discovered in code: 79 ui, 8 screen, 4 mode, 7 api, 12 event, 11 tag. Photos: 63
 | 🟢 | giveup | Give up reveals the photo and records the outcome; Back returns home | gave_up landed, home reached |  |
 | 🟢 | unfreeze | Unfreeze spends a freeze and is recorded | freeze spent, freeze_fail landed |  |
 | 🟢 | options | Practice grid, scramble and hint options reach the round | 9 tiles, scramble 1, hint on |  |
-| 🟢 | blitz | Blitz: answer, skip, end run, run again; run total recorded | run total 1901 recorded |  |
+| 🟢 | blitz | Blitz: answer, skip, end run, run again; run total recorded | run total 1900 recorded |  |
 | 🟢 | world | World Live: join, freeze, answer, results with leaderboard, next round | leaderboard shown, round_end landed |  |
 | 🟢 | group_reconnect | Group Room survives reloads: guest returns to the live round with their score; host keeps the game; unknown codes explain themselves | guest + host reload mid-game, scores kept, game continued |  |
-| 🟢 | world_live_board | World Live is live: players in the same round see each other's real scores within a second | both boards had both within 252 ms |  |
-| 🟢 | world_same | World Live is the same round on every device at the same moment, even with a wrong device clock | plain sea-turtle 3 ms apart; scrambled owl 3 ms apart (one device clock 9 s fast) |  |
+| 🟢 | world_live_board | World Live is live: players in the same round see each other's real scores within a second | both boards had both within 212 ms |  |
+| 🟢 | auto_update | Open pages pick up a new deploy by themselves, but never in the middle of a round | noticed mid-round, waited, reloaded on the results screen |  |
+| 🟢 | a11y | Accessibility: no WCAG 2 A/AA violations on home, a selected option, or group setup (axe-core) | 0 violations |  |
+| 🟢 | static_files | Icons, manifest, robots, share image and a real 404 are served; photos cached for a year | all present; CSP, HSTS, frame and permissions headers set |  |
+| 🟢 | world_same | World Live is the same round on every device at the same moment, even with a wrong device clock | plain pancakes 0 ms apart; scrambled pug 0 ms apart (one device clock 9 s fast) |  |
 | 🟢 | world_scr | World Live: Scrambled: every round shuffled + turned, x1.5 score, own board, recorded as its own mode | scrambled round played, recorded as world_scr |  |
 | 🟢 | abandon | Quitting a round before it ends is recorded | round_abandon landed |  |
-| 🟢 | visit_data | Visit data lands: device details, page speed, answer time, play time, errors | windows/chrome, first byte 117 ms, 4 s active, error captured |  |
+| 🟢 | visit_data | Visit data lands: device details, page speed, answer time, play time, errors | windows/chrome, first byte 160 ms, 4 s active, error captured |  |
 | 🟢 | owner_device | ?owner=1 marks a device so its plays are never counted | owner plays stored, excluded from stats |  |
 | 🟢 | feedback_form | Feedback form: rating, tags, text, send; stored with context | feedback stored (1 rows for this session) |  |
 | 🟢 | round_reaction | Round thumbs and 'should count' flag are stored per photo | thumbs + dispute stored |  |
-| 🟢 | admin | Admin results are locked without the token, load with it, and exclude test traffic | locked, renders, 2 real testers counted |  |
+| 🟢 | admin | Admin results are locked without the token, load with it, and exclude test traffic | locked, renders, 3 real testers counted |  |
 | 🟢 | api_guard | APIs reject garbage, oversize and empty input | 400 / 413 / 400 |  |
 | 🟢 | headers | Security and no-index headers are served | noindex on /admin, nosniff |  |
-| 🟢 | photos | Every built-in photo loads at 900x900 with an allowed licence, answers and a credit | 63 photos OK |  |
+| 🟢 | photos | Every built-in photo loads at 900x900 with an allowed licence, answers and a credit | 269 photos OK |  |
 | 🟢 | selftest | Scoring self-test in the page passes every spec vector | 38/38 pass |  |
 | 🟢 | pack | Your own photos: add a photo from the device, name the pack, back out | 1 photo added |  |
-| 🟡 | pack_persist | Your own photos survive a reload | after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site) | 2026-10-03T23:25:12.430Z |
+| 🟡 | pack_persist | Your own photos survive a reload | after reload the pack has 0 photos (saving needs the claude.ai asset store; not available on this site) | 2026-10-04T05:19:15.140Z |
 | 🟢 | profile | Player name is saved on the device | kept after reload |  |
-| 🟢 | group | Group Room: host shares a link, a friend joins with just a name, both play the same round live | joined via invite in 208 ms, round start skew 2 ms, boards match |  |
+| 🟢 | group | Group Room: host shares a link, a friend joins with just a name, both play the same round live | joined via invite in 247 ms, round start skew 1 ms, boards match |  |
 
 ## Open promises
 
