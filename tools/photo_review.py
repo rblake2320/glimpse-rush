@@ -40,5 +40,8 @@ elif sys.argv[1] == "decide" and sys.argv[2] == "reject":
         else:
             print("not found:", s)
     save(SRC, src); save(REJ, rej); print("rejected", len(sys.argv) - 3)
+elif sys.argv[1] == "decide" and sys.argv[2] == "accept":
+    ok = [s for s in sys.argv[3:] if s in pending]
+    rev += ok; save(REV, sorted(set(rev))); print("accepted", len(ok), "| not pending:", [s for s in sys.argv[3:] if s not in pending])
 elif sys.argv[1] == "decide" and sys.argv[2] == "accept-rest":
     rev += pending; save(REV, sorted(set(rev))); print("accepted", len(pending))

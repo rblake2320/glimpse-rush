@@ -46,7 +46,7 @@
  {
   "slug": "taj-mahal",
   "cat": "Famous places",
-  "q": "Taj Mahal Agra India photograph",
+  "q": "Taj Mahal mausoleum front view reflecting pool",
   "accepted": [
    "taj mahal",
    "the taj mahal"
@@ -459,7 +459,7 @@
  {
   "slug": "lion",
   "cat": "Animals",
-  "q": "Lion Panthera leo male Serengeti",
+  "q": "lion Panthera leo portrait savanna",
   "accepted": [
    "lion"
   ],
@@ -752,7 +752,7 @@
  {
   "slug": "chair",
   "cat": "Objects",
-  "q": "wooden chair furniture",
+  "q": "chair furniture design studio",
   "accepted": [
    "chair",
    "wooden chair"
@@ -886,7 +886,7 @@
  {
   "slug": "hot-air-balloon",
   "cat": "Objects",
-  "q": "hot air balloon flying sky",
+  "q": "hot air balloon flight festival",
   "accepted": [
    "hot air balloon"
   ],
@@ -1070,6 +1070,3242 @@
   "partial": [
    "mountain",
    "lava"
+  ]
+ },
+ {
+  "slug": "gorilla",
+  "cat": "Animals",
+  "q": "gorilla",
+  "accepted": [
+   "gorilla",
+   "silverback"
+  ],
+  "partial": [
+   "ape",
+   "monkey",
+   "animal"
+  ]
+ },
+ {
+  "slug": "chimpanzee",
+  "cat": "Animals",
+  "q": "chimpanzee",
+  "accepted": [
+   "chimpanzee",
+   "chimp"
+  ],
+  "partial": [
+   "ape",
+   "monkey",
+   "animal"
+  ]
+ },
+ {
+  "slug": "orangutan",
+  "cat": "Animals",
+  "q": "orangutan",
+  "accepted": [
+   "orangutan",
+   "orang utan"
+  ],
+  "partial": [
+   "ape",
+   "monkey",
+   "animal"
+  ]
+ },
+ {
+  "slug": "kangaroo",
+  "cat": "Animals",
+  "q": "kangaroo",
+  "accepted": [
+   "kangaroo"
+  ],
+  "partial": [
+   "marsupial",
+   "animal"
+  ]
+ },
+ {
+  "slug": "hippopotamus",
+  "cat": "Animals",
+  "q": "Hippopotamus amphibius water",
+  "accepted": [
+   "hippopotamus",
+   "hippo"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "rhinoceros",
+  "cat": "Animals",
+  "q": "white rhinoceros Ceratotherium simum",
+  "accepted": [
+   "rhinoceros",
+   "rhino"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "polar-bear",
+  "cat": "Animals",
+  "q": "polar bear",
+  "accepted": [
+   "polar bear"
+  ],
+  "partial": [
+   "bear",
+   "animal"
+  ]
+ },
+ {
+  "slug": "brown-bear",
+  "cat": "Animals",
+  "q": "brown bear",
+  "accepted": [
+   "brown bear",
+   "grizzly bear",
+   "grizzly"
+  ],
+  "partial": [
+   "bear",
+   "animal"
+  ]
+ },
+ {
+  "slug": "cheetah",
+  "cat": "Animals",
+  "q": "cheetah",
+  "accepted": [
+   "cheetah"
+  ],
+  "partial": [
+   "big cat",
+   "cat",
+   "animal"
+  ]
+ },
+ {
+  "slug": "leopard",
+  "cat": "Animals",
+  "q": "African leopard Panthera pardus",
+  "accepted": [
+   "leopard"
+  ],
+  "partial": [
+   "big cat",
+   "cat",
+   "animal"
+  ]
+ },
+ {
+  "slug": "jaguar",
+  "cat": "Animals",
+  "q": "jaguar",
+  "accepted": [
+   "jaguar"
+  ],
+  "partial": [
+   "big cat",
+   "cat",
+   "animal"
+  ]
+ },
+ {
+  "slug": "wolf",
+  "cat": "Animals",
+  "q": "gray wolf Canis lupus",
+  "accepted": [
+   "wolf",
+   "grey wolf",
+   "gray wolf"
+  ],
+  "partial": [
+   "dog",
+   "animal"
+  ]
+ },
+ {
+  "slug": "deer",
+  "cat": "Animals",
+  "q": "deer",
+  "accepted": [
+   "deer",
+   "red deer",
+   "white-tailed deer"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "moose",
+  "cat": "Animals",
+  "q": "moose",
+  "accepted": [
+   "moose",
+   "elk"
+  ],
+  "partial": [
+   "deer",
+   "animal"
+  ]
+ },
+ {
+  "slug": "camel",
+  "cat": "Animals",
+  "q": "camel",
+  "accepted": [
+   "camel",
+   "dromedary"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "llama",
+  "cat": "Animals",
+  "q": "llama",
+  "accepted": [
+   "llama",
+   "alpaca"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "sheep",
+  "cat": "Animals",
+  "q": "sheep",
+  "accepted": [
+   "sheep",
+   "lamb"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "goat",
+  "cat": "Animals",
+  "q": "goat",
+  "accepted": [
+   "goat"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "pig",
+  "cat": "Animals",
+  "q": "domestic pig Sus domesticus farm",
+  "accepted": [
+   "pig",
+   "piglet",
+   "hog"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "donkey",
+  "cat": "Animals",
+  "q": "donkey Equus asinus",
+  "accepted": [
+   "donkey"
+  ],
+  "partial": [
+   "horse",
+   "animal"
+  ]
+ },
+ {
+  "slug": "rabbit",
+  "cat": "Animals",
+  "q": "rabbit",
+  "accepted": [
+   "rabbit",
+   "bunny",
+   "hare"
+  ],
+  "partial": [
+   "animal",
+   "pet"
+  ]
+ },
+ {
+  "slug": "squirrel",
+  "cat": "Animals",
+  "q": "squirrel",
+  "accepted": [
+   "squirrel"
+  ],
+  "partial": [
+   "rodent",
+   "animal"
+  ]
+ },
+ {
+  "slug": "hedgehog",
+  "cat": "Animals",
+  "q": "hedgehog",
+  "accepted": [
+   "hedgehog"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "raccoon",
+  "cat": "Animals",
+  "q": "raccoon",
+  "accepted": [
+   "raccoon"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "beaver",
+  "cat": "Animals",
+  "q": "North American beaver Castor canadensis",
+  "accepted": [
+   "beaver"
+  ],
+  "partial": [
+   "rodent",
+   "animal"
+  ]
+ },
+ {
+  "slug": "otter",
+  "cat": "Animals",
+  "q": "Eurasian otter Lutra lutra",
+  "accepted": [
+   "otter",
+   "sea otter"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "meerkat",
+  "cat": "Animals",
+  "q": "meerkat",
+  "accepted": [
+   "meerkat"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "sloth",
+  "cat": "Animals",
+  "q": "brown-throated sloth Bradypus",
+  "accepted": [
+   "sloth"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "armadillo",
+  "cat": "Animals",
+  "q": "nine-banded armadillo Dasypus",
+  "accepted": [
+   "armadillo"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "bison",
+  "cat": "Animals",
+  "q": "bison",
+  "accepted": [
+   "bison",
+   "buffalo"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "crocodile",
+  "cat": "Animals",
+  "q": "Nile crocodile Crocodylus niloticus",
+  "accepted": [
+   "crocodile",
+   "alligator"
+  ],
+  "partial": [
+   "reptile",
+   "animal"
+  ]
+ },
+ {
+  "slug": "snake",
+  "cat": "Animals",
+  "q": "snake",
+  "accepted": [
+   "snake",
+   "python",
+   "boa"
+  ],
+  "partial": [
+   "reptile",
+   "animal"
+  ]
+ },
+ {
+  "slug": "frog",
+  "cat": "Animals",
+  "q": "frog",
+  "accepted": [
+   "frog",
+   "tree frog"
+  ],
+  "partial": [
+   "amphibian",
+   "animal"
+  ]
+ },
+ {
+  "slug": "iguana",
+  "cat": "Animals",
+  "q": "iguana",
+  "accepted": [
+   "iguana"
+  ],
+  "partial": [
+   "lizard",
+   "reptile"
+  ]
+ },
+ {
+  "slug": "tortoise",
+  "cat": "Animals",
+  "q": "tortoise",
+  "accepted": [
+   "tortoise",
+   "giant tortoise"
+  ],
+  "partial": [
+   "turtle",
+   "reptile"
+  ]
+ },
+ {
+  "slug": "seal",
+  "cat": "Animals",
+  "q": "harbor seal Phoca vitulina",
+  "accepted": [
+   "seal",
+   "harbor seal"
+  ],
+  "partial": [
+   "sea animal",
+   "animal"
+  ]
+ },
+ {
+  "slug": "walrus",
+  "cat": "Animals",
+  "q": "walrus",
+  "accepted": [
+   "walrus"
+  ],
+  "partial": [
+   "sea animal",
+   "animal"
+  ]
+ },
+ {
+  "slug": "dalmatian",
+  "cat": "Animals",
+  "q": "dalmatian",
+  "accepted": [
+   "dalmatian"
+  ],
+  "partial": [
+   "dog",
+   "puppy"
+  ]
+ },
+ {
+  "slug": "german-shepherd",
+  "cat": "Animals",
+  "q": "german shepherd",
+  "accepted": [
+   "german shepherd",
+   "alsatian"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "husky",
+  "cat": "Animals",
+  "q": "husky",
+  "accepted": [
+   "husky",
+   "siberian husky"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "poodle",
+  "cat": "Animals",
+  "q": "poodle",
+  "accepted": [
+   "poodle"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "labrador",
+  "cat": "Animals",
+  "q": "labrador",
+  "accepted": [
+   "labrador",
+   "labrador retriever"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "bulldog",
+  "cat": "Animals",
+  "q": "bulldog",
+  "accepted": [
+   "bulldog"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "corgi",
+  "cat": "Animals",
+  "q": "corgi",
+  "accepted": [
+   "corgi"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "pug",
+  "cat": "Animals",
+  "q": "pug",
+  "accepted": [
+   "pug"
+  ],
+  "partial": [
+   "dog"
+  ]
+ },
+ {
+  "slug": "parrot",
+  "cat": "Birds",
+  "q": "scarlet macaw parrot Ara macao",
+  "accepted": [
+   "parrot",
+   "macaw"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "toucan",
+  "cat": "Birds",
+  "q": "toucan",
+  "accepted": [
+   "toucan"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "hummingbird",
+  "cat": "Birds",
+  "q": "hummingbird",
+  "accepted": [
+   "hummingbird"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "swan",
+  "cat": "Birds",
+  "q": "mute swan Cygnus olor",
+  "accepted": [
+   "swan"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "duck",
+  "cat": "Birds",
+  "q": "duck",
+  "accepted": [
+   "duck",
+   "mallard"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "goose",
+  "cat": "Birds",
+  "q": "goose",
+  "accepted": [
+   "goose"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "pelican",
+  "cat": "Birds",
+  "q": "pelican",
+  "accepted": [
+   "pelican"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "puffin",
+  "cat": "Birds",
+  "q": "puffin",
+  "accepted": [
+   "puffin"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "ostrich",
+  "cat": "Birds",
+  "q": "ostrich",
+  "accepted": [
+   "ostrich"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "penguin-chick",
+  "cat": "Birds",
+  "q": "penguin chick",
+  "accepted": [
+   "penguin chick"
+  ],
+  "partial": [
+   "penguin",
+   "bird"
+  ]
+ },
+ {
+  "slug": "robin",
+  "cat": "Birds",
+  "q": "robin",
+  "accepted": [
+   "robin",
+   "european robin"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "woodpecker",
+  "cat": "Birds",
+  "q": "woodpecker",
+  "accepted": [
+   "woodpecker"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "kingfisher",
+  "cat": "Birds",
+  "q": "kingfisher",
+  "accepted": [
+   "kingfisher"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "rooster",
+  "cat": "Birds",
+  "q": "rooster chicken Gallus gallus",
+  "accepted": [
+   "rooster",
+   "chicken",
+   "cockerel"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "heron",
+  "cat": "Birds",
+  "q": "heron",
+  "accepted": [
+   "heron"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "seagull",
+  "cat": "Birds",
+  "q": "seagull",
+  "accepted": [
+   "seagull",
+   "gull"
+  ],
+  "partial": [
+   "bird"
+  ]
+ },
+ {
+  "slug": "shark",
+  "cat": "Sea life",
+  "q": "shark underwater fish",
+  "accepted": [
+   "shark",
+   "great white shark"
+  ],
+  "partial": [
+   "fish"
+  ]
+ },
+ {
+  "slug": "whale",
+  "cat": "Sea life",
+  "q": "whale",
+  "accepted": [
+   "whale",
+   "humpback whale"
+  ],
+  "partial": [
+   "sea animal"
+  ]
+ },
+ {
+  "slug": "jellyfish",
+  "cat": "Sea life",
+  "q": "jellyfish",
+  "accepted": [
+   "jellyfish"
+  ],
+  "partial": [
+   "sea animal"
+  ]
+ },
+ {
+  "slug": "starfish",
+  "cat": "Sea life",
+  "q": "starfish",
+  "accepted": [
+   "starfish",
+   "sea star"
+  ],
+  "partial": [
+   "sea animal"
+  ]
+ },
+ {
+  "slug": "seahorse",
+  "cat": "Sea life",
+  "q": "seahorse Hippocampus underwater",
+  "accepted": [
+   "seahorse",
+   "sea horse"
+  ],
+  "partial": [
+   "fish"
+  ]
+ },
+ {
+  "slug": "clownfish",
+  "cat": "Sea life",
+  "q": "clownfish",
+  "accepted": [
+   "clownfish"
+  ],
+  "partial": [
+   "fish"
+  ]
+ },
+ {
+  "slug": "goldfish",
+  "cat": "Sea life",
+  "q": "goldfish",
+  "accepted": [
+   "goldfish"
+  ],
+  "partial": [
+   "fish"
+  ]
+ },
+ {
+  "slug": "lobster",
+  "cat": "Sea life",
+  "q": "European lobster Homarus",
+  "accepted": [
+   "lobster"
+  ],
+  "partial": [
+   "seafood",
+   "sea animal"
+  ]
+ },
+ {
+  "slug": "stingray",
+  "cat": "Sea life",
+  "q": "stingray fish Dasyatis underwater",
+  "accepted": [
+   "stingray",
+   "ray"
+  ],
+  "partial": [
+   "fish"
+  ]
+ },
+ {
+  "slug": "coral-reef",
+  "cat": "Sea life",
+  "q": "coral reef underwater fish colorful",
+  "accepted": [
+   "coral reef",
+   "coral"
+  ],
+  "partial": [
+   "reef",
+   "sea"
+  ]
+ },
+ {
+  "slug": "beetle",
+  "cat": "Insects",
+  "q": "stag beetle Lucanus cervus",
+  "accepted": [
+   "beetle",
+   "stag beetle"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "caterpillar",
+  "cat": "Insects",
+  "q": "caterpillar",
+  "accepted": [
+   "caterpillar"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "snail",
+  "cat": "Insects",
+  "q": "snail",
+  "accepted": [
+   "snail"
+  ],
+  "partial": [
+   "animal"
+  ]
+ },
+ {
+  "slug": "scorpion",
+  "cat": "Insects",
+  "q": "scorpion arachnid",
+  "accepted": [
+   "scorpion"
+  ],
+  "partial": [
+   "bug"
+  ]
+ },
+ {
+  "slug": "firefly",
+  "cat": "Insects",
+  "q": "firefly insect Lampyridae",
+  "accepted": [
+   "firefly"
+  ],
+  "partial": [
+   "insect",
+   "bug"
+  ]
+ },
+ {
+  "slug": "moth",
+  "cat": "Insects",
+  "q": "moth",
+  "accepted": [
+   "moth"
+  ],
+  "partial": [
+   "insect",
+   "butterfly"
+  ]
+ },
+ {
+  "slug": "wasp",
+  "cat": "Insects",
+  "q": "wasp",
+  "accepted": [
+   "wasp",
+   "hornet"
+  ],
+  "partial": [
+   "insect",
+   "bee"
+  ]
+ },
+ {
+  "slug": "white-house",
+  "cat": "Famous places",
+  "q": "White House Washington north facade",
+  "accepted": [
+   "white house"
+  ],
+  "partial": [
+   "washington",
+   "building"
+  ]
+ },
+ {
+  "slug": "capitol-building",
+  "cat": "Famous places",
+  "q": "United States Capitol west front",
+  "accepted": [
+   "capitol building",
+   "us capitol",
+   "united states capitol"
+  ],
+  "partial": [
+   "washington",
+   "building"
+  ]
+ },
+ {
+  "slug": "empire-state-building",
+  "cat": "Famous places",
+  "q": "empire state building",
+  "accepted": [
+   "empire state building"
+  ],
+  "partial": [
+   "new york",
+   "skyscraper"
+  ]
+ },
+ {
+  "slug": "times-square",
+  "cat": "Famous places",
+  "q": "Times Square New York night billboards",
+  "accepted": [
+   "times square"
+  ],
+  "partial": [
+   "new york",
+   "city"
+  ]
+ },
+ {
+  "slug": "central-park",
+  "cat": "Famous places",
+  "q": "Central Park Bow Bridge New York",
+  "accepted": [
+   "central park"
+  ],
+  "partial": [
+   "new york",
+   "park"
+  ]
+ },
+ {
+  "slug": "chrysler-building",
+  "cat": "Famous places",
+  "q": "Chrysler Building spire New York",
+  "accepted": [
+   "chrysler building"
+  ],
+  "partial": [
+   "new york",
+   "skyscraper"
+  ]
+ },
+ {
+  "slug": "gateway-arch",
+  "cat": "Famous places",
+  "q": "Gateway Arch St. Louis Missouri",
+  "accepted": [
+   "gateway arch",
+   "st louis arch"
+  ],
+  "partial": [
+   "arch",
+   "st louis"
+  ]
+ },
+ {
+  "slug": "alamo",
+  "cat": "Famous places",
+  "q": "Alamo Mission San Antonio",
+  "accepted": [
+   "alamo",
+   "the alamo"
+  ],
+  "partial": [
+   "texas",
+   "mission"
+  ]
+ },
+ {
+  "slug": "yosemite",
+  "cat": "Famous places",
+  "q": "Yosemite Valley Half Dome",
+  "accepted": [
+   "yosemite",
+   "half dome",
+   "el capitan"
+  ],
+  "partial": [
+   "national park",
+   "mountain"
+  ]
+ },
+ {
+  "slug": "devils-tower",
+  "cat": "Famous places",
+  "q": "devils tower",
+  "accepted": [
+   "devils tower"
+  ],
+  "partial": [
+   "wyoming",
+   "rock"
+  ]
+ },
+ {
+  "slug": "monument-valley",
+  "cat": "Famous places",
+  "q": "monument valley",
+  "accepted": [
+   "monument valley"
+  ],
+  "partial": [
+   "desert",
+   "arizona",
+   "utah"
+  ]
+ },
+ {
+  "slug": "delicate-arch",
+  "cat": "Famous places",
+  "q": "delicate arch",
+  "accepted": [
+   "delicate arch",
+   "arches national park"
+  ],
+  "partial": [
+   "arch",
+   "utah"
+  ]
+ },
+ {
+  "slug": "mount-everest",
+  "cat": "Famous places",
+  "q": "mount everest",
+  "accepted": [
+   "mount everest",
+   "everest"
+  ],
+  "partial": [
+   "mountain",
+   "himalaya"
+  ]
+ },
+ {
+  "slug": "louvre",
+  "cat": "Famous places",
+  "q": "Louvre Pyramid courtyard Paris",
+  "accepted": [
+   "louvre",
+   "louvre pyramid"
+  ],
+  "partial": [
+   "paris",
+   "museum"
+  ]
+ },
+ {
+  "slug": "notre-dame",
+  "cat": "Famous places",
+  "q": "Notre-Dame de Paris facade",
+  "accepted": [
+   "notre dame",
+   "notre-dame de paris"
+  ],
+  "partial": [
+   "paris",
+   "cathedral"
+  ]
+ },
+ {
+  "slug": "sacre-coeur",
+  "cat": "Famous places",
+  "q": "sacre coeur",
+  "accepted": [
+   "sacre coeur",
+   "sacre-coeur"
+  ],
+  "partial": [
+   "paris",
+   "church"
+  ]
+ },
+ {
+  "slug": "mont-saint-michel",
+  "cat": "Famous places",
+  "q": "Mont-Saint-Michel island abbey view",
+  "accepted": [
+   "mont saint michel",
+   "mont-saint-michel"
+  ],
+  "partial": [
+   "france",
+   "island"
+  ]
+ },
+ {
+  "slug": "buckingham-palace",
+  "cat": "Famous places",
+  "q": "buckingham palace",
+  "accepted": [
+   "buckingham palace"
+  ],
+  "partial": [
+   "london",
+   "palace"
+  ]
+ },
+ {
+  "slug": "london-eye",
+  "cat": "Famous places",
+  "q": "london eye",
+  "accepted": [
+   "london eye"
+  ],
+  "partial": [
+   "london",
+   "ferris wheel"
+  ]
+ },
+ {
+  "slug": "st-pauls-cathedral",
+  "cat": "Famous places",
+  "q": "st pauls cathedral",
+  "accepted": [
+   "st pauls cathedral"
+  ],
+  "partial": [
+   "london",
+   "cathedral"
+  ]
+ },
+ {
+  "slug": "edinburgh-castle",
+  "cat": "Famous places",
+  "q": "edinburgh castle",
+  "accepted": [
+   "edinburgh castle"
+  ],
+  "partial": [
+   "scotland",
+   "castle"
+  ]
+ },
+ {
+  "slug": "trevi-fountain",
+  "cat": "Famous places",
+  "q": "trevi fountain",
+  "accepted": [
+   "trevi fountain"
+  ],
+  "partial": [
+   "rome",
+   "fountain"
+  ]
+ },
+ {
+  "slug": "st-peters-basilica",
+  "cat": "Famous places",
+  "q": "st peters basilica",
+  "accepted": [
+   "st peters basilica"
+  ],
+  "partial": [
+   "rome",
+   "vatican",
+   "church"
+  ]
+ },
+ {
+  "slug": "venice",
+  "cat": "Famous places",
+  "q": "Venice Grand Canal Rialto gondola",
+  "accepted": [
+   "venice",
+   "grand canal"
+  ],
+  "partial": [
+   "italy",
+   "canal"
+  ]
+ },
+ {
+  "slug": "florence-cathedral",
+  "cat": "Famous places",
+  "q": "Florence Cathedral Duomo dome Brunelleschi",
+  "accepted": [
+   "florence cathedral",
+   "duomo"
+  ],
+  "partial": [
+   "florence",
+   "cathedral"
+  ]
+ },
+ {
+  "slug": "acropolis",
+  "cat": "Famous places",
+  "q": "acropolis",
+  "accepted": [
+   "acropolis",
+   "parthenon"
+  ],
+  "partial": [
+   "athens",
+   "greece",
+   "temple"
+  ]
+ },
+ {
+  "slug": "santorini",
+  "cat": "Famous places",
+  "q": "santorini",
+  "accepted": [
+   "santorini",
+   "oia"
+  ],
+  "partial": [
+   "greece",
+   "island"
+  ]
+ },
+ {
+  "slug": "brandenburg-gate",
+  "cat": "Famous places",
+  "q": "brandenburg gate",
+  "accepted": [
+   "brandenburg gate"
+  ],
+  "partial": [
+   "berlin",
+   "gate"
+  ]
+ },
+ {
+  "slug": "cologne-cathedral",
+  "cat": "Famous places",
+  "q": "cologne cathedral",
+  "accepted": [
+   "cologne cathedral"
+  ],
+  "partial": [
+   "germany",
+   "cathedral"
+  ]
+ },
+ {
+  "slug": "sagrada-familia",
+  "cat": "Famous places",
+  "q": "Sagrada Familia basilica Barcelona exterior",
+  "accepted": [
+   "sagrada familia"
+  ],
+  "partial": [
+   "barcelona",
+   "church"
+  ]
+ },
+ {
+  "slug": "alhambra",
+  "cat": "Famous places",
+  "q": "alhambra",
+  "accepted": [
+   "alhambra"
+  ],
+  "partial": [
+   "spain",
+   "palace"
+  ]
+ },
+ {
+  "slug": "red-square",
+  "cat": "Famous places",
+  "q": "Saint Basil's Cathedral Moscow",
+  "accepted": [
+   "red square",
+   "st basils cathedral"
+  ],
+  "partial": [
+   "moscow",
+   "russia"
+  ]
+ },
+ {
+  "slug": "kremlin",
+  "cat": "Famous places",
+  "q": "Moscow Kremlin towers walls river",
+  "accepted": [
+   "kremlin"
+  ],
+  "partial": [
+   "moscow",
+   "russia"
+  ]
+ },
+ {
+  "slug": "hagia-sophia",
+  "cat": "Famous places",
+  "q": "hagia sophia",
+  "accepted": [
+   "hagia sophia"
+  ],
+  "partial": [
+   "istanbul",
+   "mosque"
+  ]
+ },
+ {
+  "slug": "blue-mosque",
+  "cat": "Famous places",
+  "q": "blue mosque",
+  "accepted": [
+   "blue mosque",
+   "sultan ahmed mosque"
+  ],
+  "partial": [
+   "istanbul",
+   "mosque"
+  ]
+ },
+ {
+  "slug": "forbidden-city",
+  "cat": "Famous places",
+  "q": "Forbidden City palace Beijing hall",
+  "accepted": [
+   "forbidden city"
+  ],
+  "partial": [
+   "beijing",
+   "palace"
+  ]
+ },
+ {
+  "slug": "tiananmen",
+  "cat": "Famous places",
+  "q": "tiananmen",
+  "accepted": [
+   "tiananmen"
+  ],
+  "partial": [
+   "beijing",
+   "gate"
+  ]
+ },
+ {
+  "slug": "potala-palace",
+  "cat": "Famous places",
+  "q": "potala palace",
+  "accepted": [
+   "potala palace"
+  ],
+  "partial": [
+   "tibet",
+   "palace"
+  ]
+ },
+ {
+  "slug": "golden-pavilion",
+  "cat": "Famous places",
+  "q": "golden pavilion",
+  "accepted": [
+   "golden pavilion",
+   "kinkaku-ji"
+  ],
+  "partial": [
+   "kyoto",
+   "temple"
+  ]
+ },
+ {
+  "slug": "tokyo-tower",
+  "cat": "Famous places",
+  "q": "tokyo tower",
+  "accepted": [
+   "tokyo tower"
+  ],
+  "partial": [
+   "tokyo",
+   "tower"
+  ]
+ },
+ {
+  "slug": "sphinx",
+  "cat": "Famous places",
+  "q": "Great Sphinx of Giza pyramid",
+  "accepted": [
+   "sphinx",
+   "great sphinx"
+  ],
+  "partial": [
+   "egypt",
+   "statue"
+  ]
+ },
+ {
+  "slug": "abu-simbel",
+  "cat": "Famous places",
+  "q": "abu simbel",
+  "accepted": [
+   "abu simbel"
+  ],
+  "partial": [
+   "egypt",
+   "temple"
+  ]
+ },
+ {
+  "slug": "victoria-falls",
+  "cat": "Famous places",
+  "q": "victoria falls",
+  "accepted": [
+   "victoria falls"
+  ],
+  "partial": [
+   "waterfall",
+   "africa"
+  ]
+ },
+ {
+  "slug": "table-mountain",
+  "cat": "Famous places",
+  "q": "table mountain",
+  "accepted": [
+   "table mountain"
+  ],
+  "partial": [
+   "cape town",
+   "mountain"
+  ]
+ },
+ {
+  "slug": "kilimanjaro",
+  "cat": "Famous places",
+  "q": "Mount Kilimanjaro Amboseli elephants",
+  "accepted": [
+   "kilimanjaro",
+   "mount kilimanjaro"
+  ],
+  "partial": [
+   "mountain",
+   "africa"
+  ]
+ },
+ {
+  "slug": "uluru",
+  "cat": "Famous places",
+  "q": "uluru",
+  "accepted": [
+   "uluru",
+   "ayers rock"
+  ],
+  "partial": [
+   "australia",
+   "rock"
+  ]
+ },
+ {
+  "slug": "sydney-harbour-bridge",
+  "cat": "Famous places",
+  "q": "sydney harbour bridge",
+  "accepted": [
+   "sydney harbour bridge"
+  ],
+  "partial": [
+   "sydney",
+   "bridge"
+  ]
+ },
+ {
+  "slug": "great-barrier-reef",
+  "cat": "Famous places",
+  "q": "great barrier reef",
+  "accepted": [
+   "great barrier reef"
+  ],
+  "partial": [
+   "reef",
+   "australia"
+  ]
+ },
+ {
+  "slug": "iguazu-falls",
+  "cat": "Famous places",
+  "q": "iguazu falls",
+  "accepted": [
+   "iguazu falls"
+  ],
+  "partial": [
+   "waterfall"
+  ]
+ },
+ {
+  "slug": "easter-island",
+  "cat": "Famous places",
+  "q": "easter island",
+  "accepted": [
+   "easter island",
+   "moai"
+  ],
+  "partial": [
+   "statue",
+   "island"
+  ]
+ },
+ {
+  "slug": "chichen-itza",
+  "cat": "Famous places",
+  "q": "Chichen Itza El Castillo pyramid",
+  "accepted": [
+   "chichen itza",
+   "el castillo"
+  ],
+  "partial": [
+   "mexico",
+   "pyramid"
+  ]
+ },
+ {
+  "slug": "golden-temple",
+  "cat": "Famous places",
+  "q": "Golden Temple Amritsar",
+  "accepted": [
+   "golden temple",
+   "harmandir sahib"
+  ],
+  "partial": [
+   "india",
+   "temple"
+  ]
+ },
+ {
+  "slug": "marina-bay-sands",
+  "cat": "Famous places",
+  "q": "marina bay sands",
+  "accepted": [
+   "marina bay sands"
+  ],
+  "partial": [
+   "singapore",
+   "hotel"
+  ]
+ },
+ {
+  "slug": "petronas-towers",
+  "cat": "Famous places",
+  "q": "petronas towers",
+  "accepted": [
+   "petronas towers"
+  ],
+  "partial": [
+   "kuala lumpur",
+   "skyscraper"
+  ]
+ },
+ {
+  "slug": "cn-tower",
+  "cat": "Famous places",
+  "q": "cn tower",
+  "accepted": [
+   "cn tower"
+  ],
+  "partial": [
+   "toronto",
+   "tower"
+  ]
+ },
+ {
+  "slug": "hamburger",
+  "cat": "Food",
+  "q": "hamburger",
+  "accepted": [
+   "hamburger",
+   "burger",
+   "cheeseburger"
+  ],
+  "partial": [
+   "sandwich",
+   "food"
+  ]
+ },
+ {
+  "slug": "hot-dog",
+  "cat": "Food",
+  "q": "hot dog",
+  "accepted": [
+   "hot dog",
+   "hotdog"
+  ],
+  "partial": [
+   "sausage",
+   "food"
+  ]
+ },
+ {
+  "slug": "taco",
+  "cat": "Food",
+  "q": "taco",
+  "accepted": [
+   "taco",
+   "tacos"
+  ],
+  "partial": [
+   "food"
+  ]
+ },
+ {
+  "slug": "sushi",
+  "cat": "Food",
+  "q": "sushi nigiri plate",
+  "accepted": [
+   "sushi"
+  ],
+  "partial": [
+   "food",
+   "fish"
+  ]
+ },
+ {
+  "slug": "spaghetti",
+  "cat": "Food",
+  "q": "spaghetti tomato sauce dish",
+  "accepted": [
+   "spaghetti",
+   "pasta"
+  ],
+  "partial": [
+   "food"
+  ]
+ },
+ {
+  "slug": "pancakes",
+  "cat": "Food",
+  "q": "pancakes",
+  "accepted": [
+   "pancakes",
+   "pancake"
+  ],
+  "partial": [
+   "food",
+   "breakfast"
+  ]
+ },
+ {
+  "slug": "waffle",
+  "cat": "Food",
+  "q": "waffle",
+  "accepted": [
+   "waffle",
+   "waffles"
+  ],
+  "partial": [
+   "food",
+   "breakfast"
+  ]
+ },
+ {
+  "slug": "croissant",
+  "cat": "Food",
+  "q": "croissant",
+  "accepted": [
+   "croissant"
+  ],
+  "partial": [
+   "bread",
+   "pastry"
+  ]
+ },
+ {
+  "slug": "donut",
+  "cat": "Food",
+  "q": "donut",
+  "accepted": [
+   "donut",
+   "doughnut"
+  ],
+  "partial": [
+   "dessert",
+   "food"
+  ]
+ },
+ {
+  "slug": "ice-cream",
+  "cat": "Food",
+  "q": "ice cream cone scoop",
+  "accepted": [
+   "ice cream",
+   "ice cream cone"
+  ],
+  "partial": [
+   "dessert"
+  ]
+ },
+ {
+  "slug": "chocolate",
+  "cat": "Food",
+  "q": "chocolate",
+  "accepted": [
+   "chocolate"
+  ],
+  "partial": [
+   "candy",
+   "sweets"
+  ]
+ },
+ {
+  "slug": "popcorn",
+  "cat": "Food",
+  "q": "popcorn bowl snack",
+  "accepted": [
+   "popcorn"
+  ],
+  "partial": [
+   "snack",
+   "food"
+  ]
+ },
+ {
+  "slug": "pretzel",
+  "cat": "Food",
+  "q": "pretzel baked bread",
+  "accepted": [
+   "pretzel"
+  ],
+  "partial": [
+   "bread",
+   "snack"
+  ]
+ },
+ {
+  "slug": "bagel",
+  "cat": "Food",
+  "q": "bagel",
+  "accepted": [
+   "bagel"
+  ],
+  "partial": [
+   "bread"
+  ]
+ },
+ {
+  "slug": "cheese",
+  "cat": "Food",
+  "q": "cheese wheel Emmental",
+  "accepted": [
+   "cheese"
+  ],
+  "partial": [
+   "food"
+  ]
+ },
+ {
+  "slug": "watermelon",
+  "cat": "Food",
+  "q": "watermelon slice red fruit",
+  "accepted": [
+   "watermelon"
+  ],
+  "partial": [
+   "fruit",
+   "melon"
+  ]
+ },
+ {
+  "slug": "banana",
+  "cat": "Food",
+  "q": "banana",
+  "accepted": [
+   "banana",
+   "bananas"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "apple",
+  "cat": "Food",
+  "q": "red apple fruit",
+  "accepted": [
+   "apple",
+   "apples"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "orange",
+  "cat": "Food",
+  "q": "orange",
+  "accepted": [
+   "orange",
+   "oranges"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "lemon",
+  "cat": "Food",
+  "q": "lemon",
+  "accepted": [
+   "lemon",
+   "lemons"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "grapes",
+  "cat": "Food",
+  "q": "grapes",
+  "accepted": [
+   "grapes",
+   "grape"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "cherries",
+  "cat": "Food",
+  "q": "cherries",
+  "accepted": [
+   "cherries",
+   "cherry"
+  ],
+  "partial": [
+   "fruit"
+  ]
+ },
+ {
+  "slug": "blueberries",
+  "cat": "Food",
+  "q": "blueberries",
+  "accepted": [
+   "blueberries",
+   "blueberry"
+  ],
+  "partial": [
+   "fruit",
+   "berry"
+  ]
+ },
+ {
+  "slug": "coconut",
+  "cat": "Food",
+  "q": "coconut fruit halves",
+  "accepted": [
+   "coconut"
+  ],
+  "partial": [
+   "fruit",
+   "nut"
+  ]
+ },
+ {
+  "slug": "avocado",
+  "cat": "Food",
+  "q": "avocado",
+  "accepted": [
+   "avocado"
+  ],
+  "partial": [
+   "fruit",
+   "vegetable"
+  ]
+ },
+ {
+  "slug": "broccoli",
+  "cat": "Food",
+  "q": "broccoli vegetable head",
+  "accepted": [
+   "broccoli"
+  ],
+  "partial": [
+   "vegetable"
+  ]
+ },
+ {
+  "slug": "carrot",
+  "cat": "Food",
+  "q": "carrot",
+  "accepted": [
+   "carrot",
+   "carrots"
+  ],
+  "partial": [
+   "vegetable"
+  ]
+ },
+ {
+  "slug": "corn",
+  "cat": "Food",
+  "q": "corn on the cob maize",
+  "accepted": [
+   "corn",
+   "corn on the cob",
+   "maize"
+  ],
+  "partial": [
+   "vegetable"
+  ]
+ },
+ {
+  "slug": "tomato",
+  "cat": "Food",
+  "q": "tomato",
+  "accepted": [
+   "tomato",
+   "tomatoes"
+  ],
+  "partial": [
+   "vegetable",
+   "fruit"
+  ]
+ },
+ {
+  "slug": "mushroom",
+  "cat": "Food",
+  "q": "mushroom fungus forest cap",
+  "accepted": [
+   "mushroom",
+   "mushrooms"
+  ],
+  "partial": [
+   "fungus",
+   "vegetable"
+  ]
+ },
+ {
+  "slug": "pumpkin",
+  "cat": "Food",
+  "q": "pumpkin orange squash",
+  "accepted": [
+   "pumpkin"
+  ],
+  "partial": [
+   "vegetable",
+   "squash"
+  ]
+ },
+ {
+  "slug": "eggs",
+  "cat": "Food",
+  "q": "chicken eggs",
+  "accepted": [
+   "eggs",
+   "egg"
+  ],
+  "partial": [
+   "food"
+  ]
+ },
+ {
+  "slug": "coffee",
+  "cat": "Food",
+  "q": "coffee",
+  "accepted": [
+   "coffee",
+   "cup of coffee",
+   "espresso"
+  ],
+  "partial": [
+   "drink"
+  ]
+ },
+ {
+  "slug": "teddy-bear",
+  "cat": "Objects",
+  "q": "teddy bear toy plush",
+  "accepted": [
+   "teddy bear"
+  ],
+  "partial": [
+   "toy",
+   "bear"
+  ]
+ },
+ {
+  "slug": "rubber-duck",
+  "cat": "Objects",
+  "q": "rubber duck",
+  "accepted": [
+   "rubber duck"
+  ],
+  "partial": [
+   "toy",
+   "duck"
+  ]
+ },
+ {
+  "slug": "lego",
+  "cat": "Objects",
+  "q": "Lego bricks toy",
+  "accepted": [
+   "lego",
+   "lego bricks"
+  ],
+  "partial": [
+   "toy",
+   "bricks"
+  ]
+ },
+ {
+  "slug": "kite",
+  "cat": "Objects",
+  "q": "kite",
+  "accepted": [
+   "kite"
+  ],
+  "partial": [
+   "toy"
+  ]
+ },
+ {
+  "slug": "chess",
+  "cat": "Objects",
+  "q": "chess",
+  "accepted": [
+   "chess",
+   "chessboard",
+   "chess pieces"
+  ],
+  "partial": [
+   "game",
+   "board game"
+  ]
+ },
+ {
+  "slug": "dice",
+  "cat": "Objects",
+  "q": "dice",
+  "accepted": [
+   "dice",
+   "die"
+  ],
+  "partial": [
+   "game"
+  ]
+ },
+ {
+  "slug": "playing-cards",
+  "cat": "Objects",
+  "q": "playing cards deck",
+  "accepted": [
+   "playing cards",
+   "cards"
+  ],
+  "partial": [
+   "game"
+  ]
+ },
+ {
+  "slug": "camera",
+  "cat": "Objects",
+  "q": "camera photography lens",
+  "accepted": [
+   "camera"
+  ],
+  "partial": [
+   "device"
+  ]
+ },
+ {
+  "slug": "telephone",
+  "cat": "Objects",
+  "q": "rotary telephone dial",
+  "accepted": [
+   "telephone",
+   "rotary phone"
+  ],
+  "partial": [
+   "phone"
+  ]
+ },
+ {
+  "slug": "radio",
+  "cat": "Objects",
+  "q": "vintage radio receiver",
+  "accepted": [
+   "radio"
+  ],
+  "partial": [
+   "device"
+  ]
+ },
+ {
+  "slug": "television",
+  "cat": "Objects",
+  "q": "television set screen",
+  "accepted": [
+   "television",
+   "tv"
+  ],
+  "partial": [
+   "screen"
+  ]
+ },
+ {
+  "slug": "laptop",
+  "cat": "Objects",
+  "q": "laptop",
+  "accepted": [
+   "laptop"
+  ],
+  "partial": [
+   "computer"
+  ]
+ },
+ {
+  "slug": "keyboard",
+  "cat": "Objects",
+  "q": "computer keyboard keys",
+  "accepted": [
+   "keyboard",
+   "computer keyboard"
+  ],
+  "partial": [
+   "computer"
+  ]
+ },
+ {
+  "slug": "headphones",
+  "cat": "Objects",
+  "q": "headphones",
+  "accepted": [
+   "headphones"
+  ],
+  "partial": [
+   "music"
+  ]
+ },
+ {
+  "slug": "microphone",
+  "cat": "Objects",
+  "q": "microphone",
+  "accepted": [
+   "microphone"
+  ],
+  "partial": [
+   "music"
+  ]
+ },
+ {
+  "slug": "lamp",
+  "cat": "Objects",
+  "q": "desk lamp light",
+  "accepted": [
+   "lamp",
+   "desk lamp"
+  ],
+  "partial": [
+   "light"
+  ]
+ },
+ {
+  "slug": "light-bulb",
+  "cat": "Objects",
+  "q": "incandescent light bulb glowing",
+  "accepted": [
+   "light bulb",
+   "lightbulb"
+  ],
+  "partial": [
+   "light",
+   "lamp"
+  ]
+ },
+ {
+  "slug": "candle",
+  "cat": "Objects",
+  "q": "candle",
+  "accepted": [
+   "candle",
+   "candles"
+  ],
+  "partial": [
+   "light"
+  ]
+ },
+ {
+  "slug": "clock",
+  "cat": "Objects",
+  "q": "clock",
+  "accepted": [
+   "clock",
+   "wall clock"
+  ],
+  "partial": [
+   "time"
+  ]
+ },
+ {
+  "slug": "hourglass",
+  "cat": "Objects",
+  "q": "hourglass",
+  "accepted": [
+   "hourglass",
+   "sand timer"
+  ],
+  "partial": [
+   "timer",
+   "clock"
+  ]
+ },
+ {
+  "slug": "compass",
+  "cat": "Objects",
+  "q": "compass",
+  "accepted": [
+   "compass"
+  ],
+  "partial": [
+   "tool"
+  ]
+ },
+ {
+  "slug": "scissors",
+  "cat": "Objects",
+  "q": "scissors",
+  "accepted": [
+   "scissors"
+  ],
+  "partial": [
+   "tool"
+  ]
+ },
+ {
+  "slug": "hammer",
+  "cat": "Objects",
+  "q": "claw hammer tool",
+  "accepted": [
+   "hammer"
+  ],
+  "partial": [
+   "tool"
+  ]
+ },
+ {
+  "slug": "wrench",
+  "cat": "Objects",
+  "q": "wrench",
+  "accepted": [
+   "wrench",
+   "spanner"
+  ],
+  "partial": [
+   "tool"
+  ]
+ },
+ {
+  "slug": "paintbrush",
+  "cat": "Objects",
+  "q": "paintbrush",
+  "accepted": [
+   "paintbrush",
+   "brush"
+  ],
+  "partial": [
+   "tool",
+   "art"
+  ]
+ },
+ {
+  "slug": "pencil",
+  "cat": "Objects",
+  "q": "pencil",
+  "accepted": [
+   "pencil",
+   "pencils"
+  ],
+  "partial": [
+   "pen"
+  ]
+ },
+ {
+  "slug": "book",
+  "cat": "Objects",
+  "q": "book",
+  "accepted": [
+   "book",
+   "books"
+  ],
+  "partial": [
+   "reading"
+  ]
+ },
+ {
+  "slug": "globe",
+  "cat": "Objects",
+  "q": "globe",
+  "accepted": [
+   "globe"
+  ],
+  "partial": [
+   "map",
+   "earth"
+  ]
+ },
+ {
+  "slug": "backpack",
+  "cat": "Objects",
+  "q": "backpack",
+  "accepted": [
+   "backpack",
+   "rucksack"
+  ],
+  "partial": [
+   "bag"
+  ]
+ },
+ {
+  "slug": "suitcase",
+  "cat": "Objects",
+  "q": "suitcase",
+  "accepted": [
+   "suitcase",
+   "luggage"
+  ],
+  "partial": [
+   "bag"
+  ]
+ },
+ {
+  "slug": "key",
+  "cat": "Objects",
+  "q": "key",
+  "accepted": [
+   "key",
+   "keys"
+  ],
+  "partial": [
+   "lock"
+  ]
+ },
+ {
+  "slug": "lock",
+  "cat": "Objects",
+  "q": "lock",
+  "accepted": [
+   "lock",
+   "padlock"
+  ],
+  "partial": [
+   "key"
+  ]
+ },
+ {
+  "slug": "mailbox",
+  "cat": "Objects",
+  "q": "mailbox",
+  "accepted": [
+   "mailbox",
+   "letterbox",
+   "post box"
+  ],
+  "partial": [
+   "box"
+  ]
+ },
+ {
+  "slug": "fire-hydrant",
+  "cat": "Objects",
+  "q": "fire hydrant",
+  "accepted": [
+   "fire hydrant",
+   "hydrant"
+  ],
+  "partial": [
+   "street"
+  ]
+ },
+ {
+  "slug": "traffic-light",
+  "cat": "Objects",
+  "q": "traffic light",
+  "accepted": [
+   "traffic light",
+   "stoplight"
+  ],
+  "partial": [
+   "street",
+   "light"
+  ]
+ },
+ {
+  "slug": "bench",
+  "cat": "Objects",
+  "q": "bench",
+  "accepted": [
+   "bench",
+   "park bench"
+  ],
+  "partial": [
+   "seat"
+  ]
+ },
+ {
+  "slug": "ladder",
+  "cat": "Objects",
+  "q": "ladder",
+  "accepted": [
+   "ladder"
+  ],
+  "partial": [
+   "tool"
+  ]
+ },
+ {
+  "slug": "wheelbarrow",
+  "cat": "Objects",
+  "q": "wheelbarrow",
+  "accepted": [
+   "wheelbarrow"
+  ],
+  "partial": [
+   "garden",
+   "cart"
+  ]
+ },
+ {
+  "slug": "watering-can",
+  "cat": "Objects",
+  "q": "watering can",
+  "accepted": [
+   "watering can"
+  ],
+  "partial": [
+   "garden"
+  ]
+ },
+ {
+  "slug": "anchor",
+  "cat": "Objects",
+  "q": "anchor",
+  "accepted": [
+   "anchor"
+  ],
+  "partial": [
+   "ship",
+   "boat"
+  ]
+ },
+ {
+  "slug": "drum",
+  "cat": "Instruments and sport",
+  "q": "drum",
+  "accepted": [
+   "drum",
+   "drums",
+   "drum kit"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "trumpet",
+  "cat": "Instruments and sport",
+  "q": "trumpet",
+  "accepted": [
+   "trumpet"
+  ],
+  "partial": [
+   "instrument",
+   "horn"
+  ]
+ },
+ {
+  "slug": "saxophone",
+  "cat": "Instruments and sport",
+  "q": "saxophone",
+  "accepted": [
+   "saxophone",
+   "sax"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "harp",
+  "cat": "Instruments and sport",
+  "q": "harp",
+  "accepted": [
+   "harp"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "accordion",
+  "cat": "Instruments and sport",
+  "q": "accordion",
+  "accepted": [
+   "accordion"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "banjo",
+  "cat": "Instruments and sport",
+  "q": "banjo",
+  "accepted": [
+   "banjo"
+  ],
+  "partial": [
+   "instrument",
+   "guitar"
+  ]
+ },
+ {
+  "slug": "cello",
+  "cat": "Instruments and sport",
+  "q": "cello",
+  "accepted": [
+   "cello"
+  ],
+  "partial": [
+   "instrument",
+   "violin"
+  ]
+ },
+ {
+  "slug": "xylophone",
+  "cat": "Instruments and sport",
+  "q": "xylophone",
+  "accepted": [
+   "xylophone"
+  ],
+  "partial": [
+   "instrument"
+  ]
+ },
+ {
+  "slug": "soccer-ball",
+  "cat": "Instruments and sport",
+  "q": "soccer ball",
+  "accepted": [
+   "soccer ball",
+   "football"
+  ],
+  "partial": [
+   "ball"
+  ]
+ },
+ {
+  "slug": "basketball",
+  "cat": "Instruments and sport",
+  "q": "basketball",
+  "accepted": [
+   "basketball"
+  ],
+  "partial": [
+   "ball"
+  ]
+ },
+ {
+  "slug": "baseball",
+  "cat": "Instruments and sport",
+  "q": "baseball",
+  "accepted": [
+   "baseball",
+   "baseball glove"
+  ],
+  "partial": [
+   "ball"
+  ]
+ },
+ {
+  "slug": "tennis-racket",
+  "cat": "Instruments and sport",
+  "q": "tennis racket",
+  "accepted": [
+   "tennis racket",
+   "tennis"
+  ],
+  "partial": [
+   "racket",
+   "sport"
+  ]
+ },
+ {
+  "slug": "golf-ball",
+  "cat": "Instruments and sport",
+  "q": "golf ball",
+  "accepted": [
+   "golf ball",
+   "golf"
+  ],
+  "partial": [
+   "ball",
+   "sport"
+  ]
+ },
+ {
+  "slug": "bowling",
+  "cat": "Instruments and sport",
+  "q": "bowling",
+  "accepted": [
+   "bowling",
+   "bowling pins",
+   "bowling ball"
+  ],
+  "partial": [
+   "sport"
+  ]
+ },
+ {
+  "slug": "skateboard",
+  "cat": "Instruments and sport",
+  "q": "skateboard",
+  "accepted": [
+   "skateboard"
+  ],
+  "partial": [
+   "board"
+  ]
+ },
+ {
+  "slug": "surfboard",
+  "cat": "Instruments and sport",
+  "q": "surfboard",
+  "accepted": [
+   "surfboard",
+   "surfing"
+  ],
+  "partial": [
+   "board"
+  ]
+ },
+ {
+  "slug": "skis",
+  "cat": "Instruments and sport",
+  "q": "skis",
+  "accepted": [
+   "skis",
+   "skiing"
+  ],
+  "partial": [
+   "sport",
+   "snow"
+  ]
+ },
+ {
+  "slug": "ice-skates",
+  "cat": "Instruments and sport",
+  "q": "ice skates",
+  "accepted": [
+   "ice skates"
+  ],
+  "partial": [
+   "skates",
+   "sport"
+  ]
+ },
+ {
+  "slug": "boxing-gloves",
+  "cat": "Instruments and sport",
+  "q": "boxing gloves",
+  "accepted": [
+   "boxing gloves"
+  ],
+  "partial": [
+   "gloves",
+   "sport"
+  ]
+ },
+ {
+  "slug": "motorcycle",
+  "cat": "Vehicles",
+  "q": "motorcycle",
+  "accepted": [
+   "motorcycle",
+   "motorbike"
+  ],
+  "partial": [
+   "vehicle",
+   "bike"
+  ]
+ },
+ {
+  "slug": "scooter",
+  "cat": "Vehicles",
+  "q": "scooter",
+  "accepted": [
+   "scooter",
+   "vespa"
+  ],
+  "partial": [
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "school-bus",
+  "cat": "Vehicles",
+  "q": "school bus",
+  "accepted": [
+   "school bus"
+  ],
+  "partial": [
+   "bus",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "double-decker-bus",
+  "cat": "Vehicles",
+  "q": "double decker bus",
+  "accepted": [
+   "double decker bus",
+   "double-decker"
+  ],
+  "partial": [
+   "bus",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "taxi",
+  "cat": "Vehicles",
+  "q": "taxi",
+  "accepted": [
+   "taxi",
+   "cab"
+  ],
+  "partial": [
+   "car",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "police-car",
+  "cat": "Vehicles",
+  "q": "police car",
+  "accepted": [
+   "police car"
+  ],
+  "partial": [
+   "car",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "ambulance",
+  "cat": "Vehicles",
+  "q": "ambulance",
+  "accepted": [
+   "ambulance"
+  ],
+  "partial": [
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "race-car",
+  "cat": "Vehicles",
+  "q": "race car",
+  "accepted": [
+   "race car",
+   "formula one",
+   "f1 car"
+  ],
+  "partial": [
+   "car",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "tank",
+  "cat": "Vehicles",
+  "q": "tank",
+  "accepted": [
+   "tank"
+  ],
+  "partial": [
+   "vehicle",
+   "army"
+  ]
+ },
+ {
+  "slug": "submarine",
+  "cat": "Vehicles",
+  "q": "submarine",
+  "accepted": [
+   "submarine"
+  ],
+  "partial": [
+   "ship",
+   "boat"
+  ]
+ },
+ {
+  "slug": "cruise-ship",
+  "cat": "Vehicles",
+  "q": "cruise ship",
+  "accepted": [
+   "cruise ship"
+  ],
+  "partial": [
+   "ship",
+   "boat"
+  ]
+ },
+ {
+  "slug": "canoe",
+  "cat": "Vehicles",
+  "q": "canoe",
+  "accepted": [
+   "canoe",
+   "kayak"
+  ],
+  "partial": [
+   "boat"
+  ]
+ },
+ {
+  "slug": "gondola",
+  "cat": "Vehicles",
+  "q": "gondola",
+  "accepted": [
+   "gondola"
+  ],
+  "partial": [
+   "boat",
+   "venice"
+  ]
+ },
+ {
+  "slug": "airplane",
+  "cat": "Vehicles",
+  "q": "airplane",
+  "accepted": [
+   "airplane",
+   "aeroplane",
+   "plane",
+   "jet"
+  ],
+  "partial": [
+   "aircraft"
+  ]
+ },
+ {
+  "slug": "space-shuttle",
+  "cat": "Vehicles",
+  "q": "space shuttle",
+  "accepted": [
+   "space shuttle"
+  ],
+  "partial": [
+   "rocket",
+   "spacecraft"
+  ]
+ },
+ {
+  "slug": "rocket",
+  "cat": "Vehicles",
+  "q": "rocket",
+  "accepted": [
+   "rocket"
+  ],
+  "partial": [
+   "spacecraft"
+  ]
+ },
+ {
+  "slug": "tram",
+  "cat": "Vehicles",
+  "q": "tram",
+  "accepted": [
+   "tram",
+   "streetcar",
+   "trolley"
+  ],
+  "partial": [
+   "train",
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "cable-car",
+  "cat": "Vehicles",
+  "q": "cable car",
+  "accepted": [
+   "cable car"
+  ],
+  "partial": [
+   "vehicle"
+  ]
+ },
+ {
+  "slug": "bulldozer",
+  "cat": "Vehicles",
+  "q": "bulldozer",
+  "accepted": [
+   "bulldozer"
+  ],
+  "partial": [
+   "vehicle",
+   "machine"
+  ]
+ },
+ {
+  "slug": "excavator",
+  "cat": "Vehicles",
+  "q": "excavator",
+  "accepted": [
+   "excavator",
+   "digger"
+  ],
+  "partial": [
+   "vehicle",
+   "machine"
+  ]
+ },
+ {
+  "slug": "waterfall",
+  "cat": "Nature",
+  "q": "waterfall",
+  "accepted": [
+   "waterfall"
+  ],
+  "partial": [
+   "water",
+   "river"
+  ]
+ },
+ {
+  "slug": "glacier",
+  "cat": "Nature",
+  "q": "glacier",
+  "accepted": [
+   "glacier"
+  ],
+  "partial": [
+   "ice",
+   "mountain"
+  ]
+ },
+ {
+  "slug": "iceberg",
+  "cat": "Nature",
+  "q": "iceberg",
+  "accepted": [
+   "iceberg"
+  ],
+  "partial": [
+   "ice",
+   "sea"
+  ]
+ },
+ {
+  "slug": "desert",
+  "cat": "Nature",
+  "q": "desert",
+  "accepted": [
+   "desert",
+   "sand dunes"
+  ],
+  "partial": [
+   "sand"
+  ]
+ },
+ {
+  "slug": "beach",
+  "cat": "Nature",
+  "q": "beach",
+  "accepted": [
+   "beach"
+  ],
+  "partial": [
+   "sea",
+   "sand"
+  ]
+ },
+ {
+  "slug": "island",
+  "cat": "Nature",
+  "q": "island",
+  "accepted": [
+   "island"
+  ],
+  "partial": [
+   "sea"
+  ]
+ },
+ {
+  "slug": "lightning",
+  "cat": "Nature",
+  "q": "lightning",
+  "accepted": [
+   "lightning"
+  ],
+  "partial": [
+   "storm",
+   "weather"
+  ]
+ },
+ {
+  "slug": "tornado",
+  "cat": "Nature",
+  "q": "tornado",
+  "accepted": [
+   "tornado"
+  ],
+  "partial": [
+   "storm",
+   "weather"
+  ]
+ },
+ {
+  "slug": "aurora",
+  "cat": "Nature",
+  "q": "aurora",
+  "accepted": [
+   "aurora",
+   "northern lights",
+   "aurora borealis"
+  ],
+  "partial": [
+   "sky",
+   "lights"
+  ]
+ },
+ {
+  "slug": "snowflake",
+  "cat": "Nature",
+  "q": "snowflake",
+  "accepted": [
+   "snowflake"
+  ],
+  "partial": [
+   "snow",
+   "ice"
+  ]
+ },
+ {
+  "slug": "autumn-leaves",
+  "cat": "Nature",
+  "q": "autumn leaves",
+  "accepted": [
+   "autumn leaves",
+   "fall leaves"
+  ],
+  "partial": [
+   "leaves",
+   "tree"
+  ]
+ },
+ {
+  "slug": "oak-tree",
+  "cat": "Nature",
+  "q": "oak tree",
+  "accepted": [
+   "oak tree",
+   "oak"
+  ],
+  "partial": [
+   "tree"
+  ]
+ },
+ {
+  "slug": "palm-tree",
+  "cat": "Nature",
+  "q": "palm tree",
+  "accepted": [
+   "palm tree"
+  ],
+  "partial": [
+   "tree"
+  ]
+ },
+ {
+  "slug": "cherry-blossom",
+  "cat": "Nature",
+  "q": "cherry blossom",
+  "accepted": [
+   "cherry blossom",
+   "sakura"
+  ],
+  "partial": [
+   "flower",
+   "tree"
+  ]
+ },
+ {
+  "slug": "rose",
+  "cat": "Nature",
+  "q": "rose",
+  "accepted": [
+   "rose",
+   "roses"
+  ],
+  "partial": [
+   "flower"
+  ]
+ },
+ {
+  "slug": "tulip",
+  "cat": "Nature",
+  "q": "tulip",
+  "accepted": [
+   "tulip",
+   "tulips"
+  ],
+  "partial": [
+   "flower"
+  ]
+ },
+ {
+  "slug": "lotus",
+  "cat": "Nature",
+  "q": "lotus",
+  "accepted": [
+   "lotus",
+   "water lily"
+  ],
+  "partial": [
+   "flower"
+  ]
+ },
+ {
+  "slug": "lavender",
+  "cat": "Nature",
+  "q": "lavender",
+  "accepted": [
+   "lavender"
+  ],
+  "partial": [
+   "flower",
+   "plant"
+  ]
+ },
+ {
+  "slug": "cave",
+  "cat": "Nature",
+  "q": "cave",
+  "accepted": [
+   "cave"
+  ],
+  "partial": [
+   "rock"
+  ]
+ },
+ {
+  "slug": "canyon",
+  "cat": "Nature",
+  "q": "canyon",
+  "accepted": [
+   "canyon",
+   "gorge"
+  ],
+  "partial": [
+   "valley",
+   "rock"
+  ]
+ },
+ {
+  "slug": "moon",
+  "cat": "Nature",
+  "q": "moon",
+  "accepted": [
+   "moon",
+   "full moon"
+  ],
+  "partial": [
+   "space"
   ]
  }
 ]

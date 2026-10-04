@@ -6,3 +6,4 @@ Thumbs.db
 .env.*
 .wrangler/
 __pycache__/
+prototype/version.json
