@@ -1,7 +1,15 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style></head><body>
-<title>Glimpse Rush Playtest</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Glimpse Rush</title>
+<meta name="description" content="Same photo. Same clock. See it first. A live photo-reveal guessing game: play the world every minute, or friends and family on one link.">
+<meta name="theme-color" content="#060d22">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Glimpse Rush"><meta property="og:title" content="Glimpse Rush">
+<meta property="og:description" content="Same photo. Same clock. See it first. Play with friends and family on one link.">
+<meta property="og:image" content="https://glimpse-rush.pages.dev/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,900&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+</head><body>
 <style>
 /* Layout: one phone-width column, screen swaps (home / play / results), arcade-night single dark look taken from the brand mockup */
 :root{
@@ -32,7 +40,8 @@ h1,h2,.display{font-family:var(--display);font-style:italic;letter-spacing:.01em
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button,.btn{font:600 .9rem var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--volt);border-color:var(--volt-hi)}
+.seg button[aria-pressed="true"]{background:#1450c8;border-color:var(--volt-hi)} /* 6:1 with --ink (WCAG AA); --volt was 2.93:1 */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .btn:focus-visible,.seg button:focus-visible{outline:2px solid var(--volt-hi);outline-offset:2px}
 .btn.big{width:100%;padding:14px;font:900 1.35rem var(--display);font-style:italic;letter-spacing:.06em;border-radius:12px}
 .btn.freeze{background:linear-gradient(180deg,#2f8bff,#1450c8);border-color:#8cc8ff;box-shadow:0 0 24px #2f8bff66}
@@ -118,7 +127,8 @@ tr.me td{background:#2f8bff33;font-weight:700}
 @media (prefers-reduced-motion:reduce){.tiles>div,.tiles .cover{transition:none}}
 </style>
 
-<div class="app" id="app"></div>
+<header><h1 class="sr-only">Glimpse Rush</h1></header>
+<main class="app" id="app"></main>
 
 <script src="photos/photos.js"></script>
 <script>
@@ -376,7 +386,7 @@ function blitzEnd(){const B=S.blitz,R=S.R;if(R&&R.done&&R.partialOpen&&!R.flash)
 /* Live rooms on this site: a WebSocket to /api/room/<name> (Cloudflare Durable Object, rooms/src/index.js).
    Same shape as the room capability the game was written against: join(name) → {presence(patch), onPeers(cb, onErr), leave()}.
    Peers carry {id, presence, updatedAt (local receive time), isMe, sameTab}. Reconnects by itself (phones drop sockets when asleep). */
-const WSROOM={join(name){return new Promise((resolve,reject)=>{
+const WSROOM={join(name){const tJoin=performance.now();return new Promise((resolve,reject)=>{
   let ws=null,me=null,peers=new Map(),mine={},cb=null,onErr=null,left=false,tries=0,first=true;
   const mk=(id,presence,at)=>({id,presence,updatedAt:at,isMe:id===me,sameTab:id===me});
   const emit=()=>{if(cb)cb({peers:[...peers.values()].map(p=>({...p,isMe:p.id===me,sameTab:p.id===me}))})};
@@ -384,7 +394,7 @@ const WSROOM={join(name){return new Promise((resolve,reject)=>{
   let best=1e9,seq=0;const sent=new Map();
   const ping=()=>{if(ws&&ws.readyState===1){const id=++seq;sent.set(id,Date.now());ws.send(JSON.stringify({t:"ping",id}))}};
   let pinger=null;
-  const room={serverOffset:null,rtt:null,presence(patch){Object.assign(mine,patch);if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"presence",patch}));return Promise.resolve()},
+  const room={serverOffset:null,rtt:null,joinMs:null,presence(patch){Object.assign(mine,patch);if(ws&&ws.readyState===1)ws.send(JSON.stringify({t:"presence",patch}));return Promise.resolve()},
     onPeers(c,e){cb=c;onErr=e;emit()},leave(){left=true;clearInterval(pinger);try{ws&&ws.close(1000)}catch{}return Promise.resolve()},
     get status(){return ws&&ws.readyState===1?"live":"reconnecting"}};
   const open=()=>{ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/api/room/"+encodeURIComponent(name));
@@ -392,7 +402,7 @@ const WSROOM={join(name){return new Promise((resolve,reject)=>{
       if(m.t==="hello"){me=m.id;tries=0;peers=new Map(m.peers.map(p=>[p.id,mk(p.id,p.presence||{},now)]));peers.set(me,mk(me,{...mine},now));
         if(Object.keys(mine).length)ws.send(JSON.stringify({t:"presence",patch:mine}));
         for(let i=0;i<6;i++)setTimeout(ping,i*150);clearInterval(pinger);pinger=setInterval(()=>{best+=2;ping()},5000);
-        if(first){first=false;resolve(room)}emit()}
+        if(first){first=false;room.joinMs=Math.round(performance.now()-tJoin);resolve(room)}emit()}
       else if(m.t==="peer"){peers.set(m.id,mk(m.id,m.presence||{},now));emit()}
       else if(m.t==="leave"){peers.delete(m.id);emit()}
       else if(m.t==="pong"&&sent.has(m.id)){const t0=sent.get(m.id),rtt=now-t0;sent.delete(m.id);room.rtt=rtt;const had=room.serverOffset!==null;if(rtt<=best){best=rtt;room.serverOffset=Math.round(m.now-(t0+rtt/2))}if(!had)emit();}};

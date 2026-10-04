@@ -12,7 +12,7 @@ const bad = [];
     if (statSync(p).isDirectory()) walk(p);
     else if (EXT.has(extname(f))) {
       const s = readFileSync(p, "utf8");
-      s.split("\n").forEach((line, i) => { if (/[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(line)) bad.push(`${p}:${i + 1}`); });
+      s.split("\n").forEach((line, i) => { if (/[\x00-\x08\x0b\x0c\x0e-\x1f]|\r(?!$)/.test(line)) bad.push(`${p}:${i + 1}`); });
     }
   }
 })(ROOT);

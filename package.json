@@ -15,15 +15,16 @@
     "test:db": "node --test backend/schema.test.mjs",
     "test:playtest": "node --test playtest/playtest.test.mjs",
     "test:flow": "node --test --test-concurrency=1 test/flow.test.mjs",
-    "deploy": "node scripts/stamp.mjs && wrangler pages deploy prototype --project-name glimpse-rush --branch main --commit-dirty=true",
+    "deploy": "node scripts/deploy.mjs",
     "map": "node scripts/wire-map.mjs",
     "test:rooms": "node --test --test-concurrency=1 rooms/room.test.mjs",
     "deploy:rooms": "cd rooms && wrangler deploy",
     "photos": "python tools/fetch_photos.py",
-    "check": "node scripts/check-control-chars.mjs && node --check prototype/playtest.js && node --check functions/_lib/store.js && node --check functions/_lib/ingest.js && node --check rooms/src/index.js && node --check scripts/wire-map.mjs"
+    "check": "node scripts/check-control-chars.mjs && node --check prototype/playtest.js && node --check functions/_lib/store.js && node --check functions/_lib/ingest.js && node --check rooms/src/index.js && node --check scripts/wire-map.mjs && node --check scripts/stamp.mjs && node --check scripts/deploy.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.2.17",
+    "axe-core": "^4.13.0",
     "playwright": "^1.58.2"
   }
 }

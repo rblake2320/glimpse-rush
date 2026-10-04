@@ -142,7 +142,7 @@ export async function engagement(db, now) {
   const count = (key) => Object.entries(plat.reduce((m, p) => ((m[p[key] ?? "unknown"] = (m[p[key] ?? "unknown"] || 0) + 1), m), {}))
     .map(([k, n]) => ({ [key]: k, n })).sort((a, b) => b.n - a.n);
   const answers = await all(db, `SELECT mode, json_extract(data,'$.rt') AS rt, json_extract(data,'$.kind') AS kind FROM events WHERE type='answer' ORDER BY id DESC LIMIT 20000`);
-  const hbs = await all(db, `SELECT json_extract(data,'$.api_ms') AS api, json_extract(data,'$.room_rtt') AS rtt FROM events WHERE type='heartbeat' ORDER BY id DESC LIMIT 20000`);
+  const hbs = await all(db, `SELECT json_extract(data,'$.api_ms') AS api, json_extract(data,'$.room_rtt') AS rtt, json_extract(data,'$.room_join_ms') AS rjoin FROM events WHERE type='heartbeat' ORDER BY id DESC LIMIT 20000`);
   const imgs = await all(db, `SELECT json_extract(data,'$.img_ms') AS ms FROM events WHERE type='round_start' ORDER BY id DESC LIMIT 20000`);
   const modes = [...new Set(answers.map((a) => a.mode))];
 
@@ -165,7 +165,7 @@ export async function engagement(db, now) {
     speed: {
       answer_ms: modes.map((m) => { const a = answers.filter((x) => x.mode === m); return { mode: m, answers: a.length, median_ms: med(a.map((x) => x.rt)), correct_median_ms: med(a.filter((x) => x.kind === "correct").map((x) => x.rt)) }; }),
       page_ttfb_ms: med(plat.map((p) => p.page?.ttfb)), page_load_ms: med(plat.map((p) => p.page?.load)), page_kb: med(plat.map((p) => p.page?.kb)),
-      photo_ms: med(imgs.map((x) => x.ms)), api_ms: med(hbs.map((x) => x.api)), room_rtt_ms: med(hbs.map((x) => x.rtt)),
+      photo_ms: med(imgs.map((x) => x.ms)), api_ms: med(hbs.map((x) => x.api)), room_rtt_ms: med(hbs.map((x) => x.rtt)), room_join_ms: med(hbs.map((x) => x.rjoin)),
     },
   };
 }

@@ -76,6 +76,7 @@ function inventory() {
 let browser;
 async function page({ consent = "yes", sid = SYN + "-map-" + Math.random().toString(16).slice(2, 14) + Date.now().toString(16) } = {}) { // sid null = none preset
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  await ctx.addInitScript(() => { window.__csp = []; document.addEventListener("securitypolicyviolation", (e) => window.__csp.push(e.violatedDirective + " " + e.blockedURI)); });
   await ctx.addInitScript(([c, s]) => {
     try { if (c) localStorage.setItem("gr.pt.consent", c); if (s) localStorage.setItem("gr.pt.sid", s); } catch {}
   }, [consent, sid]);
@@ -114,14 +115,18 @@ async function freezeAnswer(p, text) {
   if (text !== null) { await p.fill("#ans", text); await p.press("#ans", "Enter"); await p.waitForTimeout(200); }
 }
 const must = (cond, msg) => { if (!cond) throw new Error(msg); };
-const noErrors = (p) => must(p.errs.length === 0, "page errors: " + p.errs.join(" | "));
+const noErrors = async (p) => {
+  must(p.errs.length === 0, "page errors: " + p.errs.join(" | "));
+  const csp = await p.evaluate(() => window.__csp || []).catch(() => []);
+  must(csp.length === 0, "Content-Security-Policy blocked: " + csp.join(" | "));
+};
 
 // ------------------------------------------------------------------ wires
 const WIRES = {
   home: ["Home loads with every mode and no errors", async () => {
     const p = await page();
     for (const id of ["#goWorld", "#goPractice", "#goBlitz", "#goGroup", "#goPack"]) must(await p.locator(id).isVisible(), id + " not visible");
-    noErrors(p); await close(p); return "5 mode controls visible";
+    await noErrors(p); await close(p); return "5 mode controls visible";
   }],
   consent_no: ["Declining consent sends nothing and stores no id", async () => {
     const p = await page({ consent: null, sid: null });
@@ -131,13 +136,13 @@ const WIRES = {
     const data = p.api.filter((u) => /\/api\/(e|feedback)(\?|$)/.test(u)); // the clock read (/api/time) carries no id and no data
     must(data.length === 0, "data sent after declining: " + data.join(", "));
     must(await p.evaluate(() => localStorage.getItem("gr.pt.sid")) === null, "an id was stored");
-    noErrors(p); await close(p); return "no data sent, no id stored";
+    await noErrors(p); await close(p); return "no data sent, no id stored";
   }],
   consent_yes: ["Accepting consent records session_start and screens", async () => {
     const p = await page({ consent: null });
     await p.click("#pt-yes");
     await landed(p.sid, (r) => ev(r, "session_start") && ev(r, "screen") && r.session?.device, "session_start + screen + session row with device");
-    noErrors(p); await close(p); return "session_start, screen landed";
+    await noErrors(p); await close(p); return "session_start, screen landed";
   }],
   practice_full: ["Practice: freeze, correct answer, results with credit; events land", async () => {
     const p = await page();
@@ -152,7 +157,7 @@ const WIRES = {
     const credit = await p.evaluate(() => !!(S.R.photo.credit) === /Photo:/.test(document.body.innerText));
     must(credit, "photo credit line missing on results");
     await landed(p.sid, (r) => ev(r, "round_start") && ev(r, "freeze") && ev(r, "answer", (e, d) => d.kind === "correct") && ev(r, "round_end", (e, d) => d.outcome === "correct"), "round_start/freeze/answer/round_end");
-    noErrors(p); await close(p); return `photo loaded (${img.w || "emoji"}px), credit shown, 4 events landed`;
+    await noErrors(p); await close(p); return `photo loaded (${img.w || "emoji"}px), credit shown, 4 events landed`;
   }],
   half_credit: ["Half answer banks and continues; wrong 2nd answer keeps half credit", async () => {
     const p = await page();
@@ -165,7 +170,7 @@ const WIRES = {
     await p.waitForSelector(".result-h", { timeout: 8000 });
     must(/Close enough/.test(await p.locator(".result-h").innerText()), "banked half credit lost");
     await landed(p.sid, (r) => ev(r, "round_end", (e, d) => d.outcome === "partial"), "round_end partial");
-    noErrors(p); await close(p); return "banked, continued, kept";
+    await noErrors(p); await close(p); return "banked, continued, kept";
   }],
   giveup: ["Give up reveals the photo and records the outcome; Back returns home", async () => {
     const p = await page();
@@ -174,7 +179,7 @@ const WIRES = {
     await p.waitForSelector(".result-h");
     await landed(p.sid, (r) => ev(r, "round_end", (e, d) => d.outcome === "gave_up"), "round_end gave_up");
     await p.click("#home"); await p.waitForSelector("#goPractice");
-    noErrors(p); await close(p); return "gave_up landed, home reached";
+    await noErrors(p); await close(p); return "gave_up landed, home reached";
   }],
   unfreeze: ["Unfreeze spends a freeze and is recorded", async () => {
     const p = await page();
@@ -182,7 +187,7 @@ const WIRES = {
     await p.click("#unfreeze"); await p.waitForTimeout(300);
     must(await p.evaluate(() => S.R.freezesUsed === 1 && !S.R.frozen), "freeze not spent");
     await landed(p.sid, (r) => ev(r, "freeze_fail"), "freeze_fail");
-    noErrors(p); await close(p); return "freeze spent, freeze_fail landed";
+    await noErrors(p); await close(p); return "freeze spent, freeze_fail landed";
   }],
   options: ["Practice grid, scramble and hint options reach the round", async () => {
     const p = await page();
@@ -193,7 +198,7 @@ const WIRES = {
     const r = await p.evaluate(() => ({ N: S.R.N, scr: S.R.scr, hint: S.R.hint }));
     must(r.N === 9 && r.scr === 1 && r.hint === true, "options not applied: " + JSON.stringify(r));
     await landed(p.sid, (x) => ev(x, "round_start", (e, d) => e.grid === 9 && d.scr === 1 && d.hint === true), "round_start with options");
-    noErrors(p); await close(p); return "9 tiles, scramble 1, hint on";
+    await noErrors(p); await close(p); return "9 tiles, scramble 1, hint on";
   }],
   blitz: ["Blitz: answer, skip, end run, run again; run total recorded", async () => {
     const p = await page();
@@ -207,7 +212,7 @@ const WIRES = {
     must(total > 0, "run total is 0 after a correct answer");
     await landed(p.sid, (r) => ev(r, "blitz_end", (e, d) => d.total === total) && ev(r, "round_end", (e) => e.mode === "blitz"), "blitz_end with total");
     await p.click("#again"); await p.waitForFunction(() => S.screen === "play");
-    noErrors(p); await close(p); return `run total ${total} recorded`;
+    await noErrors(p); await close(p); return `run total ${total} recorded`;
   }],
   world: ["World Live: join, freeze, answer, results with leaderboard, next round", async () => {
     const p = await page();
@@ -217,7 +222,7 @@ const WIRES = {
     must(/World Live Leaderboard/.test(await p.locator("body").innerText()), "leaderboard missing");
     must(await p.locator("#next").isVisible(), "next round button missing");
     await landed(p.sid, (r) => ev(r, "round_end", (e) => e.mode === "world"), "world round_end");
-    noErrors(p); await close(p); return "leaderboard shown, round_end landed";
+    await noErrors(p); await close(p); return "leaderboard shown, round_end landed";
   }],
   group_reconnect: ["Group Room survives reloads: guest returns to the live round with their score; host keeps the game; unknown codes explain themselves", async () => {
     const { spawnSync } = await import("node:child_process");
@@ -252,6 +257,29 @@ const WIRES = {
     await ctx.close();
     return "noticed mid-round, waited, reloaded on the results screen";
   }],
+  a11y: ["Accessibility: no WCAG 2 A/AA violations on home, a selected option, or group setup (axe-core)", async () => {
+    const { spawnSync } = await import("node:child_process");
+    const r = spawnSync(process.execPath, [join(ROOT, "scripts/a11y.mjs"), BASE], { encoding: "utf8", timeout: 120000 });
+    const out = (r.stdout || "") + (r.stderr || "");
+    const ids = [...new Set([...out.matchAll(/"id": "([a-z-]+)"/g)].map((m) => m[1]))];
+    must(/^PASS/m.test(out) && ids.length === 0, "violations: " + (ids.join(", ") || out.split("\n").slice(-2).join(" ")));
+    return "0 violations";
+  }],
+  static_files: ["Icons, manifest, robots, share image and a real 404 are served; photos cached for a year", async () => {
+    const want = { "/favicon.ico": ["200", "image"], "/manifest.webmanifest": ["200", "manifest"], "/robots.txt": ["200", "text/plain"],
+      "/og.png": ["200", "image/png"], "/icon-512.png": ["200", "image/png"], ["/no-such-page-" + Date.now()]: ["404", "text/html"] };
+    for (const [u, [code, type]] of Object.entries(want)) {
+      const r = await fetch(BASE + u);
+      must(String(r.status) === code && (r.headers.get("content-type") || "").includes(type), `${u}: ${r.status} ${r.headers.get("content-type")}`);
+    }
+    const photo = inv.pool[0];
+    const pr = await fetch(BASE + "/" + photo.src);
+    must(/immutable/.test(pr.headers.get("cache-control") || ""), "photos are not cached long-term");
+    const h = await fetch(BASE + "/");
+    for (const k of ["content-security-policy", "strict-transport-security", "x-frame-options", "permissions-policy"]) must(h.headers.get(k), "missing header " + k);
+    must(/og:image/.test(await h.text()), "share image tag missing");
+    return "all present; CSP, HSTS, frame and permissions headers set";
+  }],
   world_same: ["World Live is the same round on every device at the same moment, even with a wrong device clock", async () => {
     const real = await browser.newContext({ viewport: { width: 1280, height: 800 } });
     const skew = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
@@ -283,14 +311,14 @@ const WIRES = {
     await p.waitForSelector(".result-h", { timeout: 70000 });
     must(/World Live: Scrambled Leaderboard/.test(await p.locator("body").innerText()), "scrambled leaderboard missing");
     await landed(p.sid, (r) => ev(r, "round_start", (e, d) => e.mode === "world_scr" && d.scr === 2) && ev(r, "round_end", (e) => e.mode === "world_scr"), "world_scr round_start/round_end");
-    noErrors(p); await close(p); return "scrambled round played, recorded as world_scr";
+    await noErrors(p); await close(p); return "scrambled round played, recorded as world_scr";
   }],
   abandon: ["Quitting a round before it ends is recorded", async () => {
     const p = await page();
     await p.click("#goWorld"); await p.waitForSelector("#quit", { timeout: 20000 });
     await p.click("#quit"); await p.waitForSelector("#goPractice");
     await landed(p.sid, (r) => ev(r, "round_abandon"), "round_abandon");
-    noErrors(p); await close(p); return "round_abandon landed";
+    await noErrors(p); await close(p); return "round_abandon landed";
   }],
   visit_data: ["Visit data lands: device details, page speed, answer time, play time, errors", async () => {
     const p = await page();
@@ -331,7 +359,7 @@ const WIRES = {
     await p.click("#pt-send");
     await p.waitForFunction(() => /Thank you/.test(document.querySelector("#pt-msg")?.textContent || ""), null, { timeout: 8000 });
     const rows = await landed(p.sid, (r) => r.feedback.some((f) => f.liked === mark && f.rating === 3 && f.tags === "other" && JSON.parse(f.context).screen === "home") && ev(r, "feedback_open"), "feedback row + feedback_open");
-    noErrors(p); await close(p); return `feedback stored (${rows.feedback.length} rows for this session)`;
+    await noErrors(p); await close(p); return `feedback stored (${rows.feedback.length} rows for this session)`;
   }],
   round_reaction: ["Round thumbs and 'should count' flag are stored per photo", async () => {
     const p = await page();
@@ -341,7 +369,7 @@ const WIRES = {
     await p.click('.pt-rf [data-r="1"]'); await p.click('.pt-rf [data-d="0"]');
     await p.waitForFunction(() => /Thanks/.test(document.querySelector("#pt-st")?.textContent || ""), null, { timeout: 8000 });
     await landed(p.sid, (r) => r.feedback.some((f) => f.kind === "round" && f.rating === 1) && r.feedback.some((f) => f.kind === "dispute" && f.answer === "zzqx one"), "round + dispute feedback");
-    noErrors(p); await close(p); return "thumbs + dispute stored";
+    await noErrors(p); await close(p); return "thumbs + dispute stored";
   }],
   admin: ["Admin results are locked without the token, load with it, and exclude test traffic", async () => {
     must((await fetch(BASE + "/api/admin/summary")).status === 401, "summary open without token");
@@ -394,7 +422,7 @@ const WIRES = {
     await p.waitForFunction(() => (document.querySelector("#vec")?.textContent || "").length > 20);
     const t = await p.locator("#vec").innerText();
     must(!/FAIL/i.test(t), "a vector failed");
-    noErrors(p); await close(p); return (t.match(/\d+\s*\/\s*\d+[^\n]*/) || ["passed"])[0].slice(0, 60);
+    await noErrors(p); await close(p); return (t.match(/\d+\s*\/\s*\d+[^\n]*/) || ["passed"])[0].slice(0, 60);
   }],
   pack: ["Your own photos: add a photo from the device, name the pack, back out", async () => {
     const p = await page();
@@ -404,7 +432,7 @@ const WIRES = {
     await p.fill("#packName", "Wire map pack"); await p.press("#packName", "Tab");
     await p.click("#back"); await p.waitForSelector("#pSrc");
     must(await p.evaluate(() => PACK.photos.length === 1), "photo not in the pack");
-    noErrors(p); await close(p); return "1 photo added";
+    await noErrors(p); await close(p); return "1 photo added";
   }],
   pack_persist: ["Your own photos survive a reload", async () => {
     const p = await page();
@@ -422,7 +450,7 @@ const WIRES = {
     await p.fill("#profName", "WireMap"); await p.press("#profName", "Tab");
     await p.reload(); await p.waitForSelector("#profName");
     must(await p.inputValue("#profName") === "WireMap", "name not kept");
-    noErrors(p); await close(p); return "kept after reload";
+    await noErrors(p); await close(p); return "kept after reload";
   }],
   group: ["Group Room: host shares a link, a friend joins with just a name, both play the same round live", async () => {
     const { spawnSync } = await import("node:child_process");

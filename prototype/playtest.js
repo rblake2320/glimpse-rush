@@ -76,8 +76,9 @@
   const active = () => activeMs + (visibleSince !== null ? performance.now() - visibleSince : 0);
   const heartbeat = (final) => {
     const roomRtt = typeof G !== "undefined" && G.room && G.room.rtt ? G.room.rtt : null;
+    const roomJoin = typeof G !== "undefined" && G.room && G.room.joinMs ? G.room.joinMs : null;
     track("heartbeat", { mode: modeOf(S.R), data: { visit, active_ms: Math.round(active()), total_ms: Math.round(performance.now()), rounds,
-      screen: S.screen, api_ms: median(apiMs), room_rtt: roomRtt, final: !!final } });
+      screen: S.screen, api_ms: median(apiMs), room_rtt: roomRtt, room_join_ms: roomJoin, final: !!final } });
   };
   setInterval(() => { if (!document.hidden) heartbeat(false); }, 30000);
 
@@ -236,7 +237,7 @@
   .pt-sheet textarea{min-height:64px;resize:vertical}
   .pt-row{display:flex;gap:6px;flex-wrap:wrap}
   .pt-chip,.pt-star,.pt-btn{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:700 .85rem var(--body);cursor:pointer}
-  .pt-chip[aria-pressed=true],.pt-star[aria-pressed=true]{background:var(--volt);border-color:var(--volt-hi)}
+  .pt-chip[aria-pressed=true],.pt-star[aria-pressed=true]{background:#1450c8;border-color:var(--volt-hi)}
   .pt-btn.pri{background:linear-gradient(180deg,#2f8bff,#1450c8);border-color:#8cc8ff} .pt-note{font-size:.78rem;color:var(--dim);margin-top:8px}
   .pt-rf{margin:12px 0;text-align:center} .pt-rf .pt-row{justify-content:center} .pt-rf small{display:block;color:var(--dim);margin-top:6px}`;
   document.head.appendChild(css);
@@ -295,9 +296,10 @@
     bg.querySelector("#pt-liked").focus();
   }
 
-  const fab = el(`<button class="pt-fab" aria-label="Send feedback">Feedback</button>`);
+  const fabWrap = el(`<aside aria-label="Feedback"><button class="pt-fab" aria-label="Send feedback">Feedback</button></aside>`);
+  const fab = fabWrap.firstElementChild;
   fab.onclick = openFeedback;
-  document.body.appendChild(fab);
+  document.body.appendChild(fabWrap);
 
   /* per-round reaction + "my answer should have counted" */
   function reactionCard(photoId, wrong) {

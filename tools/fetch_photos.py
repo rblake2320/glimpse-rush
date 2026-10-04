@@ -8,7 +8,7 @@ Usage:  python tools/fetch_photos.py            (fetch everything missing)
         python tools/fetch_photos.py --redo slug (refetch one, skipping files listed in tools/photo_rejects.json)
 Output: prototype/photos/<slug>.jpg (900x900, EXIF stripped), prototype/photos/photos.js, prototype/photos/CREDITS.md
 """
-import io, json, re, sys, time, urllib.error, urllib.parse, urllib.request
+import hashlib, io, json, re, sys, time, urllib.error, urllib.parse, urllib.request
 from html import unescape
 from pathlib import Path
 from PIL import Image, ImageOps
@@ -58,9 +58,22 @@ def search(q, extra):
     pages = sorted(data.get("query", {}).get("pages", {}).values(), key=lambda p: p.get("index", 999))
     return pages
 
+STOP = {"the", "of", "and", "a", "an", "de", "la", "le", "st", "mount", "tree", "building"}
+
+def title_ok(entry, title):
+    """The file title must name the subject (any accepted answer, word stems), so a search hit on a
+    look-alike or an unrelated photographer's caption ("Dragon" capsule for dragonfly) is skipped."""
+    t = re.sub(r"[^a-z0-9]+", " ", title.lower())
+    for ans in entry["accepted"]:
+        words = [w for w in re.sub(r"[^a-z0-9]+", " ", ans.lower()).split() if w not in STOP and len(w) >= 3]
+        if words and all(re.search(r"\b" + re.escape(w.rstrip("s")[:max(4, len(w) - 2)]), t) for w in words):
+            return True
+    return False
+
 def pick(entry):
     rejected = set(REJECTS.get(entry["slug"], []))
-    for extra in ('incategory:"Featured pictures on Wikimedia Commons"', 'incategory:"Quality images"', ""):
+    # curated photographs first: Quality images are vetted photos; Featured pictures include paintings and maps
+    for extra in ('incategory:"Quality images"', 'incategory:"Featured pictures on Wikimedia Commons"', ""):
         for p in search(entry["q"], extra):
             ii = (p.get("imageinfo") or [{}])[0]
             md = ii.get("extmetadata", {})
@@ -69,7 +82,7 @@ def pick(entry):
             if p["title"] in rejected or ii.get("mime") != "image/jpeg" or not ok_license(lic):
                 continue
             # the pool is real photographs: skip artwork, prints, maps and ephemera by file title
-            if ART.search(p["title"]):
+            if ART.search(p["title"]) or not title_ok(entry, p["title"]):
                 continue
             if min(w, h) < 900 or not (0.66 <= w / max(h, 1) <= 1.8):
                 continue
@@ -95,7 +108,7 @@ def build_outputs():
         if not src or not (OUT / f"{e['slug']}.jpg").exists():
             continue
         items.append({"slug": e["slug"], "category": e["cat"], "accepted": e["accepted"], "partial": e["partial"],
-                      "src": f"photos/{e['slug']}.jpg",
+                      "src": f"photos/{e['slug']}.jpg?v={hashlib.sha256((OUT / (e['slug'] + '.jpg')).read_bytes()).hexdigest()[:10]}",  # cache-busting: photos are cached for a year
                       "credit": {"author": src["author"][:120], "license": src["license"], "page": src["page"]}})
         credits.append(f"| {e['accepted'][0]} | {src['author'][:80]} | {src['license']} | {src['page']} |")
     (OUT / "photos.js").write_text(
