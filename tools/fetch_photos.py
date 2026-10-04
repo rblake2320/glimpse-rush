@@ -103,9 +103,12 @@ def save(entry, src):
 def build_outputs():
     items, credits = [], ["# Photo credits\n", "Built-in photos from Wikimedia Commons. Cropped square and resized for the game.\n",
                           "| Photo | Author | Licence | Source |", "|---|---|---|---|"]
+    reviewed_file = ROOT / "tools" / "photo_reviewed.json"
+    reviewed = set(json.loads(reviewed_file.read_text(encoding="utf-8"))) if reviewed_file.exists() else set()
     for e in CATALOG:
         src = CHOSEN.get(e["slug"])
-        if not src or not (OUT / f"{e['slug']}.jpg").exists():
+        # only photos a person has reviewed (tools/photo_review.py) ever reach the game
+        if not src or e["slug"] not in reviewed or not (OUT / f"{e['slug']}.jpg").exists():
             continue
         items.append({"slug": e["slug"], "category": e["cat"], "accepted": e["accepted"], "partial": e["partial"],
                       "src": f"photos/{e['slug']}.jpg?v={hashlib.sha256((OUT / (e['slug'] + '.jpg')).read_bytes()).hexdigest()[:10]}",  # cache-busting: photos are cached for a year

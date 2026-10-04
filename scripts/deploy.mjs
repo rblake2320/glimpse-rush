@@ -9,6 +9,10 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 execSync("node scripts/stamp.mjs", { cwd: ROOT, stdio: "inherit" });
 const reviewed = new Set(JSON.parse(readFileSync(join(ROOT, "tools/photo_reviewed.json"), "utf8")));
+const pjs = readFileSync(join(ROOT, "prototype/photos/photos.js"), "utf8");
+const listed = JSON.parse(pjs.slice(pjs.indexOf("=") + 1).trim().replace(/;$/, "")).map((p) => p.slug);
+const unreviewed = listed.filter((s) => !reviewed.has(s));
+if (unreviewed.length) { console.error("refusing to deploy: photos.js lists unreviewed photos: " + unreviewed.join(", ")); process.exit(1); }
 const out = mkdtempSync(join(tmpdir(), "gr-deploy-"));
 let skipped = 0;
 cpSync(join(ROOT, "prototype"), out, { recursive: true, filter: (src) => {
