@@ -15,7 +15,7 @@
     "test:db": "node --test backend/schema.test.mjs",
     "test:playtest": "node --test playtest/playtest.test.mjs",
     "test:flow": "node --test --test-concurrency=1 test/flow.test.mjs",
-    "deploy": "wrangler pages deploy prototype --project-name glimpse-rush --branch main",
+    "deploy": "node scripts/stamp.mjs && wrangler pages deploy prototype --project-name glimpse-rush --branch main --commit-dirty=true",
     "map": "node scripts/wire-map.mjs",
     "test:rooms": "node --test --test-concurrency=1 rooms/room.test.mjs",
     "deploy:rooms": "cd rooms && wrangler deploy",

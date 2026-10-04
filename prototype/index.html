@@ -527,11 +527,11 @@ function runVectors(){const V=[["TV01",36,0,1,0,2917],["TV02",36,7000,1,0,1856],
   $("#vec").innerHTML=`<b>${pass}/${lines.length} pass</b>\n`+lines.join("\n")}
 
 function hudTitle(R){const extra=R.mode==="group"?` <span class="badge">${esc(G.code)} · round ${R.roundNo}/${G.game?G.game.rounds:"?"}</span>`:"";
-  return`${R.mode==="world"&&R.scr?"World Live: Scrambled":MODE_NAME[R.mode]} <span class="badge">${R.N} tiles</span>${R.hint?` <span class="badge">hint: ${esc(R.photo.category)}</span>`:""}${R.scr?` <span class="badge">${SCR_NAME[R.scr].toLowerCase()}</span>`:""}${extra}`}
+  return`${R.mode==="world"&&R.scr?"World Live: Scrambled":MODE_NAME[R.mode]}${R.mode==="world"&&R.cycle!==undefined?` <span class="badge" title="Same number on every device">Round #${R.cycle%10000}</span>`:""} <span class="badge">${R.N} tiles</span>${R.hint?` <span class="badge">hint: ${esc(R.photo.category)}</span>`:""}${R.scr?` <span class="badge">${SCR_NAME[R.scr].toLowerCase()}</span>`:""}${extra}`}
 
 function renderPlay(){const R=S.R,ph=R.phase||(R.mode==="blitz"?"REVEAL":"JOIN");
   if(ph==="JOIN"){const hidden=R.mode==="world"||(R.mode==="group"&&G.game&&G.game.grid==="mixed");
-    app.innerHTML=`<div class="hud"><div><div class="title">${R.mode==="world"&&R.scr?"World Live: Scrambled":MODE_NAME[R.mode]}</div><div class="sub">${R.mode==="group"?`Room ${esc(G.code)} · round ${R.roundNo} of ${G.game?G.game.rounds:"?"}`:"Round #"+R.roundNo}</div></div><button class="btn ghost" id="quit">${R.mode==="group"?"Leave":"Quit"}</button></div>
+    app.innerHTML=`<div class="hud"><div><div class="title">${R.mode==="world"&&R.scr?"World Live: Scrambled":MODE_NAME[R.mode]}${R.mode==="world"&&R.cycle!==undefined?` · Round #${R.cycle%10000}`:""}</div><div class="sub">${R.mode==="group"?`Room ${esc(G.code)} · round ${R.roundNo} of ${G.game?G.game.rounds:"?"}`:"Round #"+R.roundNo}</div></div><button class="btn ghost" id="quit">${R.mode==="group"?"Leave":"Quit"}</button></div>
     <div class="lobby"><div class="note">Next round starting soon</div><div class="ring" id="cd">0:05</div>
       <div class="qq"><div><b>??</b>Photo</div><div><b>${hidden?"??":R.N}</b>Grid size</div><div><b>${R.hint?esc(R.photo.category):"??"}</b>Category</div></div>
       ${R.mode==="world"?`<div class="card" style="width:100%;text-align:center" id="wlLive">${WL.board?wlLiveText(R):`<b>${fmt(R.players)}</b> players waiting <span class="badge">simulated</span>`}</div>`:""}
@@ -742,6 +742,13 @@ function renderGroupFinal(){const rows=groupTable(0).sort((a,b)=>b.total-a.total
   const a=$("#again");if(a)a.onclick=()=>{G.game={...G.game,state:"lobby",roundNo:0};hostPublish();S.screen="groupLobby";render()};
   $("#leave").onclick=groupLeave}
 
+/* Every open page follows the live version: a newer deploy is picked up within ~30 s, at a safe moment (menu, results,
+   lobby), so no phone keeps running old rules (e.g. a tab opened before World Live became one global round). */
+const BUILD={mine:null,pending:false};
+async function checkBuild(){if(!/^https?:$/.test(location.protocol))return;try{const r=await fetch("version.json",{cache:"no-store"});if(!r.ok)return;const{build}=await r.json();
+  if(BUILD.mine===null)BUILD.mine=build;else if(build!==BUILD.mine)BUILD.pending=true}catch{}reloadIfSafe()}
+function reloadIfSafe(){if(BUILD.pending&&["home","results","blitzResults","groupLobby","groupFinal","pack","groupSetup"].includes(S.screen)&&!(S.R&&S.R.frozen))location.reload()}
+checkBuild();setInterval(checkBuild,30000);setInterval(reloadIfSafe,2000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkBuild()});
 if(/^#[A-Za-z0-9]{6}$/.test(location.hash))S.screen="groupSetup";
 {const m=roomMemo.get();if(m&&location.hash.slice(1).toUpperCase()===m.code&&ROOM===WSROOM)setTimeout(()=>groupEnter(m.code,!!m.host,m),0)}
 render();

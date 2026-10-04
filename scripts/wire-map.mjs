@@ -233,6 +233,25 @@ const WIRES = {
     must(/^PASS/m.test(out), (out.match(/^FAIL.*$/m) || ["no result"])[0]);
     return (out.match(/both boards had both within \d+ ms/) || ["live"])[0];
   }],
+  auto_update: ["Open pages pick up a new deploy by themselves, but never in the middle of a round", async () => {
+    const ctx = await browser.newContext();
+    let build = "wire-a";
+    await ctx.route("**/version.json", (route) => route.fulfill({ contentType: "application/json", body: JSON.stringify({ build }) }));
+    const p = await ctx.newPage();
+    await p.goto(BASE + "/"); await p.waitForSelector("#pt-no"); await p.click("#pt-no");
+    await p.waitForFunction(() => BUILD.mine === "wire-a");
+    await p.click("#goPractice"); await p.waitForSelector("#fz:not([disabled])", { timeout: 20000 });
+    build = "wire-b";
+    await p.evaluate(() => checkBuild());
+    await p.waitForTimeout(2500);
+    must(await p.evaluate(() => S.screen === "play" && BUILD.pending), "page reloaded mid-round or did not notice the new build");
+    const reloaded = p.waitForEvent("load", { timeout: 10000 });
+    await p.click("#giveup"); await p.waitForSelector(".result-h").catch(() => {});
+    await reloaded;
+    await p.waitForFunction(() => typeof BUILD !== "undefined" && BUILD.mine === "wire-b", null, { timeout: 10000 });
+    await ctx.close();
+    return "noticed mid-round, waited, reloaded on the results screen";
+  }],
   world_same: ["World Live is the same round on every device at the same moment, even with a wrong device clock", async () => {
     const real = await browser.newContext({ viewport: { width: 1280, height: 800 } });
     const skew = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
